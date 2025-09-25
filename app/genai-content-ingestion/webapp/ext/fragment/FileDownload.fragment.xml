@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
+	
+	  <Link
+	  	core:require="{ handler: 'genaicontentingestion/ext/fragment/FileDownload'}"
+        text="{fileName}"
+        press="handler.onPress"/>
+</core:FragmentDefinition>

@@ -1,22 +1,96 @@
 {
   "name": "genaicontentingestion",
-  "version": "0.0.1",
-  "description": "An SAP Fiori application.",
-  "keywords": [
-    "ui5",
-    "openui5",
-    "sapui5"
-  ],
-  "main": "webapp/index.html",
-  "dependencies": {},
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@cap-js-community/odata-v2-adapter": "^1.15.3",
+    "@cap-js/hana": "^2.2.0",
+    "@sap-cloud-sdk/connectivity": "^4.1.1",
+    "@sap-cloud-sdk/core": "^1.54.2",
+    "@sap-cloud-sdk/http-client": "^4.1.1",
+    "@sap/cds": "^9",
+    "@sap/cds-odata-v2-adapter-proxy": "^1.9.21",
+    "@sap/hana-client": "^2.25.31",
+    "@sap/xsenv": "^6.0.0",
+    "@sap/xssec": "^4.9.1",
+    "express": "^4",
+    "hdb": "^2.25.1",
+    "sap-cf-axios": "^1.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "devDependencies": {
-    "@ui5/cli": "^4.0.16",
-    "@sap/ux-ui5-tooling": "1",
-    "ui5-task-zipper": "^3.4.x"
+    "@cap-js/cds-types": "^0.13.0",
+    "@cap-js/sqlite": "^2",
+    "@sap/cds-dk": ">=8",
+    "@sap/hdi-deploy": "^5.5.0",
+    "cds-plugin-ui5": "^0.13.0",
+    "mbt": "^1.2.29",
+    "rimraf": "^5.0.5"
   },
   "scripts": {
-    "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf",
-    "build:cf": "ui5 build preload --clean-dest --config ui5-deploy.yaml --include-task=generateCachebusterInfo",
-    "build": "npm run build:cf"
-  }
+    "start": "cds-serve",
+ 
+    "undeploy": "cf undeploy genaicontentingestion --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-content-ingestion-app": "cds watch --no-watch --open content-ingestion-app/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-genai-content-ingestion": "cds watch --open genaicontentingestion/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "cds": {
+    "requires": {
+      "uaa": {
+        "kind": "xsuaa"
+      },
+      "auth": {
+        "[production]": {
+          "strategy": "JWT"
+        },
+        "[development]": {
+          "strategy": "mock",
+          "users": {
+            "joe": {
+              "roles": [
+                "Treasury_ContentMaker",
+                "Viewer"
+              ]
+            },
+            "julie": {
+              "roles": [
+                "Treasury_ContentMaker"
+              ]
+            },
+            "bob": {
+              "roles": [
+                "Treasury_ContentMaker"
+              ]
+            }
+          }
+        }
+      },
+      "db": {
+        "[production]": {
+          "kind": "hana-cloud"
+        },
+        "[development]": {
+          "kind": "hana-cloud"
+        },
+        "model": [
+          "db",
+          "srv"
+        ]
+      }
+    }
+  },
+  "sapux": [
+    "app/content-ingestion-app",
+    "app/genai-content-ingestion"
+  ],
+  "workspaces": [
+    "app/*"
+  ]
 }

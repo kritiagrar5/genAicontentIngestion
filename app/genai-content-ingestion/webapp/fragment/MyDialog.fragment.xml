@@ -1,0 +1,92 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout">
+   
+    <Dialog
+      beforeOpen=".onBeforeOpen"
+        id="myDialog"
+        title="Document Details"
+        class="sapUiResponsivePadding--around"
+        draggable="true"
+        resizable="true"
+        contentWidth="800px"
+        contentHeight="500px">
+ 
+        <VBox class="sapUiSmallMargin">
+            <layout:Grid defaultSpan="L4 M6 S12" hSpacing="2" vSpacing="2">
+ 
+                <!-- DUBLIN CORE -->
+                <VBox class="sapUiSmallMargin">
+                    <Title text="DUBLIN CORE" level="H4" />
+                    <Text text="Creator" />
+                    <Label text="{viewModel>/creator}" />
+                    <Text text="Contributor" />
+                    <Label text="{viewModel>/contributor}" />
+                    <Text text="Copyright Holder" />
+                    <Label text="{viewModel>/copyright_holder}" />
+                    <Text text="Copyright Status" />
+                    <Label text="{viewModel>/copyright_status}" />
+                    <Text text="Language" />
+                    <Label text="{viewModel>/language}" />
+                    <Text text="Publisher" />
+                    <Label text="{viewModel>/publisher}" />
+                </VBox>
+ 
+                <!-- TECHNICAL DETAILS -->
+                <VBox class="sapUiSmallMargin">
+                    <Title text="TECHNICAL DETAILS" level="H4" />
+                    <Text text="File Name" />
+                    <Label text="{viewModel>/filename}" />
+                    <Text text="File Extension" />
+                    <Label text="{viewModel>/file_extension}" />
+                    <Text text="Format" />
+                    <Label text="{viewModel>/file_format}" />
+                    <Text text="MIME Type" />
+                    <Label text="{viewModel>/mime_type}" />
+                    <Text text="License Type" />
+                    <Label text="{viewModel>/license_type}" />
+                </VBox>
+ 
+                <!-- ADDITIONAL FIELDS -->
+                <VBox class="sapUiSmallMargin">
+                    <Title text="ADDITIONAL FIELDS" level="H4" />
+                    <Text text="Access Level" />
+                    <Label text="{viewModel>/access_level}" />
+                    <Text text="Document Date" />
+                    <Label text="{viewModel>/document_date}" />
+                    <Text text="Extraction Tool" />
+                    <Label text="{viewModel>/extraction_tool}" />
+                    <Text text="DC Classification" />
+                    <Label text="{viewModel>/dc_primary_classification}" />
+ 
+                    <!-- Audit Trail -->
+                    <Text text="Audit Action" />
+                    <Label text="{viewModel>/audit_trail/0/action}" />
+                    <Text text="Audit Timestamp" />
+                    <Label text="{viewModel>/audit_trail/0/timestamp}" />
+                    <Text text="Audit User" />
+                    <Label text="{viewModel>/audit_trail/0/user}" />
+                </VBox>
+ 
+            </layout:Grid>
+ 
+            <!-- DECISION -->
+            <VBox>
+            <HBox justifyContent="Start" class="sapUiSmallMarginTop">
+                <Text text="Decision: " design="Bold" />
+                <Label text="{viewModel>/decision}" />
+            </HBox>
+            <HBox justifyContent="Start" class="sapUiSmallMarginTop">
+                <Text text="Reasoning: " design="Bold" />
+                <Label text="{viewModel>/reasoning}" />
+            </HBox>
+            </VBox>
+ 
+            <!-- Footer -->
+            <HBox justifyContent="End" class="sapUiTinyMarginTop">
+                <Button text="Close" press="onCloseDialog" />
+            </HBox>
+        </VBox>
+    </Dialog>
+</core:FragmentDefinition>

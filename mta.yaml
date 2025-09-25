@@ -6,14 +6,14 @@ modules:
   - name: genaicontentingestion-srv
     type: nodejs
     path: gen/srv
-    provides:
-      - name: srv-api
-        properties:
-          srv-url: ${default-url}
     requires:
       - name: uaa_genaicontentingestion
       - name: genaicontentingestion-db
       - name: genaicontentingestion-destination-service
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
     parameters:
       buildpack: nodejs_buildpack
       instances: 1
@@ -65,7 +65,7 @@ modules:
           target-path: resources/
   - name: genaicontentingestion
     type: html5
-    path: app/genaicontentingestion
+    path: app/genai-content-ingestion
     build-parameters:
       build-result: dist
       builder: custom
@@ -74,14 +74,20 @@ modules:
         - npm run build:cf
       supported-platforms:
         []
-
   - name: genaicontentingestion-db-deployer
     type: hdb
     path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
     requires:
       - name: genaicontentingestion-db
+        properties:
+          TARGET_CONTAINER: ~{hdi-container-name}
+      - name: cross-container-service-1
+        group: SERVICE_REPLACEMENTS
+        properties:
+          key: ServiceName_1
+          service: ~{the-service-name}
+    parameters:
+      buildpack: nodejs_buildpack
 resources:
   - name: genaicontentingestion-destination-service
     type: org.cloudfoundry.managed-service
@@ -119,6 +125,14 @@ resources:
     parameters:
       service: hana
       service-plan: hdi-shared
+    properties:
+      hdi-container-name: ${service-name}
+  - name: cross-container-service-1
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service-name: genaicontentingestion-db
+    properties:
+      the-service-name: ${service-name}
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true

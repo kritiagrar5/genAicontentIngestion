@@ -1,0 +1,30 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    xmlns:u="sap.ui.unified">
+
+    <VBox>
+        <!-- Label above -->
+        <Label text="Select Use Case" required="true" />
+
+        <!-- Row: dropdown + button -->
+        <HBox alignItems="Center" justifyContent="Start">
+            <Select id="categorySelect"
+                width="300px"
+                items="{
+                    path: '/AppSelection'
+                }"
+                change=".extension.genaicontentingestion.controller.CustomExpandedHeader.onUseCaseChange">
+                <core:ListItem key="{ID}" text="{AppName}" />
+            </Select>
+
+            <Button 
+                id="__uploaderButton" 
+                text="Upload Attachment" 
+                press=".extension.genaicontentingestion.controller.CustomExpandedHeader.onUploadPress"
+                type="Emphasized" 
+                class="sapUiSmallMarginBegin customUploadButton" />
+        </HBox>
+    </VBox>
+
+</core:FragmentDefinition>

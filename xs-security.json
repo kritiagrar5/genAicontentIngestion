@@ -6,15 +6,48 @@
     {
       "name": "uaa.user",
       "description": "UAA"
+    },
+      {
+      "name": "$XSAPPNAME.Treasury_ContentChecker",
+      "description": "Treasury_ContentChecker"
+    },
+    {
+      "name": "$XSAPPNAME.Treasury_ContentMaker",
+      "description": "Treasury_ContentMaker"
+    },
+     {
+      "name": "$XSAPPNAME.Earnings_ContentChecker",
+      "description": "Earnings_ContentChecker"
+    },
+    {
+      "name": "$XSAPPNAME.Earnings_ContentMaker",
+      "description": "Earnings_ContentMaker"
     }
   ],
   "role-templates": [
     {
-      "name": "Token_Exchange",
-      "description": "UAA",
-      "scope-references": [
-        "uaa.user"
-      ]
+      "name": "Workzone_EFDNA_GenAI_Treasury_Checker",
+      "description": "Workzone_EFDNA_GenAI_Treasury_Checker",
+      "scope-references": ["$XSAPPNAME.Treasury_ContentChecker"]
+      
+    },
+    {
+      "name": "Workzone_EFDNA_GenAI_Treasury_Maker",
+      "description": "Workzone_EFDNA_GenAI_Treasury_Maker",
+      "scope-references": ["$XSAPPNAME.Treasury_ContentMaker"]
+       
+    },
+      {
+      "name": "Workzone_EFDNA_GenAI_Earnings_Checker",
+      "description": "Workzone_EFDNA_GenAI_Earnings_Checker",
+      "scope-references": ["$XSAPPNAME.Earnings_ContentChecker"]
+      
+    },
+    {
+      "name": "Workzone_EFDNA_GenAI_Earnings_Maker",
+      "description": "Workzone_EFDNA_GenAI_Earnings_Maker",
+      "scope-references": ["$XSAPPNAME.Earnings_ContentMaker"]
+      
     }
   ]
 }

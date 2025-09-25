@@ -1,0 +1,190 @@
+@font-face {
+    font-display: block;
+    font-family: SCProsperSans;
+    font-style: normal;
+    font-weight: 400;
+    src: url(../fonts/SCProsperSans-Light.woff2) format("woff2"),url(../fonts/SCProsperSans-Light.ttf) format("truetype")
+}
+
+@font-face {
+    font-display: block;
+    font-family: SCProsperSansLight;
+    font-style: normal;
+    src: url(../fonts/SCProsperSans-Light.woff2) format("woff2"),url(../fonts/SCProsperSans-Light.ttf) format("truetype")
+}
+
+@font-face {
+    font-display: block;
+    font-family: SCProsperSans;
+    font-style: normal;
+    font-weight: 500;
+    src: url(../fonts/SCProsperSans-Regular.woff2) format("woff2"),url(../fonts/SCProsperSans-Regular.ttf) format("truetype")
+}
+
+@font-face {
+    font-display: block;
+    font-family: SCProsperSans;
+    font-style: normal;
+    font-weight: 600;
+    src: url(../fonts/SCProsperSans-Medium.woff2) format("woff2"),url(../fonts/SCProsperSans-Medium.ttf) format("truetype")
+}
+
+@font-face {
+    font-display: block;
+    font-family: SCProsperSansMedium;
+    font-style: normal;
+    src: url(../fonts/SCProsperSans-Medium.woff2) format("woff2"),url(../fonts/SCProsperSans-Medium.ttf) format("truetype")
+}
+
+@font-face {
+    font-display: block;
+    font-family: SCProsperSans;
+    font-style: normal;
+    font-weight: 700;
+    src: url(../fonts/SCProsperSans-Bold.woff2) format("woff2"),url(../fonts/SCProsperSans-Bold.ttf) format("truetype")
+}
+
+@font-face {
+    font-display: block;
+    font-family: SCProsperSansBold;
+    font-style: normal;
+    src: url(../fonts/SCProsperSans-Bold.woff2) format("woff2"),url(../fonts/SCProsperSans-Bold.ttf) format("truetype")
+}
+
+body {
+  font-family: SCProsperSans, Arial, Helvetica, sans-serif;
+  --scbBrandColor: #0473EA;
+  --scbTextColor: #525355;
+  --sapButton_FontFamily: SCProsperSansMedium;
+  --sapButton_Emphasized_FontFamily: SCProsperSansBold;
+  --sapFontFamily: SCProsperSans;
+  --sapFontHeaderFamily: SCProsperSansBold;
+  --sapFontLightFamily: SCProsperSansLight;
+  --sapFontBoldFamily: SCProsperSansBold;
+  --sapFontSemiboldFamily: SCProsperSansMedium;
+  --sapFontSemiboldDuplexFamily: SCProsperSansMedium;
+  --sapFontBlackFamily: SCProsperSansBold;
+  --sapObjectHeader_Title_FontFamily: SCProsperSansBold;
+  --sapTextColor: var(--scbTextColor);
+  --sapPageHeader_TextColor: var(--scbTextColor);
+  --sapTab_TextColor: var(--scbTextColor);
+  --sapField_TextColor: var(--scbTextColor);
+  --sapTab_Selected_TextColor: var(--scbBrandColor);
+  --sapTab_IconColor: var(--scbBrandColor);
+  --sapLinkColor: var(--scbBrandColor);
+  --sapLink_Hover_Color: var(--scbBrandColor);
+  --sapButton_TextColor: var(--scbBrandColor);
+  --sapButton_IconColor: var(--scbBrandColor);
+  --sapButton_BorderColor: var(--scbBrandColor);
+  --sapButton_Accept_Background: var(--scbBrandColor);
+  --sapButton_Accept_BorderColor: var(--scbBrandColor);
+  --sapButton_Accept_Hover_Background: var(--sapButton_Emphasized_Hover_Background);
+  --sapButton_Accept_Hover_BorderColor: var(--sapButton_Emphasized_Hover_BorderColor);
+  --sapButton_Accept_TextColor: white;
+  --sapButton_Accept_Hover_TextColor: white;
+  --sapButton_Reject_Background: var(--scbBrandColor);
+  --sapButton_Reject_BorderColor: var(--scbBrandColor);
+  --sapButton_Reject_Hover_Background: var(--sapButton_Emphasized_Hover_Background);
+  --sapButton_Reject_Hover_BorderColor: var(--sapButton_Emphasized_Hover_BorderColor);
+  --sapButton_Reject_TextColor: white;
+  --sapButton_Reject_Hover_TextColor: white;
+
+}
+
+
+.sapUiBody,
+.sapUiArea,
+.sapUiCoreDefaultFont,
+.sapUiHintText,
+.sapThemeFont,
+.sapThemeFontFamily,
+.sapUiCorePlaintext {
+  font-family: SCProsperSans !important;
+}
+.sapMBtnInner {
+  border-radius: 18px;
+}
+
+.sapMH1Style,
+.sapMH2Style,
+.sapMH3Style,
+.sapMH4Style,
+.sapMH5Style,
+.sapMH6Style,
+.sapMTitle {
+  font-family: SCProsperSansBold !important;
+}
+.sapMBtn:focus-visible>.sapMFocusable:not(.sapMBadgeIndicator)::before,html.sap-desktop .sapMBtn:focus>.sapMFocusable:not(.sapMBadgeIndicator)::before {
+  border-radius: 18px;
+}
+
+
+html,
+body,
+.sapUiBody,
+.sapMPage {
+  height: 100%;
+  overflow: hidden;
+}
+
+.customUploadContainer {
+    background-color: #f8f9fb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.customCard {
+    background-color: #e8f0fe;
+    border-left: 5px solid #1976d2;
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.customTitle {
+    color: #1a237e;
+    font-weight: bold;
+}
+
+.customLabel {
+    font-weight: 600;
+    color: #37474f;
+}
+
+.customCheckbox {
+    color: #0d47a1;
+}
+
+.customUploadButton {
+    background-color: #1976d2 !important;
+    color: white !important;
+    border-radius: 4px;
+}
+.sectionContainer {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .sectionBox {
+    width: 32%;
+    padding: 1rem;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+    border-left: 4px solid #0070f2; /* 💙 Blue line */
+    border-top: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 4px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .sectionTitle {
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #1a5276;
+    font-size: 1rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #d0d0d0;
+    padding-bottom: 4px;
+  }

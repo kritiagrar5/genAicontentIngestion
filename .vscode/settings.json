@@ -1,0 +1,5 @@
+{
+    "SAP HANA Project Explorer.bind.confirm existing service": false,
+    "SAP HANA SQLScript LSP.URL": "https://cf-ap11.cf.hana-tooling.ingress.orchestration.prod-ap11.hanacloud.ondemand.com/hrtt-service",
+    "SAP HANA SQLScript LSP.XsAdvancedHrttServiceUrl": ""
+}

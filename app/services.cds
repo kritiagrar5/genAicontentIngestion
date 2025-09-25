@@ -1,2 +1,6 @@
 
-using from './genaicontentingestion/annotations';
+
+
+
+
+using from './genai-content-ingestion/annotations';
