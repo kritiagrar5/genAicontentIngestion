@@ -38,39 +38,14 @@ module.exports = cds.service.impl(async function () {
   this.before('READ', 'AppSelection', (req) => {
     const userRoles = { Treasury_ContentChecker: 1, Earnings_ContentMaker: 1 };
 
-    // Extract app names the user has access to
     const allowedApps = Object.keys(userRoles)
       .filter(r => r.endsWith('_ContentChecker') || r.endsWith('_ContentMaker'))
       .map(r => r.split('_')[0]);
 
-    // Modify the query to fetch only allowed apps
+
     req.query.where('AppName IN', allowedApps);
   });
-  /*this.before('READ', 'AppSelection', (req) => {
-    
-    // Example: roles the user has
-    const userRoles = {
-        Treasury_ContentChecker: 1,
-        Earnings_ContentMaker: 1,
-        Earnings_Checker: 1
-    };
-
-    // Map role prefixes to actual use-case names
-    const roleToUsecaseMap = {
-        Treasury: 'Treasury',
-        Earnings: 'Peer Analysis'
-    };
-
-    // Extract use-cases the user has access to
-    const allowedUsecases = Object.keys(userRoles)
-        .filter(r => r.endsWith('_ContentChecker') || r.endsWith('_ContentMaker') || r.endsWith('_Checker'))
-        .map(r => r.split('_')[0])           // prefix before underscore
-        .map(prefix => roleToUsecaseMap[prefix]) // convert to use-case name
-        .filter(Boolean); // remove undefined
-
-    // Modify the query to fetch only allowed apps
-    req.query.where({ AppName: allowedUsecases });
-});*/
+  
 
   //-------------------------------------------------------------
   //    Authorization check based on user logged in
@@ -84,21 +59,24 @@ module.exports = cds.service.impl(async function () {
     };
   });
 
-    this.before('READ', 'ConfigStore', async (req) => {
+this.before('READ', 'ConfigStore', (req) => {
+  const userRoles = [
+    'Workzone_EFDNA_GenAI_Treasury_Capital',
+    'Workzone_EFDNA_GenAI_Treasury_Liquidity',
+    'Workzone_EFDNA_GenAI_Employee',
+    'Workzone_EFDNA_GenAI_Treasury_Practitioners'
+  ];
 
-        // Example: user roles (you would normally fetch this from req.user or JWT)
-        const userRoles = [
-            'Workzone_EFDNA_GenAI_Treasury_Capital',
-            'Workzone_EFDNA_GenAI_Treasury_Liquidity',
-            'Workzone_EFDNA_GenAI_Employee',
-           'Workzone_EFDNA_GenAI_Treasury_Practitioners'
+ 
+  const conditions = userRoles
+    .map(r => `roles like '%${r}%'`)
+    .join(' or ');
 
-                  ];
 
-      req.query.where('roles IN', userRoles);
+  req.query.where(cds.parse.expr(conditions));
 
-    });
-
+});
+ 
 this.after("READ", "FileType", (rows) => {
     if (!Array.isArray(rows)) return rows;
 
@@ -115,17 +93,13 @@ this.after("READ", "FileType", (rows) => {
 });
 this.after("READ", "ConfigStore", (rows) => {
     if (!Array.isArray(rows)) return rows;
-
-    // Create a blank row
+  
     const blankRow = {
         ID: "",              
         fileType: "" ,
         team: "-- Please Select The Team --"          
     };
-
-    // Insert at the start of the array
     rows.unshift(blankRow);
-
     return rows;
 });
 
@@ -295,22 +269,20 @@ this.after("READ", "ConfigStore", (rows) => {
 
 
 
-  this.on("deleteContent", async (req) => {
+ this.on("deleteContent", async (req) => {
     const { ID } = req.params[0];
     try {
       const file = await cds.run(
         SELECT.one.from(Content).where({ ID: ID })
       );
-      console.log("📥  req.user.id:", req.user.id);
-      console.log("📥  file.createdBy", file.createdBy);
       //check the role - if maker -> createdby and logged in user should be Same
       //if checker can delete any file
       const ownFiles = file.createdBy === req.user.id; // only owner can delete its own file
       const fileName = file.fileName;
 
-      if (!ownFiles) {
-        req.reject(400, 'You cannot delete files that are not created by you');
-      }
+    //  if (!ownFiles) {
+    //    req.reject(400, 'You cannot delete files that are not created by you');
+   //   }
 
       const response = await executeHttpRequest(
         { destinationName: 'Treasurybackend' },
@@ -327,14 +299,13 @@ this.after("READ", "ConfigStore", (rows) => {
         req.reject(response.data.message);
       }
       await DELETE.from(Content).where({ ID: ID });
-
+      // const table = await SELECT.from(Content);
       req.info(response.data.message);
-      return await SELECT.from(Content);
+      return { ID };
     } catch (error) {
       console.log("Error in delete files API: " + error);
     }
   });
-
 
   this.on("submit", async (req) => {
     const { ID } = req.params[0]; // since bound to entity

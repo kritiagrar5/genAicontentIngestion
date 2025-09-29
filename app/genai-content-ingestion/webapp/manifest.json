@@ -119,7 +119,18 @@
                         "anchor": "DataField::isChecker",
                         "placement": "After"
                       },
-                      "template": "genaicontentingestion.ext.fragment.Metadata"
+                      "template": "genaicontentingestion.ext.fragment.Metadata",
+                       "width": "5rem",
+                      "horizontalAlign": "Center"
+                    },
+                    "Delete": {
+                      "position": {
+                        "anchor": "DataFieldForAction::CatalogService.rejectContent",
+                        "placement": "After"
+                      },
+                      "template": "genaicontentingestion.ext.fragment.Delete",
+                       "width": "5rem",
+                      "horizontalAlign": "Center"
                     }
                   }
                 }
