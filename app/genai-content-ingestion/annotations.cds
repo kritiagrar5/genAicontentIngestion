@@ -85,7 +85,7 @@ annotate service.Content with @UI.LineItem: [
         $Type                : 'UI.DataField',
         Label                : 'UseCase',
         Value                : UseCase,
-          ![@HTML5.CssDefaults]: {width: 'auto', },
+        ![@HTML5.CssDefaults]: {width: 'auto' },
         ![@UI.Hidden]        : false
     },
    /* {
@@ -148,113 +148,11 @@ annotate service.Content with @UI.LineItem: [
             {$Path: 'canApprove'}
         ]}}},
         InvocationGrouping: #Isolated,
-    },
-    {
-        $Type             : 'UI.DataFieldForAction',
-        Action            : 'CatalogService.deleteContent',
-        Label             : 'Delete',
-        IconUrl           : 'sap-icon://delete',
-        Inline            : true,
-        Criticality       : #Positive,
-        Determining       : true,
-        @title            : 'Delete',
-        @HTML5.CssDefaults: {width: '5rem'},
-        ![@UI.Hidden]     : {$edmJson: {$Not: {$And: [
-           
-            {$Path: 'canDelete'}
-        ]}}},
-        InvocationGrouping: #Isolated
     }
    
    
 ];
 
-annotate service.Content with @(
-    UI.SelectionPresentationVariant #qa          : {
-        $Type              : 'UI.SelectionPresentationVariantType',
-        PresentationVariant: {$Type: 'UI.PresentationVariantType'},
-        SelectionVariant   : {
-            $Type        : 'UI.SelectionVariantType',
-            SelectOptions: [{
-                $Type       : 'UI.SelectOptionType',
-                PropertyName: tagType,
-                Ranges      : [{
-                    Sign  : #I,
-                    Option: #EQ,
-                    Low   : 'QA'
-                }],
-            }],
-        },
-        Text               : 'Q&A',
-        @UI.Hidden         : true
-    },
-    UI.SelectionPresentationVariant #summary     : {
-        $Type              : 'UI.SelectionPresentationVariantType',
-        PresentationVariant: {$Type: 'UI.PresentationVariantType'},
-        SelectionVariant   : {
-            $Type        : 'UI.SelectionVariantType',
-            SelectOptions: [{
-                $Type       : 'UI.SelectOptionType',
-                PropertyName: tagType,
-                Ranges      : [{
-                    Sign  : #I,
-                    Option: #EQ,
-                    Low   : 'SUMMARY'
-                }]
-            }],
-        },
-        Text               : 'Summary',
-        @UI.Hidden         : true
-    },
-    UI.SelectionPresentationVariant #qainbox     : {
-        $Type              : 'UI.SelectionPresentationVariantType',
-        PresentationVariant: {$Type: 'UI.PresentationVariantType'},
-        SelectionVariant   : {
-            $Type        : 'UI.SelectionVariantType',
-            SelectOptions: [{
-                $Type       : 'UI.SelectOptionType',
-                PropertyName: tagType,
-                Ranges      : [{
-                    Sign  : #I,
-                    Option: #EQ,
-                    Low   : 'QA'
-                }]
-            }],
-        },
-        Text               : 'Q&A',
-        @UI.Hidden         : true
-    },
-    UI.SelectionPresentationVariant #summaryinbox: {
-        $Type              : 'UI.SelectionPresentationVariantType',
-        PresentationVariant: {$Type: 'UI.PresentationVariantType'},
-        SelectionVariant   : {
-            $Type        : 'UI.SelectionVariantType',
-            SelectOptions: [
-                {
-                    $Type       : 'UI.SelectOptionType',
-                    PropertyName: tagType,
-                    Ranges      : [{
-                        Sign  : #I,
-                        Option: #EQ,
-                        Low   : 'SUMMARY'
-                    }]
-                },
-                {
-                    $Type       : 'UI.SelectOptionType',
-                    PropertyName: status,
-                    Ranges      : [{
-                        Sign  : #I,
-                        Option: #NE,
-                        Low   : 'DRAFT'
-                    }]
-                }
-            ]
-        },
-        Text               : 'Summary Inbox',
-        @UI.Hidden         : true
-    },
-   
-);
 
 annotate service.Content with {
     mediaType @Common.Label: 'Media Type';

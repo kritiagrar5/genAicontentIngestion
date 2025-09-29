@@ -39,7 +39,7 @@ sap.ui.define(
           const res = await response.json();
           const sKey = res.value?.[0]?.AppName;
           this.getView().getModel("viewModel").setProperty("/usecase", sKey);
-           const responseTeam = await fetch(teamUrl, {
+          const responseTeam = await fetch(teamUrl, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -48,14 +48,14 @@ sap.ui.define(
             credentials: "include",
           });
           const resTeam = await responseTeam.json();
-        const sKeyTeam = resTeam.value.map(r => r.team);
-         // const sKeyTeam = ["Liquidity", "Capital"];
-const oTeamModel = new sap.ui.model.json.JSONModel({
-  selectedTeams: sKeyTeam
-});
-this.getView().setModel(oTeamModel, "teamModel");
+          const sKeyTeam = resTeam.value.map(r => r.team);
+          // const sKeyTeam = ["Liquidity", "Capital"];
+          const oTeamModel = new sap.ui.model.json.JSONModel({
+            selectedTeams: sKeyTeam
+          });
+          this.getView().setModel(oTeamModel, "teamModel");
           this.onFilterBarChange(sKey);
-       //  this.onFilterBarChange("Treasury");
+          //  this.onFilterBarChange("Treasury");
         },
         onTypeMismatch: function () {
           MessageBox.error("Only pdf, docx, xlsx files are allowed");
@@ -90,7 +90,7 @@ this.getView().setModel(oTeamModel, "teamModel");
           const oContext = oEvent.getSource().getSelectedItem().getBindingContext();
           // if (!oContext) return;
           //const DestinationName = await oContext.requestProperty("DestinationName");
-          
+
           this.onFilterBarChange(sKey);
         },
         onFileTypeChange: async function (oEvent) {
@@ -108,7 +108,7 @@ this.getView().setModel(oTeamModel, "teamModel");
             oBinding.filter([
               new sap.ui.model.Filter("fileType", "EQ", sKey),
               new sap.ui.model.Filter("usecase", "EQ", UseCase),
-               
+
             ]);
           }
 
@@ -124,13 +124,13 @@ this.getView().setModel(oTeamModel, "teamModel");
           const oFilterBar = sap.ui.getCore().byId(
             "genaicontentingestion::ContentList--fe::FilterBar::Content"
           );
-           const oTeamModel = this.getView().getModel("teamModel");
-           const aTeams = oTeamModel.getProperty("/selectedTeams");
-   //  const sKeyt = "Treasury";
-  //   const aTeams = ["Liquidity", "Capital"];
-     const aTeamConditions = aTeams.map(v => ({ operator: "EQ", values: [v] }));
+          const oTeamModel = this.getView().getModel("teamModel");
+          const aTeams = oTeamModel.getProperty("/selectedTeams");
+          //  const sKeyt = "Treasury";
+          //   const aTeams = ["Liquidity", "Capital"];
+          const aTeamConditions = aTeams.map(v => ({ operator: "EQ", values: [v] }));
           if (oFilterBar) {
-           
+
             oFilterBar.setFilterConditions({
               UseCase: [
                 {
@@ -138,7 +138,7 @@ this.getView().setModel(oTeamModel, "teamModel");
                   values: [sKey]
                 }
               ],
-               team: aTeamConditions
+              team: aTeamConditions
             });
 
             oFilterBar.triggerSearch();
@@ -197,7 +197,7 @@ this.getView().setModel(oTeamModel, "teamModel");
 
           const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
           var that = this;
-          if (!this._oDialog) {
+        /*  if (!this._oDialog) {
             this._pDialog = Fragment.load({
               id: this.getView().getId() + "--myUploadDialog",
               name: "genaicontentingestion.fragment.UploadFileDialog",
@@ -212,22 +212,35 @@ this.getView().setModel(oTeamModel, "teamModel");
           }
           else {
             that._oDialog.open();
-          }
-
+          }*/
+  Fragment.load({
+    id: this.getView().getId() + "--myUploadDialog",
+    name: "genaicontentingestion.fragment.UploadFileDialog",
+    controller: this
+  }).then(oDialog => {
+    this._oDialog = oDialog;
+    this.getView().addDependent(oDialog);
+    oDialog.open();
+  });
 
         },
         onCancelUpload: function () {
-          this._oDialog.close();
+         // this._oDialog.close();
+          if (this._oDialog) {
+    this._oDialog.destroy();   // ❌ destroys the dialog completely
+    this._oDialog = null;      // reset reference
+  }
         },
         onConfirmUpload: async function (oEvent) {
           try {
+            
             var that = this;
             BusyIndicator.show(0);
 
             const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
             var oteam = this.getView().getModel("viewModel").getProperty("/team");
             var ofileType = this.getView().getModel("viewModel").getProperty("/fileType");
-        
+
             //const oFileUploader = this.base.byId("__fileUploader");
             const oFileUploader = sap.ui.core.Fragment.byId(
               that.getView().getId() + "--myUploadDialog",
@@ -274,7 +287,11 @@ this.getView().setModel(oTeamModel, "teamModel");
               })
               if (flag)
                 return;
+              else 
+                this.onCancelUpload();
+                            
             }
+            
             // get the API response
             const responseAPI = await fetch(chatUrl, {
               method: "POST",
