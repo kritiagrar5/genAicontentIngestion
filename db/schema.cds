@@ -64,3 +64,9 @@ entity ConfigStore {
   fileType : String;
   
 }
+entity MetaData : cuid {
+  key bankID: String;
+  key stdMetric: String;
+  bankMetric: String;
+  userID: String;
+}

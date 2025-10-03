@@ -239,7 +239,7 @@ sap.ui.define(
 
             const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
             var oteam = this.getView().getModel("viewModel").getProperty("/team");
-            var ofileType = this.getView().getModel("viewModel").getProperty("/fileType");
+            var sfileType = this.getView().getModel("viewModel").getProperty("/fileType");
 
             //const oFileUploader = this.base.byId("__fileUploader");
             const oFileUploader = sap.ui.core.Fragment.byId(
@@ -254,8 +254,30 @@ sap.ui.define(
 
             const chatUrl = baseUrl + "/api/upload";
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
+            if (sfileType === "Meta data") {
+              //read the excel file and check the columns sequence
+              const fileReader = new FileReader();
+              fileReader.onload = async (e) => {
+                const arrayBuffer = e.target.result;
+                const data = new Uint8Array(arrayBuffer);
+                const workbook = XLSX.read(data, { type: "array" });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                  header: 1,
+                });
+              };
+              fileReader.readAsArrayBuffer(oFile);
+            }
+
+
+
+
             const csrf = await this.onfetchCSRF(baseUrl);
             console.log(oFile);
+
+            
+
             let formData = new FormData();
             formData.append("file", oFile);
 
