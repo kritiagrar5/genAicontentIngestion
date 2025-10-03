@@ -231,6 +231,73 @@ sap.ui.define(
     this._oDialog = null;      // reset reference
   }
         },
+        _validateFile: async function (file) {
+          //read the excel file and check the columns sequence
+          const fileReader = new FileReader();
+          const oFile = file;
+          let isValid = false;
+          let headers,dataRows;
+          const readFilePromise = new Promise((resolve, reject) => {
+            fileReader.onload = async (e) => {
+              const arrayBuffer = e.target.result;
+              const data = new Uint8Array(arrayBuffer);
+              const workbook = XLSX.read(data, { type: "array" });
+              const firstSheetName = workbook.SheetNames[0];
+              const worksheet = workbook.Sheets[firstSheetName];
+              const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                header: 1,
+              });
+              headers = jsonData[0];
+              dataRows = jsonData.slice(1);
+              if (
+                headers.length !== 4 ||
+                headers[0] !== "bankID" ||
+                headers[1] !== "stdMetric" ||
+                headers[2] !== "bankMetric" ||
+                headers[3] !== "userID"
+              ) {
+                MessageBox.error(
+                  "Invalid Excel Format."
+                );
+                reject("Invalid Header");
+              }else {
+                resolve("Valid Header");
+              }
+            };
+            fileReader.readAsArrayBuffer(oFile);
+          });
+          try {
+            await readFilePromise;
+            isValid = true;
+          } catch (error) {
+            isValid = false;
+          }
+          this._checkBankIDExists(dataRows.map(r => r[0])).then(exists => {
+            if (!exists) {
+              MessageBox.error("One or more Bank IDs do not exist in the system.");
+              isValid = false;
+            }
+          }).catch(err => {
+            console.error("Error checking Bank IDs:", err);
+            isValid = false;
+          });
+          return isValid;
+        },
+        _checkBankIDExists: async function (bankIDs) {
+          const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
+          const csrf = await this.onfetchCSRF(baseUrl);
+          const bankUrl = baseUrl + "/odata/v4/catalog/Banks?$filter=code in (" + bankIDs.map(id => `'${id}'`).join(", ") + ")";
+          const response = await fetch(bankUrl, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrf
+            },
+            credentials: "include",
+          });
+          const res = await response.json();
+          return res.value && res.value.length > 0;
+        },
         onConfirmUpload: async function (oEvent) {
           try {
             
@@ -255,28 +322,15 @@ sap.ui.define(
             const chatUrl = baseUrl + "/api/upload";
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
             if (sfileType === "Meta data") {
-              //read the excel file and check the columns sequence
-              const fileReader = new FileReader();
-              fileReader.onload = async (e) => {
-                const arrayBuffer = e.target.result;
-                const data = new Uint8Array(arrayBuffer);
-                const workbook = XLSX.read(data, { type: "array" });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-                  header: 1,
-                });
-              };
-              fileReader.readAsArrayBuffer(oFile);
+              const isValid = await this._validateFile(oFile);
+
+              if (!isValid) {
+                BusyIndicator.hide();
+                return;
+              }
             }
-
-
-
-
             const csrf = await this.onfetchCSRF(baseUrl);
             console.log(oFile);
-
-            
 
             let formData = new FormData();
             formData.append("file", oFile);

@@ -102,15 +102,21 @@ this.after("READ", "ConfigStore", (rows) => {
     rows.unshift(blankRow);
     return rows;
 });
-
+this.on('READ', 'Banks', async (req) => {
+  const result = await cds.run(SELECT.from('Banks'));
+  return result;
+});
 
   this.on("approveContent", async (req) => {
     console.log("📥 Action called with:", req.params[0]);
     const ID = req.params[0].ID;
-    const destination = await getDestination({ destinationName: 'Treasurybackend' });
+    const destination = await getDestination({
+      destinationName: "Treasurybackend",
+    });
     const oneFile = await SELECT.one
       .from(Content)
-      .columns('fileName', 'mediaType', 'content', 'createdBy')
+      //TODO: need to add fileType in file table
+      .columns("fileName", "mediaType", "content", "createdBy", "fileType")
       .where({ ID });
 
     const ownFile = oneFile.createdBy === req.user.id;
@@ -119,11 +125,11 @@ this.after("READ", "ConfigStore", (rows) => {
     }, 90000);
 
     if (ownFile) {
-      req.reject(400, 'You cannot Approve files that are created by you');
+      req.reject(400, "You cannot Approve files that are created by you");
     }
     //check if file content exists
     if (!oneFile?.content) {
-      return req.reject(404, 'File content not found.');
+      return req.reject(404, "File content not found.");
     }
 
     const buffer = await streamToBuffer(oneFile.x);
@@ -131,22 +137,45 @@ this.after("READ", "ConfigStore", (rows) => {
     const formData = new FormData();
     formData.append("file", buffer, {
       filename: oneFile.fileName,
-      contentType: oneFile.mediaType
+      contentType: oneFile.mediaType,
     });
-    console.log("form Data", formData)
+    console.log("form Data", formData);
+    // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
+    if (oneFile.fileType === "Meta data") {
+      //parse the xlsx file and update the metadatatable, first row is header
+      const xlsx = require("xlsx");
+      const workbook = xlsx.read(buffer, { type: "buffer" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
+      console.log("Excel Data:", jsonData);
+
+      // remove the rows in MetaData table where bankID === bankID in the excel file
+      const bankIDs = jsonData.map((row) => row.BankID);
+      await DELETE.from("MetaData").where({ BankID: bankIDs });
+      
+      //insert the rows in MetaData table
+      for (const row of jsonData) {
+        await INSERT.into("MetaData").columns(Object.keys(row)).values(Object.values(row));
+      }
+    }
 
     //Call API to create Embeddings
     try {
       //check for approved-file-upload
-      const responseFileUpload = await axios.post(`${destination.url}/api/approved-file-upload`, formData, {
-        headers: {
-          ...formData.getHeaders(),
-          Authorization: `Bearer ${destination.authTokens?.[0]?.value}`,
-        },
-        timeout: 120000
-      });
+      const responseFileUpload = await axios.post(
+        `${destination.url}/api/approved-file-upload`,
+        formData,
+        {
+          headers: {
+            ...formData.getHeaders(),
+            Authorization: `Bearer ${destination.authTokens?.[0]?.value}`,
+          },
+          timeout: 120000,
+        }
+      );
       clearTimeout(timeout);
-      console.log("upload response:", responseFileUpload)
+      console.log("upload response:", responseFileUpload);
 
       if (responseFileUpload.status == 200) {
         if (responseFileUpload.data.success) {
@@ -155,46 +184,48 @@ this.after("READ", "ConfigStore", (rows) => {
             { filename: oneFile.fileName },
             {
               headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${destination.authTokens?.[0]?.value}`
-              }
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${destination.authTokens?.[0]?.value}`,
+              },
             }
           );
           clearTimeout(timeout);
-          console.log("Embeddings Response:", responseEmbeddings)
+          console.log("Embeddings Response:", responseEmbeddings);
           if (responseEmbeddings.data.success) {
             await UPDATE(Content, ID).with({
-              status: "COMPLETED"
+              status: "COMPLETED",
             });
-            console.log("Embeddings generated successfully")
+            console.log("Embeddings generated successfully");
 
             return await SELECT.one.from(Content).where({ ID });
             // return ("Embeddings generated successfully");
-          }
-          else
-            throw new Error(`Embedding API failed with status ${responseFileUpload.status}`)
+          } else
+            throw new Error(
+              `Embedding API failed with status ${responseFileUpload.status}`
+            );
         }
       } else {
-        throw new Error(`Embedding API failed with status ${responseFileUpload.status}`)
+        throw new Error(
+          `Embedding API failed with status ${responseFileUpload.status}`
+        );
       }
     } catch (error) {
       console.log("Failed in getting embeddings due to: " + error);
     } finally {
-      console.log("Calling delete doc API")
+      console.log("Calling delete doc API");
       try {
         const responseDelDoc = await axios.post(
           `${destination.url}/api/delete-document`,
           { filename: oneFile.fileName },
           {
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${destination.authTokens?.[0]?.value}`
-            }
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${destination.authTokens?.[0]?.value}`,
+            },
           }
         );
-        console.log("Delect Document API Response: ", responseDelDoc.data)
-      }
-      catch (err) {
+        console.log("Delect Document API Response: ", responseDelDoc.data);
+      } catch (err) {
         console.log(err);
       }
     }
