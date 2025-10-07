@@ -197,47 +197,31 @@ sap.ui.define(
 
           const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
           var that = this;
-        /*  if (!this._oDialog) {
-            this._pDialog = Fragment.load({
-              id: this.getView().getId() + "--myUploadDialog",
-              name: "genaicontentingestion.fragment.UploadFileDialog",
-              controller: this
-            }).then(function (oDialog) {
-              that._oDialog = oDialog;
-              that.getView().addDependent(oDialog);
-
-              that._oDialog.open();
-
-            });
-          }
-          else {
-            that._oDialog.open();
-          }*/
-  Fragment.load({
-    id: this.getView().getId() + "--myUploadDialog",
-    name: "genaicontentingestion.fragment.UploadFileDialog",
-    controller: this
-  }).then(oDialog => {
-    this._oDialog = oDialog;
-    this.getView().addDependent(oDialog);
-    oDialog.open();
-  });
+          Fragment.load({
+            id: this.getView().getId() + "--myUploadDialog",
+            name: "genaicontentingestion.fragment.UploadFileDialog",
+            controller: this
+          }).then(oDialog => {
+            this._oDialog = oDialog;
+            this.getView().addDependent(oDialog);
+            oDialog.open();
+          });
 
         },
         onCancelUpload: function () {
-         // this._oDialog.close();
-          if (this._oDialog) {
-    this._oDialog.destroy();   // ❌ destroys the dialog completely
-    this._oDialog = null;      // reset reference
-  }
+              if (this._oDialog) {
+            this._oDialog.destroy();   
+            this._oDialog = null;     
+          }
         },
         onConfirmUpload: async function (oEvent) {
           try {
-            
+
             var that = this;
             BusyIndicator.show(0);
 
             const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+            const use_case = UseCase.toLowerCase();
             var oteam = this.getView().getModel("viewModel").getProperty("/team");
             var ofileType = this.getView().getModel("viewModel").getProperty("/fileType");
 
@@ -246,13 +230,10 @@ sap.ui.define(
               that.getView().getId() + "--myUploadDialog",
               "__fileUploader"
             );
-
-
-
             const oFile = oFileUploader.getDomRef("fu").files[0];
             const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
 
-            const chatUrl = baseUrl + "/api/upload";
+            const chatUrl = baseUrl + "/api/upload?use_case="+use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
             const csrf = await this.onfetchCSRF(baseUrl);
             console.log(oFile);
@@ -287,12 +268,12 @@ sap.ui.define(
               })
               if (flag)
                 return;
-              else 
+              else
                 this.onCancelUpload();
-                            
+
             }
-            
-            // get the API response
+  
+
             const responseAPI = await fetch(chatUrl, {
               method: "POST",
               headers: {
@@ -348,7 +329,7 @@ sap.ui.define(
                       throw new Error(`Entity creation failed: ${response.status}`);
                     }
                   }
-                  //  const metadataRes = await this.saveMetaData(csrf, json.metadata, oFile.name);
+                  
                   const oExtModel = this.base.getExtensionAPI().getModel();
                   var fileType;
                   if (oFile.type.includes("pdf"))
@@ -384,10 +365,6 @@ sap.ui.define(
             BusyIndicator.hide();
           }
         },
-
-
-
-
       }
     );
   }

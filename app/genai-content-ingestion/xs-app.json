@@ -12,7 +12,7 @@
       "source": "^/api/(.*)$",
       "target": "/api/$1",
       "authenticationType": "none",
-      "destination": "Treasurybackend",
+      "destination": "GenAIContentIngestionBackend",
       "csrfProtection" : false
     },
     {

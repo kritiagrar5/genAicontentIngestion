@@ -176,7 +176,7 @@ body,
     border-right: 1px solid #e0e0e0;
     border-bottom: 1px solid #e0e0e0;
     border-radius: 4px;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 4px rgba(244, 182, 182, 0.05);
   }
   
   .sectionTitle {

@@ -5,7 +5,7 @@
 
     <VBox>
         <!-- Label above -->
-        <Label text="Select Use Case" required="true" />
+        <Label text="Use Case" required="true" />
 
         <!-- Row: dropdown + button -->
         <HBox alignItems="Center" justifyContent="Start">
@@ -20,7 +20,7 @@
 
             <Button 
                 id="__uploaderButton" 
-                text="Upload Attachment" 
+                text="Add Attachment" 
                 press=".extension.genaicontentingestion.controller.CustomExpandedHeader.onUploadPress"
                 type="Emphasized" 
                 class="sapUiSmallMarginBegin customUploadButton" />

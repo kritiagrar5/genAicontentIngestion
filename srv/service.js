@@ -13,37 +13,28 @@ module.exports = cds.service.impl(async function () {
   const { Content, AppSelection, ActionVisibility,FileType,ConfigStore } = this.entities;
 
   this.after("READ", "Content", (each, req) => {
-  const userRoles = { Treasury_ContentChecker: 1, Treasury_ContentMaker: 1,Earnings_ContentMaker: 1,Earnings_ContentChecker: 1, };
+    const userRoles = { Treasury_ContentChecker: 1, Treasury_ContentMaker: 1};
     const usecase = each.UseCase;
     const checkerRole = `${usecase}_ContentChecker`;
     const makerRole = `${usecase}_ContentMaker`;
-  //  console.log("check roles", req.user.roles);
-  //  each.canApprove = req.user.is(checkerRole);
-  //  each.canDelete = req.user.is(makerRole);
-  //  each.isChecker = req.user?.roles?.Treasury_ContentChecker === 1;
+
     each.canApprove = userRoles[checkerRole] === 1;
     each.canDelete = userRoles[makerRole] === 1;
     each.isChecker = userRoles[checkerRole] === 1;
-  //  console.log("check Usecase", each.UseCase);
-  // console.log("check canDelete", each.canDelete);
-  //     console.log("📥check canApprove", each.canApprove);
-  //    console.log("📥check isChecker", each.isChecker);
-    //   each.canApprove = each.status === 'SUBMITTED';
-    //   each.canDelete = true;
-    //   each.isChecker = true;
+
 
   });
 
 
   this.before('READ', 'AppSelection', (req) => {
-    const userRoles = { Treasury_ContentChecker: 1, Earnings_ContentMaker: 1 };
-
-    const allowedApps = Object.keys(userRoles)
-      .filter(r => r.endsWith('_ContentChecker') || r.endsWith('_ContentMaker'))
-      .map(r => r.split('_')[0]);
-
-
-    req.query.where('AppName IN', allowedApps);
+    const userRoles = { Workzone_EFDNA_Type_Employee: 1,  };
+    const viewerRole = "Workzone_EFDNA_Type_Employee";
+  
+  if ( userRoles[viewerRole] === 1) {
+   
+    return; 
+  }
+    
   });
   
 
@@ -61,10 +52,10 @@ module.exports = cds.service.impl(async function () {
 
 this.before('READ', 'ConfigStore', (req) => {
   const userRoles = [
-    'Workzone_EFDNA_GenAI_Treasury_Capital',
-    'Workzone_EFDNA_GenAI_Treasury_Liquidity',
-    'Workzone_EFDNA_GenAI_Employee',
-    'Workzone_EFDNA_GenAI_Treasury_Practitioners'
+    'Workzone_EFDNA_Type_Treasury_Capital',
+    'Workzone_EFDNA_Type_Treasury_Liquidity',
+    'Workzone_EFDNA_Type_Employee',
+    'Workzone_EFDNA_Type_Treasury_Practitioners'
   ];
 
  
@@ -107,7 +98,7 @@ this.after("READ", "ConfigStore", (rows) => {
   this.on("approveContent", async (req) => {
     console.log("📥 Action called with:", req.params[0]);
     const ID = req.params[0].ID;
-    const destination = await getDestination({ destinationName: 'Treasurybackend' });
+    const destination = await getDestination({ destinationName: 'GenAIContentIngestionBackend' });
     const oneFile = await SELECT.one
       .from(Content)
       .columns('fileName', 'mediaType', 'content', 'createdBy')
@@ -211,7 +202,7 @@ this.after("READ", "ConfigStore", (rows) => {
     const dest = app.DestinationName
     console.log("📥 destination called with:", dest);
 
-    const destination = await getDestination({ destinationName: 'Treasurybackend' });
+    const destination = await getDestination({ destinationName: 'GenAIContentIngestionBackend' });
     const uploadUrl = destination.url + "/api/upload";
     const formData = new FormData();
     formData.append("file", Buffer.from(file), {
@@ -219,7 +210,7 @@ this.after("READ", "ConfigStore", (rows) => {
       contentType: "application/octet-stream"
     });
     const response = await executeHttpRequest(
-      { destinationName: 'Treasurybackend' },
+      { destinationName: 'GenAIContentIngestionBackend' },
       {
         method: 'POST',
         headers: {
@@ -269,12 +260,13 @@ this.after("READ", "ConfigStore", (rows) => {
 
 
 
- this.on("deleteContent", async (req) => {
+ this.on("deleteContent", "Content",async (req) => {
     const { ID } = req.params[0];
     try {
       const file = await cds.run(
         SELECT.one.from(Content).where({ ID: ID })
       );
+      console.log("delete content .... " + file);
       //check the role - if maker -> createdby and logged in user should be Same
       //if checker can delete any file
       const ownFiles = file.createdBy === req.user.id; // only owner can delete its own file
@@ -285,7 +277,7 @@ this.after("READ", "ConfigStore", (rows) => {
    //   }
 
       const response = await executeHttpRequest(
-        { destinationName: 'Treasurybackend' },
+        { destinationName: 'GenAIContentIngestionBackend' },
         {
           method: 'POST',
           headers: {

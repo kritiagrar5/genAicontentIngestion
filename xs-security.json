@@ -16,12 +16,40 @@
       "description": "Treasury_ContentMaker"
     },
      {
-      "name": "$XSAPPNAME.Earnings_ContentChecker",
-      "description": "Earnings_ContentChecker"
+      "name": "$XSAPPNAME.Peer-Analysis_ContentChecker",
+      "description": "Peer-Analysis_ContentChecker"
     },
     {
-      "name": "$XSAPPNAME.Earnings_ContentMaker",
-      "description": "Earnings_ContentMaker"
+      "name": "$XSAPPNAME.Peer-Analysis_ContentMaker",
+      "description": "Peer-Analysis_ContentMaker"
+    },
+     {
+      "name": "$XSAPPNAME.Workzone_EFDNA_Type_Treasury_Capital",
+      "description": "Workzone_EFDNA_Type_Treasury_Capital"
+    },
+     {
+      "name": "$XSAPPNAME.Workzone_EFDNA_Type_Treasury_Liquidity",
+      "description": "Workzone_EFDNA_Type_Treasury_Liquidity"
+    },
+     {
+      "name": "$XSAPPNAME.Workzone_EFDNA_Type_Treasury_IRRBB",
+      "description": "Workzone_EFDNA_Type_Treasury_IRRBB"
+    },
+    {
+      "name": "$XSAPPNAME.Workzone_EFDNA_Type_Employee",
+      "description": "Workzone_EFDNA_Type_Employee"
+    },
+    {
+      "name": "$XSAPPNAME.Workzone_EFDNA_Type_Employee",
+      "description": "Workzone_EFDNA_Type_Employee"
+    },
+       {
+      "name": "$XSAPPNAME.Workzone_EFDNA_Type_Treasury_Practitioners",
+      "description": "Workzone_EFDNA_Type_Treasury_Practitioners"
+    },
+       {
+      "name": "$XSAPPNAME.Workzone_EFDNA_Type_Earnings_Practitioners",
+      "description": "Workzone_EFDNA_Type_Earnings_Practitioners"
     }
   ],
   "role-templates": [
@@ -40,14 +68,52 @@
       {
       "name": "Workzone_EFDNA_GenAI_Earnings_Checker",
       "description": "Workzone_EFDNA_GenAI_Earnings_Checker",
-      "scope-references": ["$XSAPPNAME.Earnings_ContentChecker"]
+      "scope-references": ["$XSAPPNAME.Peer-Analysis_ContentChecker"]
       
     },
     {
       "name": "Workzone_EFDNA_GenAI_Earnings_Maker",
       "description": "Workzone_EFDNA_GenAI_Earnings_Maker",
-      "scope-references": ["$XSAPPNAME.Earnings_ContentMaker"]
+      "scope-references": ["$XSAPPNAME.Peer-Analysis_ContentMaker"]
       
-    }
+    },
+     {
+      "name": "Workzone_EFDNA_Type_Treasury_Capital",
+      "description": "Workzone_EFDNA_Type_Treasury_Capital",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Treasury_Capital"]
+      
+    },
+    {
+      "name": "Workzone_EFDNA_Type_Treasury_Liquidity",
+      "description": "Workzone_EFDNA_Type_Treasury_Liquidity",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Treasury_Liquidity"]
+      
+    },
+    {
+      "name": "Workzone_EFDNA_Type_Treasury_IRRBB",
+      "description": "Workzone_EFDNA_Type_Treasury_IRRBB",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Treasury_IRRBB"]
+          },
+
+             {
+      "name": "Workzone_EFDNA_Type_Treasury_IRRBB",
+      "description": "Workzone_EFDNA_Type_Treasury_IRRBB",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Treasury_IRRBB"]
+          },
+             {
+      "name": "Workzone_EFDNA_Type_Employee",
+      "description": "Workzone_EFDNA_Type_Employee",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Employee"]
+          },
+                 {
+      "name": "Workzone_EFDNA_Type_Treasury_Practitioners",
+      "description": "Workzone_EFDNA_Type_Treasury_Practitioners",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Treasury_Practitioners"]
+          },
+                 {
+      "name": "Workzone_EFDNA_Type_Earnings_Practitioners",
+      "description": "Workzone_EFDNA_Type_Earnings_Practitioners",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Earnings_Practitioners"]
+          }
   ]
 }
