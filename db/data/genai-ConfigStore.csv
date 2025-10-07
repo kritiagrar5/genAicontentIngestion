@@ -5,6 +5,7 @@ ID,team,roles,usecase,fileType
 4,Treasury,Workzone_EFDNA_Type_Employee,Treasury,Reports/Documents
 5,Treasury Practitioners,Workzone_EFDNA_Type_Treasury_Practitioners,Treasury,Data Dictionary
 6,Viewer,Workzone_EFDNA_Type_Employee,Peer-Analysis,Reports/Documents
-7,Peer Analysis Practitioners,Workzone_EFDNA_Type_Earnings_Practitioners,Peer-Analysis,Meta data
+7,Peer Analysis Practitioners,Workzone_EFDNA_Type_Earnings_Practitioners,Peer-Analysis,Meta Data
+
 
 
