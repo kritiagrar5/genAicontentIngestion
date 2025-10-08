@@ -20,7 +20,7 @@ sap.ui.define([
   }
   return {
     onPress: async function (oEvent) {
-         MessageToast.show("Custom handler invoked.");
+      MessageToast.show("Custom handler invoked.");
       const oContext = oEvent.getSource().getBindingContext();
       if (!oContext) return;
       const metaDataValue = await oContext.requestProperty("metaData");
@@ -37,7 +37,10 @@ sap.ui.define([
         // this.editFlow.getView().setModel(oMetaModel, "viewModel");  
 
         const oView = this.editFlow.getView();
-        oView.getModel("viewModel").setData(metaData);
+        //   oView.getModel("viewModel").setData(metaData);
+        const oViewModel = oView.getModel("viewModel");
+        const oExistingData = oViewModel.getData() || {};
+        oViewModel.setData({ ...oExistingData, ...metaData });
         oView.getModel("viewModel").setProperty("/decision", decision);
 
         if (!this._oDialog) {

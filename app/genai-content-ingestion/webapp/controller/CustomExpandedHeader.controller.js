@@ -168,28 +168,35 @@ sap.ui.define(
           }
           metaData["filename"] = response.filename;
 
-          this.getView().getModel("viewModel").setData(metaData);
+          //   this.getView().getModel("viewModel").setData(metaData);
+          const oViewModel = this.getView().getModel("viewModel");
+          const oExistingData = oViewModel.getData() || {};
+          oViewModel.setData({ ...oExistingData, ...metaData });
           // this.iProgress = 0;
-          if (!this._oDialog) {
-            this._pDialog = Fragment.load({
+          if (!this._oResultDialog) {
+            this._oResultDialog = Fragment.load({
               id: this.getView().getId() + "--myDialog",
               name: "genaicontentingestion.fragment.MyDialog",
               controller: this
             }).then(function (oDialog) {
-              that._oDialog = oDialog;
+              that._oResultDialog = oDialog;
               that.getView().addDependent(oDialog);
-              that._oDialog.open();
+              that._oResultDialog.open();
 
             });
           }
           else {
-            that._oDialog.open();
+            that._oResultDialog.open();
           }
           return true;
         },
 
         onCloseDialog: function () {
-          this._oDialog.close();
+          if (this._oResultDialog) {
+            this._oResultDialog.close();
+            this._oResultDialog.destroy();
+            this._oResultDialog = null;
+          }
         },
 
         onUploadPress: function () {
@@ -209,9 +216,9 @@ sap.ui.define(
 
         },
         onCancelUpload: function () {
-              if (this._oDialog) {
-            this._oDialog.destroy();   
-            this._oDialog = null;     
+          if (this._oDialog) {
+            this._oDialog.destroy();
+            this._oDialog = null;
           }
         },
         onConfirmUpload: async function (oEvent) {
@@ -233,7 +240,7 @@ sap.ui.define(
             const oFile = oFileUploader.getDomRef("fu").files[0];
             const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
 
-            const chatUrl = baseUrl + "/api/upload?use_case="+use_case;
+            const chatUrl = baseUrl + "/api/upload?use_case=" + use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
             const csrf = await this.onfetchCSRF(baseUrl);
             console.log(oFile);
@@ -272,7 +279,7 @@ sap.ui.define(
                 this.onCancelUpload();
 
             }
-  
+
 
             const responseAPI = await fetch(chatUrl, {
               method: "POST",
@@ -329,7 +336,7 @@ sap.ui.define(
                       throw new Error(`Entity creation failed: ${response.status}`);
                     }
                   }
-                  
+
                   const oExtModel = this.base.getExtensionAPI().getModel();
                   var fileType;
                   if (oFile.type.includes("pdf"))
