@@ -14,16 +14,68 @@ sap.ui.define(
       {
         override: {
           onInit: function () {
+            const oToolbar = sap.ui.getCore().byId("genaicontentingestion::ContentList--fe::DynamicPageTitle");
 
+            if (oToolbar) {
+              oToolbar.setVisible(false);
+            }
             const oModel = new sap.ui.model.json.JSONModel();
             this.getView().setModel(oModel, "viewModel");
+
+            var appModulePath = jQuery.sap.getModulePath("genaicontentingestion");
+
+            let oImageModel = new sap.ui.model.json.JSONModel({
+              path: appModulePath,
+            });
+            this.getView().setModel(oImageModel, "imageModel");
+
             this.getView().getModel("viewModel").setProperty("/decision");
             this.getView().getModel("viewModel").setProperty("/useCase");
             this.getView().getModel("viewModel").setProperty("/destination");
             this.onAppSelection();
+
+          }
+        },
+        onfetchRoles: async function () {
+      
+          const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
+          const url = baseUrl + "/user-api/currentUser";
+          const usecase = this.getView().getModel("viewModel").getProperty("/usecase");
+
+          try {
+            const response = await fetch(url, {
+              method: "GET",
+              headers: { "Content-Type": "application/json" }
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const roles = data.scopes;
+            const checkerRole = `${usecase}_ContentChecker`;
+            const makerRole = `${usecase}_ContentMaker`;
+            const hasScopeForChecker = roles.some(role => role.includes(checkerRole));
+            const hasScopeForMaker = roles.some(role => role.includes(makerRole));
+
+            // Create a new authModel for this controller
+            const authModel = new sap.ui.model.json.JSONModel({
+              isChecker: hasScopeForChecker,
+              isMaker: hasScopeForMaker,
+              usecase: usecase
+            });
+
+            this.getView().setModel(authModel, "authModel");  // set the model with a named model
+
+            console.log("Auth model created:", authModel.getData());
+
+          } catch (error) {
+            console.error("API Error:", error);
           }
         },
         onAppSelection: async function () {
+
           const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
           const csrf = await this.onfetchCSRF(baseUrl);
           const appUrl = baseUrl + "/odata/v4/catalog/AppSelection";
@@ -49,13 +101,14 @@ sap.ui.define(
           });
           const resTeam = await responseTeam.json();
           const sKeyTeam = resTeam.value.map(r => r.team);
-          // const sKeyTeam = ["Liquidity", "Capital"];
+
           const oTeamModel = new sap.ui.model.json.JSONModel({
             selectedTeams: sKeyTeam
           });
+          this.onfetchRoles();
           this.getView().setModel(oTeamModel, "teamModel");
           this.onFilterBarChange(sKey);
-          //  this.onFilterBarChange("Treasury");
+
         },
         onTypeMismatch: function () {
           MessageBox.error("Only pdf, docx, xlsx files are allowed");
@@ -88,9 +141,7 @@ sap.ui.define(
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/usecase", sKey);
           const oContext = oEvent.getSource().getSelectedItem().getBindingContext();
-          // if (!oContext) return;
-          //const DestinationName = await oContext.requestProperty("DestinationName");
-
+          this.onfetchRoles();
           this.onFilterBarChange(sKey);
         },
         onFileTypeChange: async function (oEvent) {
@@ -128,7 +179,7 @@ sap.ui.define(
           const aTeams = oTeamModel.getProperty("/selectedTeams");
           //  const sKeyt = "Treasury";
           //   const aTeams = ["Liquidity", "Capital"];
-          const aTeamConditions = aTeams.map(v => ({ operator: "EQ", values: [v] }));
+          const aTeamConditions = aTeams.map(v => ({ operator: "Contains", values: [v] }));
           if (oFilterBar) {
 
             oFilterBar.setFilterConditions({
@@ -168,28 +219,35 @@ sap.ui.define(
           }
           metaData["filename"] = response.filename;
 
-          this.getView().getModel("viewModel").setData(metaData);
+          //   this.getView().getModel("viewModel").setData(metaData);
+          const oViewModel = this.getView().getModel("viewModel");
+          const oExistingData = oViewModel.getData() || {};
+          oViewModel.setData({ ...oExistingData, ...metaData });
           // this.iProgress = 0;
-          if (!this._oDialog) {
-            this._pDialog = Fragment.load({
+          if (!this._oResultDialog) {
+            this._oResultDialog = Fragment.load({
               id: this.getView().getId() + "--myDialog",
               name: "genaicontentingestion.fragment.MyDialog",
               controller: this
             }).then(function (oDialog) {
-              that._oDialog = oDialog;
+              that._oResultDialog = oDialog;
               that.getView().addDependent(oDialog);
-              that._oDialog.open();
+              that._oResultDialog.open();
 
             });
           }
           else {
-            that._oDialog.open();
+            that._oResultDialog.open();
           }
           return true;
         },
 
         onCloseDialog: function () {
-          this._oDialog.close();
+          if (this._oResultDialog) {
+            this._oResultDialog.close();
+            this._oResultDialog.destroy();
+            this._oResultDialog = null;
+          }
         },
 
         onUploadPress: function () {
@@ -197,39 +255,22 @@ sap.ui.define(
 
           const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
           var that = this;
-        /*  if (!this._oDialog) {
-            this._pDialog = Fragment.load({
-              id: this.getView().getId() + "--myUploadDialog",
-              name: "genaicontentingestion.fragment.UploadFileDialog",
-              controller: this
-            }).then(function (oDialog) {
-              that._oDialog = oDialog;
-              that.getView().addDependent(oDialog);
-
-              that._oDialog.open();
-
-            });
-          }
-          else {
-            that._oDialog.open();
-          }*/
-  Fragment.load({
-    id: this.getView().getId() + "--myUploadDialog",
-    name: "genaicontentingestion.fragment.UploadFileDialog",
-    controller: this
-  }).then(oDialog => {
-    this._oDialog = oDialog;
-    this.getView().addDependent(oDialog);
-    oDialog.open();
-  });
+          Fragment.load({
+            id: this.getView().getId() + "--myUploadDialog",
+            name: "genaicontentingestion.fragment.UploadFileDialog",
+            controller: this
+          }).then(oDialog => {
+            this._oDialog = oDialog;
+            this.getView().addDependent(oDialog);
+            oDialog.open();
+          });
 
         },
         onCancelUpload: function () {
-         // this._oDialog.close();
           if (this._oDialog) {
-    this._oDialog.destroy();   // ❌ destroys the dialog completely
-    this._oDialog = null;      // reset reference
-  }
+            this._oDialog.destroy();
+            this._oDialog = null;
+          }
         },
         _validateFile: async function (file) {
           //read the excel file and check the columns sequence
@@ -300,28 +341,39 @@ sap.ui.define(
         },
         onConfirmUpload: async function (oEvent) {
           try {
-            
+
             var that = this;
             BusyIndicator.show(0);
 
             const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+            if (!UseCase) {
+              sap.m.MessageToast.show("Please Select the UseCase ");
+              return;
+            }
+
+            const use_case = UseCase.toLowerCase();
             var oteam = this.getView().getModel("viewModel").getProperty("/team");
-            var sfileType = this.getView().getModel("viewModel").getProperty("/fileType");
+            if (!oteam) {
+              sap.m.MessageToast.show("Please Select the Team ");
+              return;
+            }
+            var ofileType = this.getView().getModel("viewModel").getProperty("/fileType");
+            if (!ofileType) {
+              sap.m.MessageToast.show("Please Select the FileType ");
+              return;
+            }
 
             //const oFileUploader = this.base.byId("__fileUploader");
             const oFileUploader = sap.ui.core.Fragment.byId(
               that.getView().getId() + "--myUploadDialog",
               "__fileUploader"
             );
-
-
-
             const oFile = oFileUploader.getDomRef("fu").files[0];
             const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
 
-            const chatUrl = baseUrl + "/api/upload";
+            const chatUrl = baseUrl + "/api/upload?use_case=" + use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
-            if (sfileType === "Meta data") {
+            if (ofileType === "Meta data") {
               const isValid = await this._validateFile(oFile);
 
               if (!isValid) {
@@ -354,21 +406,41 @@ sap.ui.define(
             const dupl = await resDuplicate.json();
             var flag;
             if (dupl.value && dupl.value.length > 0) {
-              dupl.value.forEach(record => {
+              dupl.value.forEach(async record => {
                 if (record.ID == fileHash) {
-                  MessageBox.error(`File already exists!`);
-                  oFileUploader.setValueState("None");
                   flag = true;
+                  if (record.team.includes(oteam) == 1) {
+                    MessageBox.error(`File already exists!`);
+                    oFileUploader.setValueState("None");
+
+                  }
+                  else {
+                    const newteam = record.team + "," + oteam;
+                    const putteamUrl = baseUrl + "/odata/v4/catalog/Content/" + fileHash;
+                    const res = await fetch(putteamUrl, {
+                      method: "PATCH",
+                      headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-Token": csrf
+                      },
+                      credentials: "include",
+                      body: JSON.stringify({
+                        team: newteam
+                      })
+                    });
+
+                  }
+
                 }
               })
-              if (flag)
-                return;
-              else 
+              if (flag) {
                 this.onCancelUpload();
-                            
+                return;
+              }
+
             }
-            
-            // get the API response
+
+
             const responseAPI = await fetch(chatUrl, {
               method: "POST",
               headers: {
@@ -424,7 +496,7 @@ sap.ui.define(
                       throw new Error(`Entity creation failed: ${response.status}`);
                     }
                   }
-                  //  const metadataRes = await this.saveMetaData(csrf, json.metadata, oFile.name);
+
                   const oExtModel = this.base.getExtensionAPI().getModel();
                   var fileType;
                   if (oFile.type.includes("pdf"))
@@ -458,12 +530,10 @@ sap.ui.define(
             });
           } finally {
             BusyIndicator.hide();
+            const oExtModel = this.base.getExtensionAPI().getModel();
+            oExtModel.refresh();
           }
         },
-
-
-
-
       }
     );
   }

@@ -6,13 +6,13 @@
       "source": "^/odata/v4/catalog/(.*)$",
       "target": "/odata/v4/catalog/$1",
       "authenticationType": "none",
-      "destination": "GenAI-ContentIngestion-Srv"
+      "destination": "GenAIConentIngestionSrv"
     },   
     {
       "source": "^/api/(.*)$",
       "target": "/api/$1",
       "authenticationType": "none",
-      "destination": "Treasurybackend",
+      "destination": "GenAIContentIngestionBackend",
       "csrfProtection" : false
     },
     {

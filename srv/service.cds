@@ -62,7 +62,7 @@ entity ConfigStore as
 
     };
 
-  //action approveAll(IDs: array of UUID);
+ 
   action Treasury()                                     returns String;
   action createContent(initialData: String)             returns String;
 
