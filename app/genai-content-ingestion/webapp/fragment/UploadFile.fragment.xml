@@ -4,7 +4,7 @@
     xmlns:u="sap.ui.unified">
 
    <OverflowToolbar width="100%" >
-        <Image id="logo" src="{imageModel>/path}/images/FinSight.png"  decorative="true" class="logo"/>
+        <Image id="logo" src="{imageModel>/path}/css/FinSight.png"  decorative="true" class="logo"/>
     </OverflowToolbar>
 
     <VBox>
