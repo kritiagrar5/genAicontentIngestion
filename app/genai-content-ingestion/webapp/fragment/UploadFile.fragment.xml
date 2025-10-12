@@ -3,9 +3,14 @@
     xmlns:l="sap.ui.layout"
     xmlns:u="sap.ui.unified">
 
+   <OverflowToolbar width="100%" >
+        <Image id="logo" src="{imageModel>/path}/css/FinSight.png"  decorative="true" class="logo"/>
+    </OverflowToolbar>
+
     <VBox>
+       <Title text="Upload Content" level="H1"  class="sapUiSmallMarginTop largeBoldTitle"  />
         <!-- Label above -->
-        <Label text="Use Case" required="true" />
+        <Label text="Use Case" required="true"  class="sapUiSmallMarginTop smallBoldTitle" />
 
         <!-- Row: dropdown + button -->
         <HBox alignItems="Center" justifyContent="Start">
@@ -23,7 +28,8 @@
                 text="Add Attachment" 
                 press=".extension.genaicontentingestion.controller.CustomExpandedHeader.onUploadPress"
                 type="Emphasized" 
-                class="sapUiSmallMarginBegin customUploadButton" />
+                class="sapUiSmallMarginBegin "
+                enabled="{authModel>/isMaker}" />
         </HBox>
     </VBox>
 
