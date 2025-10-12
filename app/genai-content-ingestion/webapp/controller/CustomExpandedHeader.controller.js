@@ -14,16 +14,68 @@ sap.ui.define(
       {
         override: {
           onInit: function () {
+            const oToolbar = sap.ui.getCore().byId("genaicontentingestion::ContentList--fe::DynamicPageTitle");
 
+            if (oToolbar) {
+              oToolbar.setVisible(false);
+            }
             const oModel = new sap.ui.model.json.JSONModel();
             this.getView().setModel(oModel, "viewModel");
+
+            var appModulePath = jQuery.sap.getModulePath("genaicontentingestion");
+
+            let oImageModel = new sap.ui.model.json.JSONModel({
+              path: appModulePath,
+            });
+            this.getView().setModel(oImageModel, "imageModel");
+
             this.getView().getModel("viewModel").setProperty("/decision");
             this.getView().getModel("viewModel").setProperty("/useCase");
             this.getView().getModel("viewModel").setProperty("/destination");
             this.onAppSelection();
+
+          }
+        },
+        onfetchRoles: async function () {
+      
+          const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
+          const url = baseUrl + "/user-api/currentUser";
+          const usecase = this.getView().getModel("viewModel").getProperty("/usecase");
+
+          try {
+            const response = await fetch(url, {
+              method: "GET",
+              headers: { "Content-Type": "application/json" }
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const roles = data.scopes;
+            const checkerRole = `${usecase}_ContentChecker`;
+            const makerRole = `${usecase}_ContentMaker`;
+            const hasScopeForChecker = roles.some(role => role.includes(checkerRole));
+            const hasScopeForMaker = roles.some(role => role.includes(makerRole));
+
+            // Create a new authModel for this controller
+            const authModel = new sap.ui.model.json.JSONModel({
+              isChecker: hasScopeForChecker,
+              isMaker: hasScopeForMaker,
+              usecase: usecase
+            });
+
+            this.getView().setModel(authModel, "authModel");  // set the model with a named model
+
+            console.log("Auth model created:", authModel.getData());
+
+          } catch (error) {
+            console.error("API Error:", error);
           }
         },
         onAppSelection: async function () {
+
           const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
           const csrf = await this.onfetchCSRF(baseUrl);
           const appUrl = baseUrl + "/odata/v4/catalog/AppSelection";
@@ -53,6 +105,7 @@ sap.ui.define(
           const oTeamModel = new sap.ui.model.json.JSONModel({
             selectedTeams: sKeyTeam
           });
+          this.onfetchRoles();
           this.getView().setModel(oTeamModel, "teamModel");
           this.onFilterBarChange(sKey);
 
@@ -88,9 +141,7 @@ sap.ui.define(
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/usecase", sKey);
           const oContext = oEvent.getSource().getSelectedItem().getBindingContext();
-          // if (!oContext) return;
-          //const DestinationName = await oContext.requestProperty("DestinationName");
-
+          this.onfetchRoles();
           this.onFilterBarChange(sKey);
         },
         onFileTypeChange: async function (oEvent) {
@@ -221,6 +272,73 @@ sap.ui.define(
             this._oDialog = null;
           }
         },
+         _validateFile: async function (file) {
+          //read the excel file and check the columns sequence
+          const fileReader = new FileReader();
+          const oFile = file;
+          let isValid = false;
+          let headers,dataRows;
+          const readFilePromise = new Promise((resolve, reject) => {
+            fileReader.onload = async (e) => {
+              const arrayBuffer = e.target.result;
+              const data = new Uint8Array(arrayBuffer);
+              const workbook = XLSX.read(data, { type: "array" });
+              const firstSheetName = workbook.SheetNames[0];
+              const worksheet = workbook.Sheets[firstSheetName];
+              const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                header: 1,
+              });
+              headers = jsonData[0];
+              dataRows = jsonData.slice(1);
+              if (
+                headers.length !== 4 ||
+                headers[0] !== "bankID" ||
+                headers[1] !== "stdMetric" ||
+                headers[2] !== "bankMetric" ||
+                headers[3] !== "userID"
+              ) {
+                MessageBox.error(
+                  "Invalid Excel Format."
+                );
+                reject("Invalid Header");
+              }else {
+                resolve("Valid Header");
+              }
+            };
+            fileReader.readAsArrayBuffer(oFile);
+          });
+          try {
+            await readFilePromise;
+            isValid = true;
+          } catch (error) {
+            isValid = false;
+          }
+          this._checkBankIDExists(dataRows.map(r => r[0])).then(exists => {
+            if (!exists) {
+              MessageBox.error("One or more Bank IDs do not exist in the system.");
+              isValid = false;
+            }
+          }).catch(err => {
+            console.error("Error checking Bank IDs:", err);
+            isValid = false;
+          });
+          return isValid;
+        },
+        _checkBankIDExists: async function (bankIDs) {
+          const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
+          const csrf = await this.onfetchCSRF(baseUrl);
+          const bankUrl = baseUrl + "/odata/v4/catalog/Banks?$filter=code in (" + bankIDs.map(id => `'${id}'`).join(", ") + ")";
+          const response = await fetch(bankUrl, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrf
+            },
+            credentials: "include",
+          });
+          const res = await response.json();
+          return res.value && res.value.length > 0;
+        },
         onConfirmUpload: async function (oEvent) {
           try {
 
@@ -228,19 +346,19 @@ sap.ui.define(
             BusyIndicator.show(0);
 
             const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
-             if (!UseCase) {
+            if (!UseCase) {
               sap.m.MessageToast.show("Please Select the UseCase ");
               return;
             }
 
             const use_case = UseCase.toLowerCase();
             var oteam = this.getView().getModel("viewModel").getProperty("/team");
-             if (!oteam) {
+            if (!oteam) {
               sap.m.MessageToast.show("Please Select the Team ");
               return;
             }
             var ofileType = this.getView().getModel("viewModel").getProperty("/fileType");
-             if (!ofileType) {
+            if (!ofileType) {
               sap.m.MessageToast.show("Please Select the FileType ");
               return;
             }
@@ -255,6 +373,14 @@ sap.ui.define(
 
             const chatUrl = baseUrl + "/api/upload?use_case=" + use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
+            if (ofileType === "Meta Data") {
+              const isValid = await this._validateFile(oFile);
+
+              if (!isValid) {
+                BusyIndicator.hide();
+                return;
+              }
+            }
             const csrf = await this.onfetchCSRF(baseUrl);
             console.log(oFile);
             let formData = new FormData();
@@ -281,11 +407,11 @@ sap.ui.define(
             if (dupl.value && dupl.value.length > 0) {
               dupl.value.forEach(async record => {
                 if (record.ID == fileHash) {
-                   flag = true;
+                  flag = true;
                   if (record.team.includes(oteam) == 1) {
                     MessageBox.error(`File already exists!`);
                     oFileUploader.setValueState("None");
-                   
+
                   }
                   else {
                     const newteam = record.team + "," + oteam;
@@ -301,16 +427,15 @@ sap.ui.define(
                         team: newteam
                       })
                     });
-                  
+
                   }
 
                 }
               })
-              if (flag)
-                {
+              if (flag) {
                 this.onCancelUpload();
-                return;            
-                 }
+                return;
+              }
 
             }
 

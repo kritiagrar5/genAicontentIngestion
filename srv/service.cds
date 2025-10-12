@@ -56,16 +56,11 @@ entity ConfigStore as
       @Common.IsActionCritical          : true
       action deleteContent()  returns Content;
 
-      @cds.odata.bindingparameter.name  : '_it'
-      @sap.fe.core.RefreshAfterExecution: true
-      action submit()         returns Content;
-
     };
 
  
-  action Treasury()                                     returns String;
+
   action createContent(initialData: String)             returns String;
 
-  @Core.MediaType: 'application/octet-stream'
-  action uploadFile(AppName: String, file: LargeBinary) returns String;
+
 }

@@ -1,4 +1,4 @@
 <core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
 	<Button core:require="{ handler: 'genaicontentingestion/ext/fragment/Delete'}"
-	 icon="sap-icon://delete"  press="handler.onPress" tooltip="Delete" />
+	 icon="sap-icon://delete"  press="handler.onPress" tooltip="Delete" enabled="{authModel>/isMaker}" />
 </core:FragmentDefinition>

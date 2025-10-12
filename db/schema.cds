@@ -39,6 +39,7 @@ entity Content : managed {
 
       UseCase         : String;
       team            : String;
+      fileType        : String;
 
 }
 
@@ -63,4 +64,10 @@ entity ConfigStore {
   usecase : String;
   fileType : String;
   
+}
+entity MetaData : cuid {
+  key bankID: String;
+  key stdMetric: String;
+  bankMetric: String;
+  userID: String;
 }
