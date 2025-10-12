@@ -49,13 +49,13 @@ sap.ui.define(
           });
           const resTeam = await responseTeam.json();
           const sKeyTeam = resTeam.value.map(r => r.team);
-          // const sKeyTeam = ["Liquidity", "Capital"];
+
           const oTeamModel = new sap.ui.model.json.JSONModel({
             selectedTeams: sKeyTeam
           });
           this.getView().setModel(oTeamModel, "teamModel");
           this.onFilterBarChange(sKey);
-          //  this.onFilterBarChange("Treasury");
+
         },
         onTypeMismatch: function () {
           MessageBox.error("Only pdf, docx, xlsx files are allowed");
@@ -128,7 +128,7 @@ sap.ui.define(
           const aTeams = oTeamModel.getProperty("/selectedTeams");
           //  const sKeyt = "Treasury";
           //   const aTeams = ["Liquidity", "Capital"];
-          const aTeamConditions = aTeams.map(v => ({ operator: "EQ", values: [v] }));
+          const aTeamConditions = aTeams.map(v => ({ operator: "Contains", values: [v] }));
           if (oFilterBar) {
 
             oFilterBar.setFilterConditions({
@@ -228,9 +228,22 @@ sap.ui.define(
             BusyIndicator.show(0);
 
             const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+             if (!UseCase) {
+              sap.m.MessageToast.show("Please Select the UseCase ");
+              return;
+            }
+
             const use_case = UseCase.toLowerCase();
             var oteam = this.getView().getModel("viewModel").getProperty("/team");
+             if (!oteam) {
+              sap.m.MessageToast.show("Please Select the Team ");
+              return;
+            }
             var ofileType = this.getView().getModel("viewModel").getProperty("/fileType");
+             if (!ofileType) {
+              sap.m.MessageToast.show("Please Select the FileType ");
+              return;
+            }
 
             //const oFileUploader = this.base.byId("__fileUploader");
             const oFileUploader = sap.ui.core.Fragment.byId(
@@ -266,17 +279,38 @@ sap.ui.define(
             const dupl = await resDuplicate.json();
             var flag;
             if (dupl.value && dupl.value.length > 0) {
-              dupl.value.forEach(record => {
+              dupl.value.forEach(async record => {
                 if (record.ID == fileHash) {
-                  MessageBox.error(`File already exists!`);
-                  oFileUploader.setValueState("None");
-                  flag = true;
+                   flag = true;
+                  if (record.team.includes(oteam) == 1) {
+                    MessageBox.error(`File already exists!`);
+                    oFileUploader.setValueState("None");
+                   
+                  }
+                  else {
+                    const newteam = record.team + "," + oteam;
+                    const putteamUrl = baseUrl + "/odata/v4/catalog/Content/" + fileHash;
+                    const res = await fetch(putteamUrl, {
+                      method: "PATCH",
+                      headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-Token": csrf
+                      },
+                      credentials: "include",
+                      body: JSON.stringify({
+                        team: newteam
+                      })
+                    });
+                  
+                  }
+
                 }
               })
               if (flag)
-                return;
-              else
+                {
                 this.onCancelUpload();
+                return;            
+                 }
 
             }
 
@@ -370,6 +404,8 @@ sap.ui.define(
             });
           } finally {
             BusyIndicator.hide();
+            const oExtModel = this.base.getExtensionAPI().getModel();
+            oExtModel.refresh();
           }
         },
       }
