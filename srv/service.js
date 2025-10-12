@@ -101,36 +101,34 @@ this.on('READ', 'Banks', async (req) => {
   this.on("approveContent", async (req) => {
     console.log("📥 Action called with:", req.params[0]);
     const ID = req.params[0].ID;
+    try {
+  const destination = await getDestination({ destinationName: 'GenAIContentIngestionBackend' });
+  console.log('Destination fetched:', destination);
+} catch (err) {
+  console.error('Failed to get destination:', err.message);
+}
     const destination = await getDestination({ destinationName: 'GenAIContentIngestionBackend' });
     const oneFile = await SELECT.one
       .from(Content)
-      //TODO: need to add fileType in file table
-      .columns("fileName", "mediaType", "content", "createdBy", "fileType")
+      .columns('ID','fileName', 'mediaType', 'content', 'createdBy','fileType','UseCase')
       .where({ ID });
-
+    const use_case = oneFile.UseCase?.toLowerCase();
     const ownFile = oneFile.createdBy === req.user.id;
-    const timeout = setTimeout(() => {
-      controller.abort();
-    }, 90000);
+  
 
-    if (ownFile) {
-      req.reject(400, "You cannot Approve files that are created by you");
-    }
+  /*  if (ownFile) {
+      req.reject(400, 'You cannot Approve files that are created by you');
+    }*/
     //check if file content exists
     if (!oneFile?.content) {
-      return req.reject(404, "File content not found.");
+      return req.reject(404, 'File content not found.');
     }
-
-    const buffer = await streamToBuffer(oneFile.x);
-    // Create a buffer for form-data
-    const formData = new FormData();
-    formData.append("file", buffer, {
-      filename: oneFile.fileName,
-      contentType: oneFile.mediaType,
-    });
-    console.log("form Data", formData);
-    // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
-    if (oneFile.fileType === "Meta data") {
+  await UPDATE(Content, ID).with({
+              status: "PROCESSING"
+            });
+  
+   // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
+    if (oneFile.fileType === "Meta Data") {
       //parse the xlsx file and update the metadatatable, first row is header
       const xlsx = require("xlsx");
       const workbook = xlsx.read(buffer, { type: "buffer" });
@@ -148,112 +146,47 @@ this.on('READ', 'Banks', async (req) => {
         await INSERT.into("MetaData").columns(Object.keys(row)).values(Object.values(row));
       }
     }
-
     //Call API to create Embeddings
     try {
-      //check for approved-file-upload
-      const responseFileUpload = await axios.post(
-        `${destination.url}/api/approved-file-upload`,
-        formData,
-        {
-          headers: {
-            ...formData.getHeaders(),
-            Authorization: `Bearer ${destination.authTokens?.[0]?.value}`,
-          },
-          timeout: 120000,
-        }
-      );
-      clearTimeout(timeout);
-      console.log("upload response:", responseFileUpload);
-
-      if (responseFileUpload.status == 200) {
-        if (responseFileUpload.data.success) {
+      
           const responseEmbeddings = await axios.post(
-            `${destination.url}/api/generate-embeddings`,
-            { filename: oneFile.fileName },
+            `${destination.url}/api/generate-embeddings?use_case=${use_case}`,
+            { document_id: oneFile.ID },
             {
               headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${destination.authTokens?.[0]?.value}`,
-              },
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${destination.authTokens?.[0]?.value}`
+              }
             }
           );
-          clearTimeout(timeout);
-          console.log("Embeddings Response:", responseEmbeddings);
+         
+          console.log("Embeddings Response:", responseEmbeddings)
           if (responseEmbeddings.data.success) {
-            await UPDATE(Content, ID).with({
-              status: "COMPLETED",
-            });
-            console.log("Embeddings generated successfully");
+          
+            console.log("Embeddings generated successfully")
 
             return await SELECT.one.from(Content).where({ ID });
-            // return ("Embeddings generated successfully");
-          } else
-            throw new Error(
-              `Embedding API failed with status ${responseFileUpload.status}`
-            );
-        }
-      } else {
-        throw new Error(
-          `Embedding API failed with status ${responseFileUpload.status}`
-        );
-      }
-    } catch (error) {
-      console.log("Failed in getting embeddings due to: " + error);
-    } finally {
-      console.log("Calling delete doc API");
-      try {
-        const responseDelDoc = await axios.post(
-          `${destination.url}/api/delete-document`,
-          { filename: oneFile.fileName },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${destination.authTokens?.[0]?.value}`,
-            },
+            
           }
-        );
-        console.log("Delect Document API Response: ", responseDelDoc.data);
-      } catch (err) {
-        console.log(err);
-      }
+          else
+            throw new Error(`Embedding API failed with status ${responseFileUpload.status}`)
+        
+      
+    } 
+    catch (error) 
+    {
+      console.log("Failed in getting embeddings due to: " +  error.response.data?.description);
+       return req.reject(400, `Embedding API failed: ${error.response.data?.description}`);
+       await UPDATE(Content, ID).with({
+              status: "SUBMITTED"
+            });
+    
+   } 
+    finally {
+      return await SELECT.one.from(Content).where({ ID });
     }
   });
-  this.on("uploadFile", async (req) => {
-    console.log("📥 Action called with:", req.data);
-    const { AppName, file } = req.data;
-    console.log(AppName)
-    const app = await SELECT.one.from('AppSelection')
-      .columns('DestinationName')
-      .where({ AppName })
-    if (!app) return `No destination found for app: ${AppName}`
-
-    const dest = app.DestinationName
-    console.log("📥 destination called with:", dest);
-
-    const destination = await getDestination({ destinationName: 'GenAIContentIngestionBackend' });
-    const uploadUrl = destination.url + "/api/upload";
-    const formData = new FormData();
-    formData.append("file", Buffer.from(file), {
-      filename: "SCB.pdf",
-      contentType: "application/octet-stream"
-    });
-    const response = await executeHttpRequest(
-      { destinationName: 'GenAIContentIngestionBackend' },
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        url: '/api/upload',
-        data: { "filename": fileName }
-      }
-    );
-    if (!response.data.success) {
-      req.reject(response.data.message);
-    }
-    return `Upload triggered for ${AppName} → ${dest}`
-  });
+  
 
 
   function streamToBuffer(stream) {
@@ -328,12 +261,7 @@ this.on('READ', 'Banks', async (req) => {
     }
   });
 
-  this.on("submit", async (req) => {
-    const { ID } = req.params[0]; // since bound to entity
-    await UPDATE(Content).set({ status: "SUBMITTED" }).where({ ID });
-    const updated = await SELECT.one.from(Content).where({ ID });
-    return updated;
-  });
+
 
 
 

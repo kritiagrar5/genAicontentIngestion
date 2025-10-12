@@ -39,6 +39,7 @@ entity Content : managed {
 
       UseCase         : String;
       team            : String;
+      fileType        : String;
 
 }
 

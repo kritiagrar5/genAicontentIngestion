@@ -272,7 +272,7 @@ sap.ui.define(
             this._oDialog = null;
           }
         },
-        _validateFile: async function (file) {
+         _validateFile: async function (file) {
           //read the excel file and check the columns sequence
           const fileReader = new FileReader();
           const oFile = file;
@@ -373,7 +373,7 @@ sap.ui.define(
 
             const chatUrl = baseUrl + "/api/upload?use_case=" + use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
-            if (ofileType === "Meta data") {
+            if (ofileType === "Meta Data") {
               const isValid = await this._validateFile(oFile);
 
               if (!isValid) {
@@ -383,7 +383,6 @@ sap.ui.define(
             }
             const csrf = await this.onfetchCSRF(baseUrl);
             console.log(oFile);
-
             let formData = new FormData();
             formData.append("file", oFile);
 
