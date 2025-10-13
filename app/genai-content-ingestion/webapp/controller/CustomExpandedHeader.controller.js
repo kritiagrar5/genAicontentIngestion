@@ -296,11 +296,10 @@ sap.ui.define(
                 headers.length !== 4 ||
                 headers[0] !== "bankID" ||
                 headers[1] !== "stdMetric" ||
-                headers[2] !== "bankMetric" ||
-                headers[3] !== "userID"
+                headers[2] !== "bankMetric"
               ) {
                 MessageBox.error(
-                  "Invalid Excel Format."
+                  "Invalid Template Format."
                 );
                 reject("Invalid Header");
               }else {
@@ -329,7 +328,7 @@ sap.ui.define(
         _checkBankIDExists: async function (bankIDs) {
           const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
           const csrf = await this.onfetchCSRF(baseUrl);
-          const bankUrl = baseUrl + "/odata/v4/catalog/Banks?$filter=code in (" + bankIDs.map(id => `'${id}'`).join(", ") + ")";
+          const bankUrl = baseUrl + "/odata/v4/catalog/checkBanks?codes=" + bankIDs.map(id => `${id}`).join(",");
           const response = await fetch(bankUrl, {
             method: "GET",
             headers: {
@@ -339,7 +338,7 @@ sap.ui.define(
             credentials: "include",
           });
           const res = await response.json();
-          return res.value && res.value.length > 0;
+          return res.value;
         },
         onConfirmUpload: async function (oEvent) {
           try {

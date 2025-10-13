@@ -56,6 +56,8 @@ entity ConfigStore as
       @Common.IsActionCritical          : true
       action deleteContent()  returns Content;
 
+      action checkBanks(bankIDs: String) returns Boolean;
+
     };
 
  

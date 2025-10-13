@@ -266,6 +266,26 @@ this.on('READ', 'Banks', async (req) => {
     }
   });
 
+  this.on("checkBanks", async (req) => {
+    const bankIDs = req.params[0].bankIDs.split(",");
+    const response = await executeHttpRequest(
+      { destinationName: 'earning-upload-v2-srv-api' },
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        url: '/v2/odata/v4/earning-upload-srv/Banks',
+        params: {
+          '$filter': `code in ('${bankIDs.join("','")}')`,
+          '$select': 'code'
+        }
+      }
+    );
+    const existingBankIDs = response.data.value.map(bank => bank.code);
+    const allExist = bankIDs.every(id => existingBankIDs.includes(id));
+    return allExist;
+  }
 
 
 
