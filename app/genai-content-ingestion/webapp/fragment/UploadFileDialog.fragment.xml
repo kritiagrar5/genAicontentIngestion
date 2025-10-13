@@ -14,8 +14,7 @@
                 id="__fileUploader" 
                 width="300px"
                 tooltip="Choose file to be uploaded"
-                maximumFileSize='50' 
-                fileType="pdf, docs, xlsx"
+                maximumFileSize='50'
                 class="sapUiTinyMarginBottom" 
                  change=".onFileChange"
                 buttonText="Browse" />

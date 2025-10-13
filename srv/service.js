@@ -55,7 +55,8 @@ this.before('READ', 'ConfigStore', (req) => {
     'Workzone_EFDNA_Type_Treasury_Capital',
     'Workzone_EFDNA_Type_Treasury_Liquidity',
     'Workzone_EFDNA_Type_Employee',
-    'Workzone_EFDNA_Type_Treasury_Practitioners'
+    'Workzone_EFDNA_Type_Treasury_Practitioners',
+    'Workzone_EFDNA_Type_Earnings_Practitioners'
   ];
 
  
@@ -123,9 +124,13 @@ this.on('READ', 'Banks', async (req) => {
     if (!oneFile?.content) {
       return req.reject(404, 'File content not found.');
     }
-  await UPDATE(Content, ID).with({
-              status: "PROCESSING"
-            });
+
+    cds.tx (async ()=>{
+      await UPDATE(Content, ID).with({
+        status: "PROCESSING"
+      });
+    })
+  
   
    // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
     if (oneFile.fileType === "Meta Data") {

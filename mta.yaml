@@ -11,9 +11,9 @@ modules:
       - name: genaicontentingestion-db
       - name: genaicontentingestion-destination-service
     provides:
-      - name: srv-api
-        properties:
-          srv-url: ${default-url}
+    - name: srv-api
+      properties:
+        srv-url: ${default-url}
     parameters:
       buildpack: nodejs_buildpack
       instances: 1
@@ -102,11 +102,20 @@ resources:
                 ProxyType: Internet
                 Type: HTTP
                 URL: https://ui5.sap.com
+              - Authentication: NoAuthentication
+                HTML5.DynamicDestination: true
+                HTML5.ForwardAuthToken: true
+                Name: Gen-AIContent-Ingestion-Srv
+                ProxyType: Internet
+                Type: HTTP
+                URL: ~{srv-api/srv-url}
             existing_destinations_policy: update
         version: 1.0.0
       service: destination
       service-name: genaicontentingestion-destination-service
       service-plan: lite
+    requires:
+    - name: srv-api
   - name: genaicontentingestion_html_repo_host
     type: org.cloudfoundry.managed-service
     parameters:
