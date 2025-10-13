@@ -133,7 +133,7 @@ this.on('READ', 'Banks', async (req) => {
   
   
    // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
-    if (oneFile.fileType === "Meta Data") {
+    if (oneFile.fileType === "Standard Account Line Mapping") {
       //parse the xlsx file and update the metadatatable, first row is header
       const xlsx = require("xlsx");
       const workbook = xlsx.read(buffer, { type: "buffer" });
@@ -174,7 +174,7 @@ this.on('READ', 'Banks', async (req) => {
             
           }
           else
-            throw new Error(`Embedding API failed with status ${responseFileUpload.status}`)
+            throw new Error(`Embedding API failed with status ${responseEmbeddings.status}`)
         
       
     } 
@@ -229,6 +229,7 @@ this.on('READ', 'Banks', async (req) => {
 
  this.on("deleteContent", "Content",async (req) => {
     const { ID } = req.params[0];
+    console.log("delete content .... ");
     try {
       const file = await cds.run(
         SELECT.one.from(Content).where({ ID: ID })
@@ -238,6 +239,8 @@ this.on('READ', 'Banks', async (req) => {
       //if checker can delete any file
       const ownFiles = file.createdBy === req.user.id; // only owner can delete its own file
       const fileName = file.fileName;
+      const use_case = file.UseCase?.toLowerCase();
+      
 
     //  if (!ownFiles) {
     //    req.reject(400, 'You cannot delete files that are not created by you');
@@ -246,13 +249,15 @@ this.on('READ', 'Banks', async (req) => {
       const response = await executeHttpRequest(
         { destinationName: 'GenAIContentIngestionBackend' },
         {
-          method: 'POST',
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/json'
           },
-          url: '/api/delete-files',
-          data: { "filename": fileName }
-        }
+          url: '/api/delete',
+          params: { use_case : use_case  },
+          data: { document_id: ID }
+        },
+        { fetchCsrfToken: false }
       );
       if (!response.data.success) {
         req.reject(response.data.message);
@@ -262,7 +267,9 @@ this.on('READ', 'Banks', async (req) => {
       req.info(response.data.message);
       return { ID };
     } catch (error) {
-      console.log("Error in delete files API: " + error);
+     
+      console.log("Error in delete files API: " + error.response.data?.description);
+      return req.reject(400, `Errori n delete files API: ${error.response.data?.description}`);
     }
   });
 
@@ -285,11 +292,7 @@ this.on('READ', 'Banks', async (req) => {
     const existingBankIDs = response.data.value.map(bank => bank.code);
     const allExist = bankIDs.every(id => existingBankIDs.includes(id));
     return allExist;
-  }
-
-
-
-
-
+  
+});
 
 });

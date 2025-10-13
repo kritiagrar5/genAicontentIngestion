@@ -25,9 +25,11 @@ service CatalogService {
 entity ConfigStore as
     select from schema.ConfigStore {
       *,
-
     }
-
+entity MetaData as
+    select from schema.MetaData {
+      *,
+    }
   entity Content          as
     select from schema.Content {
       *,

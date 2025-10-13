@@ -374,7 +374,7 @@ sap.ui.define(
 
             const chatUrl = baseUrl + "/api/upload?use_case=" + use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
-            if (ofileType === "Meta Data") {
+            if (ofileType === "Standard Account Line Mapping") {
               const isValid = await this._validateFile(oFile);
 
               if (!isValid) {

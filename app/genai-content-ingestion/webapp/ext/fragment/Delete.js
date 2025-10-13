@@ -31,14 +31,14 @@ sap.ui.define([
                             });
                             const token = response.headers.get("X-CSRF-Token");
                             if (!token) {
-                       //         throw new Error("Failed to fetch CSRF token");
+                                throw new Error("Failed to fetch CSRF token");
                             }
 
                             const resContent = await fetch(deleteUrl, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
-                        //            "X-CSRF-Token": token
+                                    "X-CSRF-Token": token
                                 },
                                 credentials: "include",
                             });
