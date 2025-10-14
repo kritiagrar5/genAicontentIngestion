@@ -237,12 +237,11 @@ this.on('READ', 'Banks', async (req) => {
 
  this.on("deleteContent", "Content",async (req) => {
     const { ID } = req.params[0];
-    console.log("delete content .... ");
-    try {
+       
       const file = await cds.run(
         SELECT.one.from(Content).where({ ID: ID })
       );
-      console.log("delete content .... " + file);
+      console.log("delete content .... " + file.fileName);
       //check the role - if maker -> createdby and logged in user should be Same
       //if checker can delete any file
       const ownFiles = file.createdBy === req.user.id; // only owner can delete its own file
@@ -253,7 +252,12 @@ this.on('READ', 'Banks', async (req) => {
     //  if (!ownFiles) {
     //    req.reject(400, 'You cannot delete files that are not created by you');
    //   }
-
+   if(file.status != "COMPLETED")
+{
+ await DELETE.from(Content).where({ ID: ID });
+}
+else{
+   try {
       const response = await executeHttpRequest(
         { destinationName: 'GenAIContentIngestionBackend' },
         {
@@ -267,18 +271,16 @@ this.on('READ', 'Banks', async (req) => {
         },
         { fetchCsrfToken: false }
       );
-      if (!response.data.success) {
-        req.reject(response.data.message);
-      }
+    
       await DELETE.from(Content).where({ ID: ID });
-      // const table = await SELECT.from(Content);
-      req.info(response.data.message);
+    
+      req.info(response);
       return { ID };
     } catch (error) {
      
-      console.log("Error in delete files API: " + error.response.data?.description);
-      return req.reject(400, `Errori n delete files API: ${error.response.data?.description}`);
-    }
+      console.log("Error in delete files API: " + error);
+      
+    }}
   });
 
   this.on("checkBanks", async (req) => {
