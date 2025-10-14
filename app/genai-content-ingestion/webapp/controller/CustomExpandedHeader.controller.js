@@ -327,14 +327,15 @@ sap.ui.define(
         _checkBankIDExists: async function (bankIDs) {
           const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
           const csrf = await this.onfetchCSRF(baseUrl);
-          const bankUrl = baseUrl + "/odata/v4/catalog/checkBanks?codes=" + bankIDs.map(id => `${id}`).join(",");
+          const bankUrl = baseUrl + "/odata/v4/catalog/checkBanks";
           const response = await fetch(bankUrl, {
-            method: "GET",
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
               "X-CSRF-Token": csrf
             },
             credentials: "include",
+            body: JSON.stringify({ bankIDs: bankIDs })
           });
           const res = await response.json();
           return res.value;

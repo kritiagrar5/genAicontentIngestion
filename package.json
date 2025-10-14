@@ -76,9 +76,7 @@
         "[production]": {
           "kind": "hana-cloud"
         },
-        "[development]": {
-          "kind": "hana-cloud"
-        },
+        "[development]": {},
         "model": [
           "db",
           "srv"
