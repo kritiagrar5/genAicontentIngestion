@@ -19,9 +19,12 @@ module.exports = cds.service.impl(async function () {
     const checkerRole = `${usecase}_ContentChecker`;
     const makerRole = `${usecase}_ContentMaker`;
 
-    each.canApprove = userRoles[checkerRole] === 1;
-    each.canDelete = userRoles[makerRole] === 1;
-    each.isChecker = userRoles[checkerRole] === 1;
+  //  each.canApprove = userRoles[checkerRole] === 1;
+  //  each.canDelete = userRoles[makerRole] === 1;
+  //  each.isChecker = userRoles[checkerRole] === 1;
+    each.canApprove = true;
+    each.canDelete = true;
+    each.isChecker = true;
 
 
   });
