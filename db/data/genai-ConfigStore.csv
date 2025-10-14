@@ -1,0 +1,8 @@
+ID,team,roles,usecase,fileType
+1,Capital,Workzone_EFDNA_Type_Treasury_Capital,Treasury,Content
+2,Liquidity,Workzone_EFDNA_Type_Treasury_Liquidity,Treasury,Content
+3,IRRBB,Workzone_EFDNA_Type_Treasury_IRRBB,Treasury,Content
+4,Treasury,Workzone_EFDNA_Type_Employee,Treasury,Content
+5,Treasury Practitioners,Workzone_EFDNA_GenAI_Treasury_Practitioners,Treasury,Data Dictionary
+6,Viewer,Workzone_EFDNA_Type_Employee,Peer-Analysis,Content
+7,Peer Analysis Practitioners,Workzone_EFDNA_GenAI_Earnings_Practitioners,Peer-Analysis,Standard Account Line Mapping

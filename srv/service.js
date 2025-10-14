@@ -59,8 +59,8 @@ this.before('READ', 'ConfigStore', (req) => {
     'Workzone_EFDNA_Type_Treasury_Capital',
     'Workzone_EFDNA_Type_Treasury_Liquidity',
     'Workzone_EFDNA_Type_Employee',
-    'Workzone_EFDNA_Type_Treasury_Practitioners',
-    'Workzone_EFDNA_Type_Earnings_Practitioners'
+    'Workzone_EFDNA_GenAI_Treasury_Practitioners',
+    'Workzone_EFDNA_GenAI_Earnings_Practitioners'
   ];
 
  
@@ -112,7 +112,7 @@ this.on('READ', 'Banks', async (req) => {
 } catch (err) {
   console.error('Failed to get destination:', err.message);
 }
-    const destination = await getDestination({ destinationName: 'GenAIContentIngestionBackend' });
+    
     const oneFile = await SELECT.one
       .from(Content)
       .columns('ID','fileName', 'mediaType', 'content', 'createdBy','fileType','UseCase')
