@@ -310,20 +310,19 @@ sap.ui.define(
           });
           try {
             await readFilePromise;
-            isValid = true;
-          } catch (error) {
-            isValid = false;
-          }
-          this._checkBankIDExists(dataRows.map(r => r[0])).then(exists => {
-            if (!exists) {
-              MessageBox.error("One or more Bank IDs do not exist in the system.");
+            this._checkBankIDExists(dataRows.map(r => r[0])).then(exists => {
+              if (!exists) {
+                  MessageBox.error("One or more Bank IDs do not exist in the system.");
+                  isValid = false;
+                }
+              }).catch(err => {
+                console.error("Error checking Bank IDs:", err);
+                isValid = false;
+              });
+            } catch (error) {
               isValid = false;
             }
-          }).catch(err => {
-            console.error("Error checking Bank IDs:", err);
-            isValid = false;
-          });
-          return isValid;
+            return isValid;
         },
         _checkBankIDExists: async function (bankIDs) {
           const baseUrl = sap.ui.require.toUrl('genaicontentingestion');

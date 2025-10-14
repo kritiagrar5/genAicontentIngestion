@@ -58,13 +58,11 @@ entity MetaData as
       @Common.IsActionCritical          : true
       action deleteContent()  returns Content;
 
-      action checkBanks(bankIDs: String) returns Boolean;
-
     };
 
  
 
   action createContent(initialData: String)             returns String;
-
+  action checkBanks(bankIDs: String) returns Boolean;
 
 }
