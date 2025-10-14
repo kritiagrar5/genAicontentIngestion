@@ -156,46 +156,48 @@ this.on('READ', 'Banks', async (req) => {
       for (const row of jsonData) {
         await INSERT.into("MetaData").columns(Object.keys(row)).values(Object.values(row));
       }
-    }
-    //Call API to create Embeddings
-    try {
-      
-          const responseEmbeddings = await axios.post(
-            `${destination.url}/api/generate-embeddings?use_case=${use_case}`,
-            { document_id: oneFile.ID },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${destination.authTokens?.[0]?.value}`
-              }
-            }
-          );
-         
-          console.log("Embeddings Response:", responseEmbeddings)
-          if (responseEmbeddings.data.success) {
-          
-            console.log("Embeddings generated successfully")
-
-            return await SELECT.one.from(Content).where({ ID });
-            
-          }
-          else
-            throw new Error(`Embedding API failed with status ${responseEmbeddings.status}`)
+    }else{
+      //Call API to create Embeddings
+      try {
         
+            const responseEmbeddings = await axios.post(
+              `${destination.url}/api/generate-embeddings?use_case=${use_case}`,
+              { document_id: oneFile.ID },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${destination.authTokens?.[0]?.value}`
+                }
+              }
+            );
+          
+            console.log("Embeddings Response:", responseEmbeddings)
+            if (responseEmbeddings.data.success) {
+            
+              console.log("Embeddings generated successfully")
+
+              return await SELECT.one.from(Content).where({ ID });
+              
+            }
+            else
+              throw new Error(`Embedding API failed with status ${responseEmbeddings.status}`)
+          
+        
+      } 
+      catch (error) 
+      {
+        console.log("Failed in getting embeddings due to: " +  error.response.data?.description);
+        return req.reject(400, `Embedding API failed: ${error.response.data?.description}`);
+        await UPDATE(Content, ID).with({
+                status: "SUBMITTED"
+              });
       
     } 
-    catch (error) 
-    {
-      console.log("Failed in getting embeddings due to: " +  error.response.data?.description);
-       return req.reject(400, `Embedding API failed: ${error.response.data?.description}`);
-       await UPDATE(Content, ID).with({
-              status: "SUBMITTED"
-            });
-    
-   } 
-    finally {
-      return await SELECT.one.from(Content).where({ ID });
+      finally {
+        return await SELECT.one.from(Content).where({ ID });
+      }
     }
+    
   });
   
 
