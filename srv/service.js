@@ -282,7 +282,8 @@ this.on('READ', 'Banks', async (req) => {
   });
 
   this.on("checkBanks", async (req) => {
-    const bankIDs = req.params[0].bankIDs.split(",");
+    const bankIDs = req.params[0].codes.split(",");
+    LOG.info("bank IDs: ", bankIDs);
     const response = await executeHttpRequest(
       { destinationName: 'earning-upload-v2-srv-api' },
       {

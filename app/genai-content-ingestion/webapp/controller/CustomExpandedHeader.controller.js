@@ -293,7 +293,7 @@ sap.ui.define(
               headers = jsonData[0];
               dataRows = jsonData.slice(1);
               if (
-                headers.length !== 4 ||
+                headers.length !== 3 ||
                 headers[0] !== "bankID" ||
                 headers[1] !== "stdMetric" ||
                 headers[2] !== "bankMetric"
@@ -310,7 +310,7 @@ sap.ui.define(
           });
           try {
             await readFilePromise;
-            this._checkBankIDExists(dataRows.map(r => r[0])).then(exists => {
+            await this._checkBankIDExists(dataRows.map(r => r[0])).then(exists => {
               if (!exists) {
                   MessageBox.error("One or more Bank IDs do not exist in the system.");
                   isValid = false;
