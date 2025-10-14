@@ -11,6 +11,7 @@ const { isOriginOptions } = require("@sap-cloud-sdk/http-client/dist/http-client
 
 module.exports = cds.service.impl(async function () {
   const { Content, AppSelection, ActionVisibility,FileType,ConfigStore } = this.entities;
+  const LOG = cds.log('CI');
 
   this.after("READ", "Content", (each, req) => {
     const userRoles = { Treasury_ContentChecker: 1, Treasury_ContentMaker: 1};
@@ -133,6 +134,7 @@ this.on('READ', 'Banks', async (req) => {
   
   
    // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
+   LOG.info('file type is: ',oneFile.fileType);
     if (oneFile.fileType === "Standard Account Line Mapping") {
       //parse the xlsx file and update the metadatatable, first row is header
       const xlsx = require("xlsx");
