@@ -138,11 +138,12 @@ this.on('READ', 'Banks', async (req) => {
     if (oneFile.fileType === "Standard Account Line Mapping") {
       //parse the xlsx file and update the metadatatable, first row is header
       const xlsx = require("xlsx");
+      const buffer = oneFile.content; 
       const workbook = xlsx.read(buffer, { type: "buffer" });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
-      console.log("Excel Data:", jsonData);
+      LOG.info("Excel Data:", jsonData);
 
       // remove the rows in MetaData table where bankID === bankID in the excel file
       const bankIDs = jsonData.map((row) => row.bankID);
@@ -291,6 +292,7 @@ this.on('READ', 'Banks', async (req) => {
         }
       }
     );
+    LOG.info('Banks fetched:', response.data);
     const existingBankIDs = response.data.value.map(bank => bank.code);
     const allExist = bankIDs.every(id => existingBankIDs.includes(id));
     return allExist;
