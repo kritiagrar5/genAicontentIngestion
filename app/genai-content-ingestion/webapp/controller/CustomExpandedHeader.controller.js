@@ -484,7 +484,8 @@ sap.ui.define(
                       status: "SUBMITTED",
                       metaData: JSON.stringify({ metadata }),
                       UseCase: UseCase,
-                      team: oteam
+                      team: oteam,
+                      fileType: ofileType
                     })
                   });
 
