@@ -341,14 +341,20 @@ this.on("downloadMetadata", async (req) => {
   const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
   const fileName = "MetaData.xlsx";
 
-  req.reply({
-    status: 200,
-    headers: {
-      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="${fileName}"`
-    },
-    body: buffer
-  });
+  if (req._.res) {
+    req._.res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    req._.res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${fileName}"`
+    );
+    req._.res.send(buffer);
+    return;
+  }
+  // Fallback for CAP v5
+  return buffer;
 });
 
 });
