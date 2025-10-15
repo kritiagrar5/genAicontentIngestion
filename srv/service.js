@@ -156,6 +156,7 @@ this.on('READ', 'Banks', async (req) => {
       
       // remove the rows in MetaData table where bankID === bankID in the excel file
       const bankIDs = [...new Set(dataRows.map((row) => row.bankID))];
+      console.log("Deleting rows with bankIDs:", bankIDs);
       await DELETE.from(MetaData).where({ bankID: bankIDs });
       //insert the rows in MetaData table
       for (const row of dataRows) {
