@@ -106,12 +106,7 @@ this.on('READ', 'Banks', async (req) => {
   this.on("approveContent", async (req) => {
     console.log("📥 Action called with:", req.params[0]);
     const ID = req.params[0].ID;
-    try {
   const destination = await getDestination({ destinationName: 'GenAIContentIngestionBackend' });
-  console.log('Destination fetched:', destination);
-} catch (err) {
-  console.error('Failed to get destination:', err.message);
-}
     
     const oneFile = await SELECT.one
       .from(Content)
@@ -192,7 +187,7 @@ this.on('READ', 'Banks', async (req) => {
             );
           
             console.log("Embeddings Response:", responseEmbeddings)
-            if (responseEmbeddings.data.success) {
+            if (responseEmbeddings.message) {
             
               console.log("Embeddings generated successfully")
 
@@ -200,9 +195,8 @@ this.on('READ', 'Banks', async (req) => {
               
             }
             else
-              throw new Error(`Embedding API failed with status ${responseEmbeddings.status}`)
-          
-        
+              throw new Error(`Embedding API failed with status ${responseEmbeddings.status}`)           
+                  
       } 
       catch (error) 
       {
@@ -257,7 +251,8 @@ this.on('READ', 'Banks', async (req) => {
 
  this.on("deleteContent", "Content",async (req) => {
     const { ID } = req.params[0];
-       
+    
+    
       const file = await cds.run(
         SELECT.one.from(Content).where({ ID: ID })
       );
@@ -267,8 +262,7 @@ this.on('READ', 'Banks', async (req) => {
       const ownFiles = file.createdBy === req.user.id; // only owner can delete its own file
       const fileName = file.fileName;
       const use_case = file.UseCase?.toLowerCase();
-      console.log("use_case:",use_case);
-      console.log("ID:",ID);
+      
 
     //  if (!ownFiles) {
     //    req.reject(400, 'You cannot delete files that are not created by you');
@@ -276,6 +270,7 @@ this.on('READ', 'Banks', async (req) => {
    if(file.status != "COMPLETED")
 {
  await DELETE.from(Content).where({ ID: ID });
+  return { ID };
 }
 else{
    try {
@@ -288,7 +283,8 @@ else{
           },
           url: '/api/delete',
           params: { use_case : use_case  },
-          data: { document_id: ID }
+         data: { document_id: ID }
+          
         },
         { fetchCsrfToken: false }
       );
@@ -301,7 +297,8 @@ else{
      
       console.log("Error in delete files API: " + error);
       
-    }}
+    }
+  }
   });
 
   this.on("checkBanks", async (req) => {
