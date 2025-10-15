@@ -332,4 +332,23 @@ else{
   
 });
 
+this.on("downloadMetadata", async (req) => {
+  const allMetaData = await SELECT.from(MetaData);
+  const xlsx = require("xlsx");
+  const worksheet = xlsx.utils.json_to_sheet(allMetaData);
+  const workbook = xlsx.utils.book_new();
+  xlsx.utils.book_append_sheet(workbook, worksheet, "MetaData");
+  const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+  const fileName = "MetaData.xlsx";
+
+  req.reply({
+    status: 200,
+    headers: {
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="${fileName}"`
+    },
+    body: buffer
+  });
+});
+
 });

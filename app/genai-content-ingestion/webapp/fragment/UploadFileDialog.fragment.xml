@@ -33,6 +33,10 @@
                       
                         <core:ListItem key="{ID}" text="{fileType}" />
                     </Select>
+                    <HBox>
+                        <Link text="Download latest metadata file " press=".onDownloadMetadata" />
+                        <Text text=" and edit it before uploading." />
+                    </HBox>
                 </VBox>
 
                 <!-- Team -->

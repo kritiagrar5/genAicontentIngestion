@@ -14,7 +14,9 @@ sap.ui.define(
       {
         override: {
           onInit: function () {
-            const oToolbar = sap.ui.getCore().byId("genaicontentingestion::ContentList--fe::DynamicPageTitle");
+            const oToolbar = sap.ui
+              .getCore()
+              .byId("genaicontentingestion::ContentList--fe::DynamicPageTitle");
 
             if (oToolbar) {
               oToolbar.setVisible(false);
@@ -22,7 +24,9 @@ sap.ui.define(
             const oModel = new sap.ui.model.json.JSONModel();
             this.getView().setModel(oModel, "viewModel");
 
-            var appModulePath = jQuery.sap.getModulePath("genaicontentingestion");
+            var appModulePath = jQuery.sap.getModulePath(
+              "genaicontentingestion"
+            );
 
             let oImageModel = new sap.ui.model.json.JSONModel({
               path: appModulePath,
@@ -33,19 +37,19 @@ sap.ui.define(
             this.getView().getModel("viewModel").setProperty("/useCase");
             this.getView().getModel("viewModel").setProperty("/destination");
             this.onAppSelection();
-
-          }
+          },
         },
         onfetchRoles: async function () {
-      
-          const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
+          const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const url = baseUrl + "/user-api/currentUser";
-          const usecase = this.getView().getModel("viewModel").getProperty("/usecase");
+          const usecase = this.getView()
+            .getModel("viewModel")
+            .getProperty("/usecase");
 
           try {
             const response = await fetch(url, {
               method: "GET",
-              headers: { "Content-Type": "application/json" }
+              headers: { "Content-Type": "application/json" },
             });
 
             if (!response.ok) {
@@ -56,8 +60,12 @@ sap.ui.define(
             const roles = data.scopes;
             const checkerRole = `${usecase}_ContentChecker`;
             const makerRole = `${usecase}_ContentMaker`;
-            const hasScopeForChecker = roles.some(role => role.includes(checkerRole));
-            const hasScopeForMaker = roles.some(role => role.includes(makerRole));
+            const hasScopeForChecker = roles.some((role) =>
+              role.includes(checkerRole)
+            );
+            const hasScopeForMaker = roles.some((role) =>
+              role.includes(makerRole)
+            );
 
             // Create a new authModel for this controller
             const authModel = new sap.ui.model.json.JSONModel({
@@ -65,20 +73,18 @@ sap.ui.define(
               // isMaker: hasScopeForMaker,
               isChecker: true,
               isMaker: true,
-              usecase: usecase
+              usecase: usecase,
             });
 
-            this.getView().setModel(authModel, "authModel");  // set the model with a named model
+            this.getView().setModel(authModel, "authModel"); // set the model with a named model
 
             console.log("Auth model created:", authModel.getData());
-
           } catch (error) {
             console.error("API Error:", error);
           }
         },
         onAppSelection: async function () {
-
-          const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
+          const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const csrf = await this.onfetchCSRF(baseUrl);
           const appUrl = baseUrl + "/odata/v4/catalog/AppSelection";
           const teamUrl = baseUrl + "/odata/v4/catalog/ConfigStore";
@@ -86,7 +92,7 @@ sap.ui.define(
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "X-CSRF-Token": csrf
+              "X-CSRF-Token": csrf,
             },
             credentials: "include",
           });
@@ -97,20 +103,19 @@ sap.ui.define(
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "X-CSRF-Token": csrf
+              "X-CSRF-Token": csrf,
             },
             credentials: "include",
           });
           const resTeam = await responseTeam.json();
-          const sKeyTeam = resTeam.value.map(r => r.team);
+          const sKeyTeam = resTeam.value.map((r) => r.team);
 
           const oTeamModel = new sap.ui.model.json.JSONModel({
-            selectedTeams: sKeyTeam
+            selectedTeams: sKeyTeam,
           });
           this.onfetchRoles();
           this.getView().setModel(oTeamModel, "teamModel");
           this.onFilterBarChange(sKey);
-
         },
         onTypeMismatch: function () {
           MessageBox.error("Only pdf, docx, xlsx files are allowed");
@@ -142,7 +147,10 @@ sap.ui.define(
           if (!oSelectedItem) return;
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/usecase", sKey);
-          const oContext = oEvent.getSource().getSelectedItem().getBindingContext();
+          const oContext = oEvent
+            .getSource()
+            .getSelectedItem()
+            .getBindingContext();
           this.onfetchRoles();
           this.onFilterBarChange(sKey);
         },
@@ -151,47 +159,48 @@ sap.ui.define(
           if (!oSelectedItem) return;
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/fileType", sKey);
-          const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+          const UseCase = this.getView()
+            .getModel("viewModel")
+            .getProperty("/usecase");
           const ft = sap.ui.core.Fragment.byId(
             this.getView().getId() + "--myUploadDialog",
             "teamSelect"
-          )
+          );
           const oBinding = ft.getBinding("items");
           if (oBinding) {
             oBinding.filter([
               new sap.ui.model.Filter("fileType", "EQ", sKey),
               new sap.ui.model.Filter("usecase", "EQ", UseCase),
-
             ]);
           }
-
         },
         onTeamChange: async function (oEvent) {
           const oSelectedItem = oEvent.getParameter("selectedItem");
           if (!oSelectedItem) return;
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/team", sKey);
-
         },
         onFilterBarChange: function (sKey) {
-          const oFilterBar = sap.ui.getCore().byId(
-            "genaicontentingestion::ContentList--fe::FilterBar::Content"
-          );
+          const oFilterBar = sap.ui
+            .getCore()
+            .byId("genaicontentingestion::ContentList--fe::FilterBar::Content");
           const oTeamModel = this.getView().getModel("teamModel");
           const aTeams = oTeamModel.getProperty("/selectedTeams");
           //  const sKeyt = "Treasury";
           //   const aTeams = ["Liquidity", "Capital"];
-          const aTeamConditions = aTeams.map(v => ({ operator: "Contains", values: [v] }));
+          const aTeamConditions = aTeams.map((v) => ({
+            operator: "Contains",
+            values: [v],
+          }));
           if (oFilterBar) {
-
             oFilterBar.setFilterConditions({
               UseCase: [
                 {
                   operator: "EQ",
-                  values: [sKey]
-                }
+                  values: [sKey],
+                },
               ],
-              team: aTeamConditions
+              team: aTeamConditions,
             });
 
             oFilterBar.triggerSearch();
@@ -204,8 +213,8 @@ sap.ui.define(
             method: "HEAD",
             credentials: "include",
             headers: {
-              "X-CSRF-Token": "Fetch"
-            }
+              "X-CSRF-Token": "Fetch",
+            },
           });
           const token = response.headers.get("X-CSRF-Token");
           if (!token) {
@@ -230,15 +239,13 @@ sap.ui.define(
             this._oResultDialog = Fragment.load({
               id: this.getView().getId() + "--myDialog",
               name: "genaicontentingestion.fragment.MyDialog",
-              controller: this
+              controller: this,
             }).then(function (oDialog) {
               that._oResultDialog = oDialog;
               that.getView().addDependent(oDialog);
               that._oResultDialog.open();
-
             });
-          }
-          else {
+          } else {
             that._oResultDialog.open();
           }
           return true;
@@ -255,18 +262,19 @@ sap.ui.define(
         onUploadPress: function () {
           MessageToast.show("Upload pressed!");
 
-          const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+          const UseCase = this.getView()
+            .getModel("viewModel")
+            .getProperty("/usecase");
           var that = this;
           Fragment.load({
             id: this.getView().getId() + "--myUploadDialog",
             name: "genaicontentingestion.fragment.UploadFileDialog",
-            controller: this
-          }).then(oDialog => {
+            controller: this,
+          }).then((oDialog) => {
             this._oDialog = oDialog;
             this.getView().addDependent(oDialog);
             oDialog.open();
           });
-
         },
         onCancelUpload: function () {
           if (this._oDialog) {
@@ -274,12 +282,12 @@ sap.ui.define(
             this._oDialog = null;
           }
         },
-         _validateFile: async function (file) {
+        _validateFile: async function (file) {
           //read the excel file and check the columns sequence
           const fileReader = new FileReader();
           const oFile = file;
           let isValid = false;
-          let headers,dataRows;
+          let headers, dataRows;
           const readFilePromise = new Promise((resolve, reject) => {
             fileReader.onload = async (e) => {
               const arrayBuffer = e.target.result;
@@ -298,11 +306,9 @@ sap.ui.define(
                 headers[1] !== "stdMetric" ||
                 headers[2] !== "bankMetric"
               ) {
-                MessageBox.error(
-                  "Invalid Template Format."
-                );
+                MessageBox.error("Invalid Template Format.");
                 reject("Invalid Header");
-              }else {
+              } else {
                 resolve("Valid Header");
               }
             };
@@ -320,13 +326,13 @@ sap.ui.define(
             //     console.error("Error checking Bank IDs:", err);
             //     isValid = false;
             //   });
-            } catch (error) {
-              isValid = false;
-            }
-            return isValid;
+          } catch (error) {
+            isValid = false;
+          }
+          return isValid;
         },
         _checkBankIDExists: async function (bankIDs) {
-          const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
+          const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const csrf = await this.onfetchCSRF(baseUrl);
           const bankUrl = baseUrl + "/odata/v4/catalog/checkBanks";
           // Join the array into a comma-separated string
@@ -335,33 +341,38 @@ sap.ui.define(
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-CSRF-Token": csrf
+              "X-CSRF-Token": csrf,
             },
             credentials: "include",
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
           });
           const res = await response.json();
           return res.value; // or res as needed
         },
         onConfirmUpload: async function (oEvent) {
           try {
-
             var that = this;
             BusyIndicator.show(0);
 
-            const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+            const UseCase = this.getView()
+              .getModel("viewModel")
+              .getProperty("/usecase");
             if (!UseCase) {
               sap.m.MessageToast.show("Please Select the UseCase ");
               return;
             }
 
             const use_case = UseCase.toLowerCase();
-            var oteam = this.getView().getModel("viewModel").getProperty("/team");
+            var oteam = this.getView()
+              .getModel("viewModel")
+              .getProperty("/team");
             if (!oteam) {
               sap.m.MessageToast.show("Please Select the Team ");
               return;
             }
-            var ofileType = this.getView().getModel("viewModel").getProperty("/fileType");
+            var ofileType = this.getView()
+              .getModel("viewModel")
+              .getProperty("/fileType");
             if (!ofileType) {
               sap.m.MessageToast.show("Please Select the FileType ");
               return;
@@ -373,7 +384,7 @@ sap.ui.define(
               "__fileUploader"
             );
             const oFile = oFileUploader.getDomRef("fu").files[0];
-            const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
+            const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
 
             const chatUrl = baseUrl + "/api/upload?use_case=" + use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
@@ -390,7 +401,6 @@ sap.ui.define(
             let formData = new FormData();
             formData.append("file", oFile);
 
-
             if (!oFile) {
               sap.m.MessageToast.show("Please select a file to upload.");
               return;
@@ -402,54 +412,49 @@ sap.ui.define(
               method: "GET",
               headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-Token": csrf
+                "X-CSRF-Token": csrf,
               },
               credentials: "include",
             });
             const dupl = await resDuplicate.json();
             var flag;
             if (dupl.value && dupl.value.length > 0) {
-              dupl.value.forEach(async record => {
+              dupl.value.forEach(async (record) => {
                 if (record.ID == fileHash) {
                   flag = true;
                   if (record.team.includes(oteam) == 1) {
                     MessageBox.error(`File already exists!`);
                     oFileUploader.setValueState("None");
-
-                  }
-                  else {
+                  } else {
                     const newteam = record.team + "," + oteam;
-                    const putteamUrl = baseUrl + "/odata/v4/catalog/Content/" + fileHash;
+                    const putteamUrl =
+                      baseUrl + "/odata/v4/catalog/Content/" + fileHash;
                     const res = await fetch(putteamUrl, {
                       method: "PATCH",
                       headers: {
                         "Content-Type": "application/json",
-                        "X-CSRF-Token": csrf
+                        "X-CSRF-Token": csrf,
                       },
                       credentials: "include",
                       body: JSON.stringify({
-                        team: newteam
-                      })
+                        team: newteam,
+                      }),
                     });
-
                   }
-
                 }
-              })
+              });
               if (flag) {
                 this.onCancelUpload();
                 return;
               }
-
             }
-
 
             const responseAPI = await fetch(chatUrl, {
               method: "POST",
               headers: {
                 "X-CSRF-Token": csrf,
               },
-              body: formData
+              body: formData,
             });
             if (!responseAPI.ok) {
               const res = await responseAPI.json();
@@ -460,12 +465,17 @@ sap.ui.define(
             sap.m.MessageToast.show("opening dialog box");
             const dialog = await this.onOpenDialog(json);
             const decision = json.metadata.processing_decision;
-            this.getView().getModel("viewModel").setProperty("/decision", decision)
+            this.getView()
+              .getModel("viewModel")
+              .setProperty("/decision", decision);
             if (dialog) {
-              if (decision == "REJECTED")
-                return;
+              if (decision == "REJECTED") return;
               else {
-                const putUrl = baseUrl + "/odata/v4/catalog/Content/" + fileHash + "/content";
+                const putUrl =
+                  baseUrl +
+                  "/odata/v4/catalog/Content/" +
+                  fileHash +
+                  "/content";
 
                 const metadata = json.metadata;
 
@@ -477,47 +487,47 @@ sap.ui.define(
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
-                      "X-CSRF-Token": csrf
+                      "X-CSRF-Token": csrf,
                     },
                     credentials: "include",
                     body: JSON.stringify({
-                      "ID": `${fileHash}`,
+                      ID: `${fileHash}`,
                       fileName: oFile.name,
-                      "url": putUrl,
+                      url: putUrl,
                       status: "SUBMITTED",
                       metaData: JSON.stringify({ metadata }),
                       UseCase: UseCase,
                       team: oteam,
-                      fileType: ofileType
-                    })
+                      fileType: ofileType,
+                    }),
                   });
 
                   if (!response.ok) {
                     if (response.status === 400) {
                       sap.m.MessageToast.show("400-Bad Request");
-                      return
+                      return;
                     } else {
-                      throw new Error(`Entity creation failed: ${response.status}`);
+                      throw new Error(
+                        `Entity creation failed: ${response.status}`
+                      );
                     }
                   }
 
                   const oExtModel = this.base.getExtensionAPI().getModel();
                   var fileType;
-                  if (oFile.type.includes("pdf"))
-                    fileType = 'PDF'
+                  if (oFile.type.includes("pdf")) fileType = "PDF";
                   else if (oFile.type.includes("spreadsheet"))
-                    fileType = 'Excel'
-                  else
-                    fileType = 'Document/Word'
+                    fileType = "Excel";
+                  else fileType = "Document/Word";
                   await fetch(putUrl, {
                     method: "PUT",
                     headers: {
                       "Content-Type": oFile.type,
-                      "Slug": encodeURIComponent(oFile.name),
-                      "X-CSRF-Token": csrf
+                      Slug: encodeURIComponent(oFile.name),
+                      "X-CSRF-Token": csrf,
                     },
                     credentials: "include",
-                    body: oFile
+                    body: oFile,
                   });
                   oExtModel.refresh();
                   oFileUploader.setValue("");
@@ -526,7 +536,6 @@ sap.ui.define(
                 }
               }
             }
-
           } catch (error) {
             console.error(error);
             MessageBox.error("fileUploadError", {
@@ -538,6 +547,31 @@ sap.ui.define(
             oExtModel.refresh();
           }
         },
+        onDownloadMetadata: async function () {
+          const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
+          const downloadUrl = baseUrl + "/odata/v4/catalog/Content/downloadMetadata";
+          const csrf = await this.onfetchCSRF(baseUrl);
+          const responseAPI = await fetch(downloadUrl, {
+            method: "POST",
+            headers: {
+              "X-CSRF-Token": csrf,
+            }
+          });
+          if (!responseAPI.ok) {
+            const res = await responseAPI.json();
+            sap.m.MessageToast.show(res.message);
+            return;
+          }
+          const blob = await responseAPI.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'metadata.xlsx';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+        }
       }
     );
   }
