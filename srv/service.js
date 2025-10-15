@@ -137,20 +137,25 @@ this.on('READ', 'Banks', async (req) => {
   
   
    // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
-   LOG.info('file type is: ',oneFile.fileType);
+   console.log('file type is: ',oneFile.fileType);
+   console.log('file content is: ',oneFile.content);
     if (oneFile.fileType === "Standard Account Line Mapping") {
       //parse the xlsx file and update the metadatatable, first row is header
       const xlsx = require("xlsx");
-      const buffer = oneFile.content; 
+      const buffer = oneFile.content;
+      console.log('file content is Buffer:',Buffer.isBuffer(oneFile.content));
       const workbook = xlsx.read(buffer, { type: "buffer" });
+      console.log('workbook is: ',workbook);
       const sheetName = workbook.SheetNames[0];
+      console.log('sheetNames is: ',workbook.SheetNames);
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
-      LOG.info("Excel Data:", jsonData);
+      console.log('worksheet is: ',worksheet);
+      const jsonData = xlsx.utils.sheet_to_json(worksheet, {header:1});
+      console.log("Excel Data:", jsonData);
 
       // remove the rows in MetaData table where bankID === bankID in the excel file
       const bankIDs = jsonData.map((row) => row.bankID);
-      await DELETE.from("MetaData").where({ BankID: bankIDs });
+      await DELETE.from("MetaData").where({ bankID: bankIDs });
       
       //insert the rows in MetaData table
       for (const row of jsonData) {

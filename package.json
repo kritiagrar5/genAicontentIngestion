@@ -18,7 +18,8 @@
     "@sap/xssec": "^4.9.1",
     "express": "^4",
     "hdb": "^2.25.1",
-    "sap-cf-axios": "^1.0.2"
+    "sap-cf-axios": "^1.0.2",
+    "xlsx": "^0.18.5"
   },
   "engines": {
     "node": ">=20"
@@ -34,7 +35,6 @@
   },
   "scripts": {
     "start": "cds-serve",
- 
     "undeploy": "cf undeploy genaicontentingestion --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
