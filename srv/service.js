@@ -10,7 +10,7 @@ const fetch = require("node-fetch");
 const { isOriginOptions } = require("@sap-cloud-sdk/http-client/dist/http-client-types");
 
 module.exports = cds.service.impl(async function () {
-  const { Content, AppSelection, ActionVisibility,FileType,ConfigStore } = this.entities;
+  const { Content, MetaData, AppSelection, ActionVisibility,FileType,ConfigStore } = this.entities;
   const LOG = cds.log('CI');
 
   this.after("READ", "Content", (each, req) => {
@@ -156,14 +156,25 @@ this.on('READ', 'Banks', async (req) => {
       console.log('worksheet is: ',worksheet);
       const jsonData = xlsx.utils.sheet_to_json(worksheet, {header:1});
       console.log("Excel Data:", jsonData);
-
+      const dataRows = jsonData.slice(1);
+      const headers = jsonData[0];
+      
       // remove the rows in MetaData table where bankID === bankID in the excel file
-      const bankIDs = jsonData.map((row) => row.bankID);
-      await DELETE.from("MetaData").where({ bankID: bankIDs });
+      const bankIDs = [...new Set(dataRows.map((row) => row.bankID))];
+      await DELETE.from(MetaData).where({ bankID: bankIDs });
       
       //insert the rows in MetaData table
-      for (const row of jsonData) {
-        await INSERT.into("MetaData").columns(Object.keys(row)).values(Object.values(row));
+      for (const row of dataRows) {
+        const rowData = {};
+        headers.forEach((header, index) => {
+          rowData[header] = row[index];
+        });
+        console.log('Inserting row:', rowData);
+        try {
+          await INSERT.into(MetaData).entries(rowData);
+        } catch (err) {
+          console.error('Error inserting row:', err);
+        }
       }
     }else{
       //Call API to create Embeddings
