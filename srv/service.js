@@ -286,20 +286,20 @@ else{
 
   this.on("checkBanks", async (req) => {
     console.log("checkBanks", req);
-    const bankIDs = req.data.bankIDs;
-    LOG.info("bank IDs: ", bankIDs);
+    const bankIDsString = req.data.bankIDs;
+    LOG.info("bank IDs: ", bankIDsString);
     const response = await executeHttpRequest(
-      { destinationName: 'earning-upload-v2-srv-api' },
+      { destinationName: "earning-upload-v2-srv-api" },
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        url: '/v2/odata/v4/earning-upload-srv/Banks',
+        url: "/v2/odata/v4/earning-upload-srv/Banks",
         params: {
-          '$filter': `code in ('${bankIDs}')`,
-          '$select': 'code'
-        }
+          $filter: `code in ('${bankIDsString.split(',').map(id => id.trim()).join("','")}')`,
+          $select: "code",
+        },
       }
     );
     LOG.info('Banks fetched:', response.data);

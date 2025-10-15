@@ -328,6 +328,8 @@ sap.ui.define(
           const baseUrl = sap.ui.require.toUrl('genaicontentingestion');
           const csrf = await this.onfetchCSRF(baseUrl);
           const bankUrl = baseUrl + "/odata/v4/catalog/checkBanks";
+          // Join the array into a comma-separated string
+          const payload = { bankIDs: bankIDs.join(",") };
           const response = await fetch(bankUrl, {
             method: "POST",
             headers: {
@@ -335,10 +337,10 @@ sap.ui.define(
               "X-CSRF-Token": csrf
             },
             credentials: "include",
-            body: bankIDs.join(",")
+            body: JSON.stringify(payload)
           });
           const res = await response.json();
-          return res.value;
+          return res.value; // or res as needed
         },
         onConfirmUpload: async function (oEvent) {
           try {
