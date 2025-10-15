@@ -157,13 +157,13 @@ this.on('READ', 'Banks', async (req) => {
       // remove the rows in MetaData table where bankID === bankID in the excel file
       const bankIDs = [...new Set(dataRows.map((row) => row.bankID))];
       await DELETE.from(MetaData).where({ bankID: bankIDs });
-      
       //insert the rows in MetaData table
       for (const row of dataRows) {
         const rowData = {};
         headers.forEach((header, index) => {
           rowData[header] = row[index];
         });
+        rowData["userID"] = oneFile.createdBy;
         console.log('Inserting row:', rowData);
         try {
           await INSERT.into(MetaData).entries(rowData);
@@ -171,6 +171,12 @@ this.on('READ', 'Banks', async (req) => {
           console.error('Error inserting row:', err);
         }
       }
+      cds.tx (async ()=>{
+        await UPDATE(Content, ID).with({
+          status: "COMPLETED"
+        });
+      })
+      return await SELECT.one.from(Content).where({ ID });
     }else{
       //Call API to create Embeddings
       try {
