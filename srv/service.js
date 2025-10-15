@@ -248,7 +248,8 @@ this.on('READ', 'Banks', async (req) => {
       const ownFiles = file.createdBy === req.user.id; // only owner can delete its own file
       const fileName = file.fileName;
       const use_case = file.UseCase?.toLowerCase();
-      
+      console.log("use_case:",use_case);
+      console.log("ID:",ID);
 
     //  if (!ownFiles) {
     //    req.reject(400, 'You cannot delete files that are not created by you');
@@ -276,13 +277,14 @@ this.on('READ', 'Banks', async (req) => {
       return { ID };
     } catch (error) {
      
-      console.log("Error in delete files API: " + error.response.data?.description);
-      return req.reject(400, `Errori n delete files API: ${error.response.data?.description}`);
+      console.log("Error in delete files API: " + error);
+      return req.reject(400, `Errori n delete files API: ${error}`);
     }
   });
 
   this.on("checkBanks", async (req) => {
-    const bankIDs = req.data.bankIDs.split(',').map(id => id.trim());
+    console.log("checkBanks", req);
+    const bankIDs = req.data.bankIDs;
     LOG.info("bank IDs: ", bankIDs);
     const response = await executeHttpRequest(
       { destinationName: 'earning-upload-v2-srv-api' },
@@ -293,7 +295,7 @@ this.on('READ', 'Banks', async (req) => {
         },
         url: '/v2/odata/v4/earning-upload-srv/Banks',
         params: {
-          '$filter': `code in ('${bankIDs.join("','")}')`,
+          '$filter': `code in ('${bankIDs}')`,
           '$select': 'code'
         }
       }
