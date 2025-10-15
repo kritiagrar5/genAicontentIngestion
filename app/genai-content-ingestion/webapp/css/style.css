@@ -1,54 +1,54 @@
 @font-face {
-    font-display: block;
-    font-family: SCProsperSans;
-    font-style: normal;
-    font-weight: 400;
-    src: url(../fonts/SCProsperSans-Light.woff2) format("woff2"),url(../fonts/SCProsperSans-Light.ttf) format("truetype")
+  font-display: block;
+  font-family: SCProsperSans;
+  font-style: normal;
+  font-weight: 400;
+  src: url(../fonts/SCProsperSans-Light.woff2) format("woff2"), url(../fonts/SCProsperSans-Light.ttf) format("truetype")
 }
 
 @font-face {
-    font-display: block;
-    font-family: SCProsperSansLight;
-    font-style: normal;
-    src: url(../fonts/SCProsperSans-Light.woff2) format("woff2"),url(../fonts/SCProsperSans-Light.ttf) format("truetype")
+  font-display: block;
+  font-family: SCProsperSansLight;
+  font-style: normal;
+  src: url(../fonts/SCProsperSans-Light.woff2) format("woff2"), url(../fonts/SCProsperSans-Light.ttf) format("truetype")
 }
 
 @font-face {
-    font-display: block;
-    font-family: SCProsperSans;
-    font-style: normal;
-    font-weight: 500;
-    src: url(../fonts/SCProsperSans-Regular.woff2) format("woff2"),url(../fonts/SCProsperSans-Regular.ttf) format("truetype")
+  font-display: block;
+  font-family: SCProsperSans;
+  font-style: normal;
+  font-weight: 500;
+  src: url(../fonts/SCProsperSans-Regular.woff2) format("woff2"), url(../fonts/SCProsperSans-Regular.ttf) format("truetype")
 }
 
 @font-face {
-    font-display: block;
-    font-family: SCProsperSans;
-    font-style: normal;
-    font-weight: 600;
-    src: url(../fonts/SCProsperSans-Medium.woff2) format("woff2"),url(../fonts/SCProsperSans-Medium.ttf) format("truetype")
+  font-display: block;
+  font-family: SCProsperSans;
+  font-style: normal;
+  font-weight: 600;
+  src: url(../fonts/SCProsperSans-Medium.woff2) format("woff2"), url(../fonts/SCProsperSans-Medium.ttf) format("truetype")
 }
 
 @font-face {
-    font-display: block;
-    font-family: SCProsperSansMedium;
-    font-style: normal;
-    src: url(../fonts/SCProsperSans-Medium.woff2) format("woff2"),url(../fonts/SCProsperSans-Medium.ttf) format("truetype")
+  font-display: block;
+  font-family: SCProsperSansMedium;
+  font-style: normal;
+  src: url(../fonts/SCProsperSans-Medium.woff2) format("woff2"), url(../fonts/SCProsperSans-Medium.ttf) format("truetype")
 }
 
 @font-face {
-    font-display: block;
-    font-family: SCProsperSans;
-    font-style: normal;
-    font-weight: 700;
-    src: url(../fonts/SCProsperSans-Bold.woff2) format("woff2"),url(../fonts/SCProsperSans-Bold.ttf) format("truetype")
+  font-display: block;
+  font-family: SCProsperSans;
+  font-style: normal;
+  font-weight: 700;
+  src: url(../fonts/SCProsperSans-Bold.woff2) format("woff2"), url(../fonts/SCProsperSans-Bold.ttf) format("truetype")
 }
 
 @font-face {
-    font-display: block;
-    font-family: SCProsperSansBold;
-    font-style: normal;
-    src: url(../fonts/SCProsperSans-Bold.woff2) format("woff2"),url(../fonts/SCProsperSans-Bold.ttf) format("truetype")
+  font-display: block;
+  font-family: SCProsperSansBold;
+  font-style: normal;
+  src: url(../fonts/SCProsperSans-Bold.woff2) format("woff2"), url(../fonts/SCProsperSans-Bold.ttf) format("truetype")
 }
 
 body {
@@ -91,7 +91,9 @@ body {
 
 }
 
-
+.fontBold{
+  font-weight: bold;
+}
 .sapUiBody,
 .sapUiArea,
 .sapUiCoreDefaultFont,

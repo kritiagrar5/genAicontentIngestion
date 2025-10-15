@@ -555,11 +555,17 @@ sap.ui.define(
             method: "POST",
             headers: {
               "X-CSRF-Token": csrf,
+              "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             }
           });
           if (!responseAPI.ok) {
-            const res = await responseAPI.json();
-            sap.m.MessageToast.show(res.message);
+            let res;
+            try {
+              res = await responseAPI.json();
+              sap.m.MessageToast.show(res.message);
+            } catch (e) {
+              sap.m.MessageToast.show("Download failed.");
+            }
             return;
           }
           const blob = await responseAPI.blob();
