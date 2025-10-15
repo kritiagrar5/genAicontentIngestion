@@ -335,7 +335,7 @@ sap.ui.define(
               "X-CSRF-Token": csrf
             },
             credentials: "include",
-            body: JSON.stringify({ bankIDs: bankIDs })
+            body: bankIDs.join(",")
           });
           const res = await response.json();
           return res.value;
