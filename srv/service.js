@@ -139,14 +139,15 @@ this.on('READ', 'Banks', async (req) => {
    // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
    console.log('file type is: ',oneFile.fileType);
    console.log('file content is: ',oneFile.content);
+  console.log("typeof oneFile.content",typeof oneFile.content); // e.g., 'string', 'object', etc.
+  console.log("constructor.name", oneFile.content && oneFile.content.constructor && oneFile.content.constructor.name);
+  console.log(String(oneFile.content).slice(0, 100)); // Print a snippet
+  console.log('file content is Buffer:',Buffer.isBuffer(oneFile.content));
     if (oneFile.fileType === "Standard Account Line Mapping") {
       //parse the xlsx file and update the metadatatable, first row is header
       const xlsx = require("xlsx");
-      const buffer = Buffer.from(oneFile.content);
-      console.log("typeof oneFile.content",typeof oneFile.content); // e.g., 'string', 'object', etc.
-      console.log(oneFile.content && oneFile.content.constructor && oneFile.content.constructor.name);
-      console.log(String(oneFile.content).slice(0, 100)); // Print a snippet
-      console.log('file content is Buffer:',Buffer.isBuffer(oneFile.content));
+      const buffer = await streamToBuffer(oneFile.content);
+      console.log('buffer is Buffer:',Buffer.isBuffer(oneFile.content));
       const workbook = xlsx.read(buffer, { type: "buffer" });
       console.log('workbook is: ',workbook);
       const sheetName = workbook.SheetNames[0];
