@@ -545,6 +545,7 @@ sap.ui.define(
             BusyIndicator.hide();
             const oExtModel = this.base.getExtensionAPI().getModel();
             oExtModel.refresh();
+            this.onCancelUpload();
           }
         },
         onDownloadMetadata: async function () {
