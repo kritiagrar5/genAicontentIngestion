@@ -30,6 +30,10 @@ entity MetaData as
     select from schema.MetaData {
       *,
     }
+entity DataDictionary as
+    select from schema.DataDictionary {
+      *,
+    }
   entity Content          as
     select from schema.Content {
       *,
