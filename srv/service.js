@@ -195,11 +195,9 @@ this.on('READ', 'Banks', async (req) => {
       const dataRows = jsonData.slice(1);
       const headers = jsonData[0];
       
-      // remove the rows in DataDictionary table where column === column in the excel file
-      const columnIndex = headers.indexOf("column");
-      const columns = [...new Set(dataRows.map((row) => row[columnIndex]))];
-      console.log("Deleting rows with columns:", columns);
-      await DELETE.from(DataDictionary).where({ column: columns });
+      // remove all rows in DataDictionary
+      console.log("Deleting all rows in DataDictionary");
+      await DELETE.from(DataDictionary);
       //insert the rows in DataDictionary table
       for (const row of dataRows) {
         const rowData = {};
