@@ -6,7 +6,7 @@
       "source": "^/odata/v4/catalog/(.*)$",
       "target": "/odata/v4/catalog/$1",
       "authenticationType": "none",
-      "destination": "Gen-AIContent-Ingestion-Srv"
+      "destination": "GenAIContentIngestionSrv"
     },   
     {
       "source": "^/api/(.*)$",

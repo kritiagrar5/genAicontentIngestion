@@ -549,14 +549,16 @@ sap.ui.define(
         },
         onDownloadMetadata: async function () {
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
-          const downloadUrl = baseUrl + "/odata/v4/catalog/Content/downloadMetadata";
+          const downloadUrl = baseUrl + "/odata/v4/catalog/downloadMetadata";
           const csrf = await this.onfetchCSRF(baseUrl);
           const responseAPI = await fetch(downloadUrl, {
             method: "POST",
             headers: {
               "X-CSRF-Token": csrf,
-              "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            }
+              "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "Content-type": "application/json"
+            },
+            body:"{}"
           });
           if (!responseAPI.ok) {
             let res;
