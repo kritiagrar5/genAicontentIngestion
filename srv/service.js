@@ -42,17 +42,7 @@ module.exports = cds.service.impl(async function () {
   });
   
 
-  //-------------------------------------------------------------
-  //    Authorization check based on user logged in
-  //-------------------------------------------------------------
-  this.on("READ", "ActionVisibility", async (req) => {
-    return {
-      // isChkr: req.user?.roles?.ContentChecker === 1,
-      //  isMaker: req.user?.roles?.ContentMaker === 1
-      isChkr: false,
-      isMaker: false
-    };
-  });
+
 
 this.before('READ', 'ConfigStore', (req) => {
   const userRoles = [
@@ -79,7 +69,7 @@ this.after("READ", "FileType", (rows) => {
     // Create a blank row
     const blankRow = {
         ID: "",               
-        fileType: "-- Please Select The File Type --"        
+        fileType: "Select what your file will be used for"        
     };
 
     // Insert at the start of the array

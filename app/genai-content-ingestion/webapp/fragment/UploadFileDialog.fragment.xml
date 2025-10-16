@@ -44,14 +44,16 @@
                     <Label text="Team" required="true" />
             <Select id="teamSelect"
                             width="100%"
-                            items="{ path: '/ConfigStore' }"
+                           items="{path: 'teamModel>/selectedTeams'}"
                             change=".onTeamChange"
                           selectedKey=""
-                            >
-
-                      
-                        <core:ListItem key="{ID}" text="{team}" />
+                            >  
+                                               
+                       <core:ListItem key="{teamModel>ID}" text="{teamModel>team}" />
                  </Select>
+                  <HBox>
+                     <Text text="Only the members of this team will have access to the file" />
+                    </HBox>
                 </VBox>
 
             </VBox>

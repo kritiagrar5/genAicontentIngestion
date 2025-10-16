@@ -87,7 +87,7 @@ sap.ui.define(
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const csrf = await this.onfetchCSRF(baseUrl);
           const appUrl = baseUrl + "/odata/v4/catalog/AppSelection";
-          const teamUrl = baseUrl + "/odata/v4/catalog/ConfigStore";
+         const teamUrl = baseUrl + "/odata/v4/catalog/ConfigStore";
           const response = await fetch(appUrl, {
             method: "GET",
             headers: {
@@ -114,7 +114,7 @@ sap.ui.define(
             selectedTeams: sKeyTeam,
           });
           this.onfetchRoles();
-          this.getView().setModel(oTeamModel, "teamModel");
+          this.getView().setModel(oTeamModel, "teamModelFilter");
           this.onFilterBarChange(sKey);
         },
         onTypeMismatch: function () {
@@ -155,13 +155,38 @@ sap.ui.define(
           this.onFilterBarChange(sKey);
         },
         onFileTypeChange: async function (oEvent) {
+            const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
+          const csrf = await this.onfetchCSRF(baseUrl);
+            const teamUrl = baseUrl + "/odata/v4/catalog/ConfigStore";
           const oSelectedItem = oEvent.getParameter("selectedItem");
           if (!oSelectedItem) return;
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/fileType", sKey);
           const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+const responseTeam = await fetch(teamUrl, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrf,
+            },
+            credentials: "include",
+          });
+          const resTeam = await responseTeam.json();
+          //const sKeyTeam = resTeam.value.map((r) => r.team);
+          const sKeyTeam = resTeam.value.map(item => ({
+      ID: item.ID,
+      team: item.team,
+      fileType:item.fileType,
+      usecase: item.usecase
+    }));
 
-          const ft = sap.ui.core.Fragment.byId(
+          const oTeamModel = new sap.ui.model.json.JSONModel({
+            selectedTeams: sKeyTeam,
+          });
+
+          this.getView().setModel(oTeamModel, "teamModel");
+
+         const ft = sap.ui.core.Fragment.byId(
             this.getView().getId() + "--myUploadDialog",
             "teamSelect"
           );
@@ -190,10 +215,9 @@ sap.ui.define(
           const oFilterBar = sap.ui
             .getCore()
             .byId("genaicontentingestion::ContentList--fe::FilterBar::Content");
-          const oTeamModel = this.getView().getModel("teamModel");
+          const oTeamModel = this.getView().getModel("teamModelFilter");
           const aTeams = oTeamModel.getProperty("/selectedTeams");
-          //  const sKeyt = "Treasury";
-          //   const aTeams = ["Liquidity", "Capital"];
+       
           const aTeamConditions = aTeams.map((v) => ({
             operator: "Contains",
             values: [v],
@@ -229,6 +253,8 @@ sap.ui.define(
           return token;
         },
         onOpenDialog: function (response) {
+          this.getView().getModel("teamModel").setData({ Teams: [] });
+
           var that = this;
           var metaData = response.metadata;
           if (!metaData) {
@@ -286,7 +312,10 @@ sap.ui.define(
           if (this._oDialog) {
             this._oDialog.destroy();
             this._oDialog = null;
+            
           }
+          this.getView().getModel("teamModel").setData({ Teams: [] });
+
         },
         _validateFile: async function (file) {
           //read the excel file and check the columns sequence
