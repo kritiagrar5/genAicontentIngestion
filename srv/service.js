@@ -334,7 +334,8 @@ else{
 });
 
 this.on("downloadMetadata", async (req) => {
-  const allMetaData = await SELECT.from(MetaData);
+  // Fetch all metadata records sorted by bankID
+  const allMetaData = await SELECT.from(MetaData).orderBy('bankID');
   const xlsx = require("xlsx");
   const worksheet = xlsx.utils.json_to_sheet(allMetaData);
   const workbook = xlsx.utils.book_new();
