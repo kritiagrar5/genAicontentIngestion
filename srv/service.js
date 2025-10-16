@@ -10,7 +10,7 @@ const fetch = require("node-fetch");
 const { isOriginOptions } = require("@sap-cloud-sdk/http-client/dist/http-client-types");
 
 module.exports = cds.service.impl(async function () {
-  const { Content, MetaData, AppSelection, ActionVisibility,FileType,ConfigStore } = this.entities;
+  const { Content, MetaData, DataDictionary} = this.entities;
   const LOG = cds.log('CI');
 
   this.after("READ", "Content", (each, req) => {
@@ -155,7 +155,8 @@ this.on('READ', 'Banks', async (req) => {
       const headers = jsonData[0];
       
       // remove the rows in MetaData table where bankID === bankID in the excel file
-      const bankIDs = [...new Set(dataRows.map((row) => row.bankID))];
+      const bankIDIndex = headers.indexOf("bankID");
+      const bankIDs = [...new Set(dataRows.map((row) => row[bankIDIndex]))];
       console.log("Deleting rows with bankIDs:", bankIDs);
       await DELETE.from(MetaData).where({ bankID: bankIDs });
       //insert the rows in MetaData table
@@ -177,6 +178,47 @@ this.on('READ', 'Banks', async (req) => {
           status: "COMPLETED"
         });
       })
+      return await SELECT.one.from(Content).where({ ID });
+    }else if(oneFile.fileType === "Data Dictionary"){
+      //parse the xlsx file and update the DataDictionary table, first row is header
+      const xlsx = require("xlsx");
+      const buffer = await streamToBuffer(oneFile.content);
+      console.log('buffer is Buffer:',Buffer.isBuffer(oneFile.content));
+      const workbook = xlsx.read(buffer, { type: "buffer" });
+      console.log('workbook is: ',workbook);
+      const sheetName = workbook.SheetNames[0];
+      console.log('sheetNames is: ',workbook.SheetNames);
+      const worksheet = workbook.Sheets[sheetName];
+      console.log('worksheet is: ',worksheet);
+      const jsonData = xlsx.utils.sheet_to_json(worksheet, {header:1});
+      console.log("Excel Data:", jsonData);
+      const dataRows = jsonData.slice(1);
+      const headers = jsonData[0];
+      
+      // remove the rows in DataDictionary table where column === column in the excel file
+      const columnIndex = headers.indexOf("column");
+      const columns = [...new Set(dataRows.map((row) => row[columnIndex]))];
+      console.log("Deleting rows with columns:", columns);
+      await DELETE.from(DataDictionary).where({ column: columns });
+      //insert the rows in DataDictionary table
+      for (const row of dataRows) {
+        const rowData = {};
+        headers.forEach((header, index) => {
+          rowData[header] = row[index];
+        });
+        rowData["userID"] = oneFile.createdBy;
+        console.log('Inserting row:', rowData);
+        try {
+          await INSERT.into(DataDictionary).entries(rowData);
+        } catch (err) {
+          console.error('Error inserting row:', err);
+        }
+      }
+      cds.tx (async ()=>{
+        await UPDATE(Content, ID).with({
+          status: "COMPLETED"
+        });
+      });
       return await SELECT.one.from(Content).where({ ID });
     }else{
       //Call API to create Embeddings

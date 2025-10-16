@@ -71,3 +71,10 @@ entity MetaData : cuid {
   bankMetric: String;
   userID: String;
 }
+
+entity DataDictionary : cuid {
+  key column: String;
+  description: String;
+  longDescription: LargeString;
+  userID: String;
+}
