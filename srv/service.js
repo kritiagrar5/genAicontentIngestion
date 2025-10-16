@@ -10,7 +10,7 @@ const fetch = require("node-fetch");
 const { isOriginOptions } = require("@sap-cloud-sdk/http-client/dist/http-client-types");
 
 module.exports = cds.service.impl(async function () {
-  const { Content, MetaData, DataDictionary} = this.entities;
+  const { Content, MetaData,DataDictionary, AppSelection, ActionVisibility,FileType,ConfigStore } = this.entities;
   const LOG = cds.log('CI');
 
   this.after("READ", "Content", (each, req) => {
@@ -160,7 +160,7 @@ this.on('READ', 'Banks', async (req) => {
       const headers = jsonData[0];
       
       // remove the rows in MetaData table where bankID === bankID in the excel file
-      const bankIDIndex = headers.indexOf("bankID");
+       const bankIDIndex = headers.indexOf("bankID");
       const bankIDs = [...new Set(dataRows.map((row) => row[bankIDIndex]))];
       console.log("Deleting rows with bankIDs:", bankIDs);
       await DELETE.from(MetaData).where({ bankID: bankIDs });
@@ -178,12 +178,8 @@ this.on('READ', 'Banks', async (req) => {
           console.error('Error inserting row:', err);
         }
       }
-      cds.tx (async ()=>{
-        await UPDATE(Content, ID).with({
-          status: "COMPLETED"
-        });
-      })
-      return await SELECT.one.from(Content).where({ ID });
+     await tx.update(Content, ID).with({ status: "COMPLETED" });
+        return await tx.read(Content).where({ ID });
     }else{
       //Call API to create Embeddings
       try {
