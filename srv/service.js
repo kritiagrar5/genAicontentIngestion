@@ -59,8 +59,8 @@ this.before('READ', 'ConfigStore', (req) => {
     'Workzone_EFDNA_Type_Treasury_Capital',
     'Workzone_EFDNA_Type_Treasury_Liquidity',
     'Workzone_EFDNA_Type_Employee',
-    'Workzone_EFDNA_GenAI_Treasury_Practitioners',
-    'Workzone_EFDNA_GenAI_Earnings_Practitioners'
+    'Workzone_EFDNA_Type_Treasury_Practitioners',
+    'Workzone_EFDNA_Type_Earnings_Practitioners'
   ];
 
  
@@ -87,13 +87,16 @@ this.after("READ", "FileType", (rows) => {
 
     return rows;
 });
-this.after("READ", "ConfigStore", (rows) => {
+
+this.before("READ", "ConfigStore", (rows) => {
     if (!Array.isArray(rows)) return rows;
   
     const blankRow = {
         ID: "",              
         fileType: "" ,
-        team: "-- Please Select The Team --"          
+        team: "" ,
+        usecase:"",
+        roles:""         
     };
     rows.unshift(blankRow);
     return rows;
@@ -106,6 +109,8 @@ this.on('READ', 'Banks', async (req) => {
   this.on("approveContent", async (req) => {
     console.log("📥 Action called with:", req.params[0]);
     const ID = req.params[0].ID;
+      const tx = cds.tx(req);
+
   const destination = await getDestination({ destinationName: 'GenAIContentIngestionBackend' });
     
     const oneFile = await SELECT.one
@@ -116,9 +121,9 @@ this.on('READ', 'Banks', async (req) => {
     const ownFile = oneFile.createdBy === req.user.id;
   
 
-  /*  if (ownFile) {
+    if (ownFile) {
       req.reject(400, 'You cannot Approve files that are created by you');
-    }*/
+    }
     //check if file content exists
     if (!oneFile?.content) {
       return req.reject(404, 'File content not found.');
@@ -172,12 +177,8 @@ this.on('READ', 'Banks', async (req) => {
           console.error('Error inserting row:', err);
         }
       }
-      cds.tx (async ()=>{
-        await UPDATE(Content, ID).with({
-          status: "COMPLETED"
-        });
-      })
-      return await SELECT.one.from(Content).where({ ID });
+       await tx.update(Content, ID).with({ status: "COMPLETED" });
+        return await tx.read(Content).where({ ID });
     }else{
       //Call API to create Embeddings
       try {
@@ -271,9 +272,9 @@ this.on('READ', 'Banks', async (req) => {
       const use_case = file.UseCase?.toLowerCase();
       
 
-    //  if (!ownFiles) {
-    //    req.reject(400, 'You cannot delete files that are not created by you');
-   //   }
+      if (!ownFiles) {
+        req.reject(400, 'You cannot delete files that are not created by you');
+     }
    if(file.status != "COMPLETED")
 {
  await DELETE.from(Content).where({ ID: ID });

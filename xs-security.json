@@ -94,12 +94,7 @@
       "description": "Workzone_EFDNA_Type_Treasury_IRRBB",
       "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Treasury_IRRBB"]
           },
-
-             {
-      "name": "Workzone_EFDNA_Type_Treasury_IRRBB",
-      "description": "Workzone_EFDNA_Type_Treasury_IRRBB",
-      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Treasury_IRRBB"]
-          },
+   
              {
       "name": "Workzone_EFDNA_Type_Employee",
       "description": "Workzone_EFDNA_Type_Employee",

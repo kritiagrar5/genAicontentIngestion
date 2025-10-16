@@ -159,9 +159,8 @@ sap.ui.define(
           if (!oSelectedItem) return;
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/fileType", sKey);
-          const UseCase = this.getView()
-            .getModel("viewModel")
-            .getProperty("/usecase");
+          const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+
           const ft = sap.ui.core.Fragment.byId(
             this.getView().getId() + "--myUploadDialog",
             "teamSelect"
@@ -171,8 +170,15 @@ sap.ui.define(
             oBinding.filter([
               new sap.ui.model.Filter("fileType", "EQ", sKey),
               new sap.ui.model.Filter("usecase", "EQ", UseCase),
-            ]);
-          }
+              
+
+                          ]);
+            const aItems = ft.getItems();
+            const oteam = aItems[0].getText();   
+     
+            this.getView().getModel("viewModel").setProperty("/team", oteam);
+
+     }
         },
         onTeamChange: async function (oEvent) {
           const oSelectedItem = oEvent.getParameter("selectedItem");
@@ -260,7 +266,7 @@ sap.ui.define(
         },
 
         onUploadPress: function () {
-          MessageToast.show("Upload pressed!");
+        //  MessageToast.show("Upload pressed!");
 
           const UseCase = this.getView()
             .getModel("viewModel")
@@ -458,7 +464,8 @@ sap.ui.define(
             });
             if (!responseAPI.ok) {
               const res = await responseAPI.json();
-              sap.m.MessageToast.show(res.message);
+              // sap.m.MessageToast.show(res.message);
+              MessageBox.error(res.description);
               return;
             }
             const json = await responseAPI.json();
@@ -545,6 +552,7 @@ sap.ui.define(
             BusyIndicator.hide();
             const oExtModel = this.base.getExtensionAPI().getModel();
             oExtModel.refresh();
+            this.onCancelUpload();
           }
         },
         onDownloadMetadata: async function () {
@@ -558,7 +566,7 @@ sap.ui.define(
               "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               "Content-type": "application/json"
             },
-            body:"{}"
+            body: "{}"
           });
           if (!responseAPI.ok) {
             let res;

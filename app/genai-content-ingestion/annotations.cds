@@ -86,7 +86,7 @@ annotate service.Content with @UI.LineItem: [
         Label                : 'UseCase',
         Value                : UseCase,
         ![@HTML5.CssDefaults]: {width: 'auto' },
-        ![@UI.Hidden]        : false
+         @UI.Hidden           : true
     },
    /* {
       $Type: 'UI.DataFieldForAction',

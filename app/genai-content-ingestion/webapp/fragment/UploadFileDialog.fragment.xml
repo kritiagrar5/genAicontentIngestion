@@ -28,7 +28,7 @@
                             width="100%"
                             items="{ path: '/FileType' }"
                             change=".onFileTypeChange"  
-                            selectedKey=""
+                        
                             >
                       
                         <core:ListItem key="{ID}" text="{fileType}" />
@@ -42,12 +42,13 @@
                 <!-- Team -->
                 <VBox class="sapUiTinyMarginBottom">
                     <Label text="Team" required="true" />
-                      <Select id="teamSelect"
+            <Select id="teamSelect"
                             width="100%"
                             items="{ path: '/ConfigStore' }"
                             change=".onTeamChange"
                           selectedKey=""
                             >
+
                       
                         <core:ListItem key="{ID}" text="{team}" />
                  </Select>
