@@ -76,7 +76,7 @@ body {
   --sapButton_TextColor: var(--scbBrandColor);
   --sapButton_IconColor: var(--scbBrandColor);
   --sapButton_BorderColor: var(--scbBrandColor);
-  --sapButton_Accept_Background: var(--scbBrandColor);
+  /* --sapButton_Accept_Background: var(--scbBrandColor);
   --sapButton_Accept_BorderColor: var(--scbBrandColor);
   --sapButton_Accept_Hover_Background: var(--sapButton_Emphasized_Hover_Background);
   --sapButton_Accept_Hover_BorderColor: var(--sapButton_Emphasized_Hover_BorderColor);
@@ -87,7 +87,7 @@ body {
   --sapButton_Reject_Hover_Background: var(--sapButton_Emphasized_Hover_Background);
   --sapButton_Reject_Hover_BorderColor: var(--sapButton_Emphasized_Hover_BorderColor);
   --sapButton_Reject_TextColor: white;
-  --sapButton_Reject_Hover_TextColor: white;
+  --sapButton_Reject_Hover_TextColor: white; */
 
 }
 
@@ -200,4 +200,13 @@ body,
 .smallBoldTitle {
   font-weight: bold !important;
    
+}
+.neutralIcon .sapMBtnIcon{
+ color: #333 !important; 
+}
+.approveButton .sapMBtnIcon{
+ color: #269300 !important;
+}
+.rejectButton .sapMBtnIcon{
+ color: #9D070F !important;
 }
