@@ -1,0 +1,13 @@
+{
+    "role": {
+      "name": "ReadOnlyGenAI",
+      "schema_privileges": [{
+        "privileges": [
+          "SELECT",
+          "ALTER",
+          "UPDATE",
+          "DELETE"
+        ]
+      }]
+    }
+  }
