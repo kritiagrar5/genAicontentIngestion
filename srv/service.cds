@@ -4,11 +4,7 @@ service CatalogService {
   entity AppSelection     as
     select from schema.AppSelection {
       *,
-      @UI.Hidden      : true
-      @UI.HiddenFilter: true
-      virtual isAllowed : Boolean @Core.Computed,
-      DestinationName,
-
+     
     }
 
   entity FileType         as
