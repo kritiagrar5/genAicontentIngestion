@@ -123,6 +123,7 @@ annotate service.Content with @UI.LineItem: [
         Determining       : true,
         @title            : 'Approve',
         @HTML5.CssDefaults: {width: '5rem'},
+        class            : 'acceptIcon',
         ![@UI.Hidden]     : {$edmJson: {$Not: {$And: [
             {$Eq: [
                 {$Path: 'status'},
@@ -138,6 +139,7 @@ annotate service.Content with @UI.LineItem: [
         IconUrl           : 'sap-icon://decline',
         Inline            : true,
         Criticality       : #Negative,
+        class            : 'rejectIcon',
         @HTML5.CssDefaults: {width: '5rem'},
       
         ![@UI.Hidden]     : {$edmJson: {$Not: {$And: [
