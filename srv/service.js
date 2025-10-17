@@ -46,11 +46,9 @@ module.exports = cds.service.impl(async function () {
 
 this.before('READ', 'ConfigStore', (req) => {
   const userRoles = [
-    'Workzone_EFDNA_Type_Treasury_Capital',
-    'Workzone_EFDNA_Type_Treasury_Liquidity',
     'Workzone_EFDNA_Type_Employee',
-    'Workzone_EFDNA_Type_Treasury_Practitioners',
-    'Workzone_EFDNA_Type_Earnings_Practitioners'
+    'Workzone_EFDNA_GenAI_Treasury_Practitioners',
+    'Workzone_EFDNA_GenAI_Earnings_Practitioners'
   ];
 
  
@@ -78,7 +76,7 @@ this.after("READ", "FileType", (rows) => {
     return rows;
 });
 
-this.before("READ", "ConfigStore", (rows) => {
+/*this.before("READ", "ConfigStore", (rows) => {
     if (!Array.isArray(rows)) return rows;
   
     const blankRow = {
@@ -90,7 +88,7 @@ this.before("READ", "ConfigStore", (rows) => {
     };
     rows.unshift(blankRow);
     return rows;
-});
+});*/
 this.on('READ', 'Banks', async (req) => {
   const result = await cds.run(SELECT.from('Banks'));
   return result;

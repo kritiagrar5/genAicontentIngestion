@@ -8,9 +8,7 @@ using {
 entity AppSelection {
   key ID              : UUID;
       AppName         : String;
-      DestinationName : String;
-
-}
+     }
 entity Content : managed {
       @UI.AdaptationHidden: true
   key ID              : String;
