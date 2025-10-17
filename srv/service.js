@@ -111,9 +111,9 @@ this.on('READ', 'Banks', async (req) => {
     const ownFile = oneFile.createdBy === req.user.id;
   
 
-    if (ownFile) {
-      req.reject(400, 'You cannot Approve files that are created by you');
-    }
+    // if (ownFile) {
+    //   req.reject(400, 'You cannot Approve files that are created by you');
+    // }
     //check if file content exists
     if (!oneFile?.content) {
       return req.reject(404, 'File content not found.');

@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
-	<Button class="neutralIcon" type="Transparent" id="metaDataButton" core:require="{ handler: 'genaicontentingestion/ext/fragment/Metadata'}"
+	<Button class="neutralIcon" id="metaDataButton" core:require="{ handler: 'genaicontentingestion/ext/fragment/Metadata'}"
 	icon="sap-icon://information"
 	 tooltip="Metadata" press="handler.onPress" />
 </core:FragmentDefinition>
