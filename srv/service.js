@@ -301,9 +301,13 @@ else{
   this.on("checkBanks", async (req) => {
     console.log("checkBanks", req);
     const bankIDsString = req.data.bankIDs;
-    LOG.info("bank IDs: ", bankIDsString);
+    console.log("bank IDs: ", bankIDsString);
+    const destination = await getDestination({
+      destinationName: "PeerAnalysisV2SRV"
+    });
+    console.log("destination----",destination);
     const response = await executeHttpRequest(
-      { destinationName: "earning-upload-v2-srv-api" },
+      { destinationName: "PeerAnalysisV2SRV" },
       {
         method: "GET",
         headers: {
@@ -316,7 +320,7 @@ else{
         },
       }
     );
-    LOG.info('Banks fetched:', response.data);
+    console.log('Banks fetched:', response.data);
     const existingBankIDs = response.data.value.map(bank => bank.code);
     const allExist = bankIDs.every(id => existingBankIDs.includes(id));
     return allExist;
