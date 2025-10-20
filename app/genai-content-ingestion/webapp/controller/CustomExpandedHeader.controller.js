@@ -87,7 +87,7 @@ sap.ui.define(
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const csrf = await this.onfetchCSRF(baseUrl);
           const appUrl = baseUrl + "/odata/v4/catalog/AppSelection";
-         const teamUrl = baseUrl + "/odata/v4/catalog/ConfigStore";
+          const teamUrl = baseUrl + "/odata/v4/catalog/ConfigStore";
           const response = await fetch(appUrl, {
             method: "GET",
             headers: {
@@ -155,15 +155,15 @@ sap.ui.define(
           this.onFilterBarChange(sKey);
         },
         onFileTypeChange: async function (oEvent) {
-            const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
+          const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const csrf = await this.onfetchCSRF(baseUrl);
-            const teamUrl = baseUrl + "/odata/v4/catalog/ConfigStore";
+          const teamUrl = baseUrl + "/odata/v4/catalog/ConfigStore";
           const oSelectedItem = oEvent.getParameter("selectedItem");
           if (!oSelectedItem) return;
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/fileType", sKey);
           const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
-const responseTeam = await fetch(teamUrl, {
+          const responseTeam = await fetch(teamUrl, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -174,11 +174,11 @@ const responseTeam = await fetch(teamUrl, {
           const resTeam = await responseTeam.json();
           //const sKeyTeam = resTeam.value.map((r) => r.team);
           const sKeyTeam = resTeam.value.map(item => ({
-      ID: item.ID,
-      team: item.team,
-      fileType:item.fileType,
-      usecase: item.usecase
-    }));
+            ID: item.ID,
+            team: item.team,
+            fileType: item.fileType,
+            usecase: item.usecase
+          }));
 
           const oTeamModel = new sap.ui.model.json.JSONModel({
             selectedTeams: sKeyTeam,
@@ -186,7 +186,7 @@ const responseTeam = await fetch(teamUrl, {
 
           this.getView().setModel(oTeamModel, "teamModel");
 
-         const ft = sap.ui.core.Fragment.byId(
+          const ft = sap.ui.core.Fragment.byId(
             this.getView().getId() + "--myUploadDialog",
             "teamSelect"
           );
@@ -195,15 +195,15 @@ const responseTeam = await fetch(teamUrl, {
             oBinding.filter([
               new sap.ui.model.Filter("fileType", "EQ", sKey),
               new sap.ui.model.Filter("usecase", "EQ", UseCase),
-              
 
-                          ]);
+
+            ]);
             const aItems = ft.getItems();
-            const oteam = aItems[0].getText();   
-     
+            const oteam = aItems[0].getText();
+
             this.getView().getModel("viewModel").setProperty("/team", oteam);
 
-     }
+          }
         },
         onTeamChange: async function (oEvent) {
           const oSelectedItem = oEvent.getParameter("selectedItem");
@@ -217,7 +217,7 @@ const responseTeam = await fetch(teamUrl, {
             .byId("genaicontentingestion::ContentList--fe::FilterBar::Content");
           const oTeamModel = this.getView().getModel("teamModelFilter");
           const aTeams = oTeamModel.getProperty("/selectedTeams");
-       
+
           const aTeamConditions = aTeams.map((v) => ({
             operator: "Contains",
             values: [v],
@@ -292,7 +292,7 @@ const responseTeam = await fetch(teamUrl, {
         },
 
         onUploadPress: function () {
-        //  MessageToast.show("Upload pressed!");
+          //  MessageToast.show("Upload pressed!");
 
           const UseCase = this.getView()
             .getModel("viewModel")
@@ -312,7 +312,7 @@ const responseTeam = await fetch(teamUrl, {
           if (this._oDialog) {
             this._oDialog.destroy();
             this._oDialog = null;
-            
+
           }
           this.getView().getModel("teamModel").setData({ Teams: [] });
 
@@ -384,11 +384,11 @@ const responseTeam = await fetch(teamUrl, {
           const res = await response.json();
           return res.value; // or res as needed
         },
-        onConfirmUpload: async function (oEvent) {
+       onConfirmUpload: async function (oEvent) {
           try {
             var that = this;
             BusyIndicator.show(0);
-
+            var dublinCheck = 1;
             const UseCase = this.getView()
               .getModel("viewModel")
               .getProperty("/usecase");
@@ -413,6 +413,10 @@ const responseTeam = await fetch(teamUrl, {
               return;
             }
 
+              if (ofileType === "Standard Account Line Mapping" || ofileType ==="Data Dictionary")
+              {
+dublinCheck = 0;
+              }
             //const oFileUploader = this.base.byId("__fileUploader");
             const oFileUploader = sap.ui.core.Fragment.byId(
               that.getView().getId() + "--myUploadDialog",
@@ -484,6 +488,7 @@ const responseTeam = await fetch(teamUrl, {
               }
             }
 
+if(dublinCheck === 1){
             const responseAPI = await fetch(chatUrl, {
               method: "POST",
               headers: {
@@ -501,9 +506,11 @@ const responseTeam = await fetch(teamUrl, {
             sap.m.MessageToast.show("opening dialog box");
             const dialog = await this.onOpenDialog(json);
             const decision = json.metadata.processing_decision;
+          
             this.getView()
               .getModel("viewModel")
               .setProperty("/decision", decision);
+                  
             if (dialog) {
               if (decision == "REJECTED") return;
               else {
@@ -537,6 +544,8 @@ const responseTeam = await fetch(teamUrl, {
                       fileType: ofileType,
                     }),
                   });
+                
+              
 
                   if (!response.ok) {
                     if (response.status === 400) {
@@ -572,6 +581,75 @@ const responseTeam = await fetch(teamUrl, {
                 }
               }
             }
+          }
+          else{
+               const putUrl =
+                  baseUrl +
+                  "/odata/v4/catalog/Content/" +
+                  fileHash +
+                  "/content";
+
+                const metadata = "";
+
+                if (oFileUploader.getValue()) {
+                  oFileUploader.setValueState("None");
+
+                  // create a record in Content Table
+                  const response = await fetch(contentUrl, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "X-CSRF-Token": csrf,
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                      ID: `${fileHash}`,
+                      fileName: oFile.name,
+                      url: putUrl,
+                      status: "SUBMITTED",
+                    
+                      UseCase: UseCase,
+                      team: oteam,
+                      fileType: ofileType,
+                    }),
+                  });
+                
+              
+
+                  if (!response.ok) {
+                    if (response.status === 400) {
+                      sap.m.MessageToast.show("400-Bad Request");
+                      return;
+                    } else {
+                      throw new Error(
+                        `Entity creation failed: ${response.status}`
+                      );
+                    }
+                  }
+
+                  const oExtModel = this.base.getExtensionAPI().getModel();
+                  var fileType;
+                  if (oFile.type.includes("pdf")) fileType = "PDF";
+                  else if (oFile.type.includes("spreadsheet"))
+                    fileType = "Excel";
+                  else fileType = "Document/Word";
+                  await fetch(putUrl, {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": oFile.type,
+                      Slug: encodeURIComponent(oFile.name),
+                      "X-CSRF-Token": csrf,
+                    },
+                    credentials: "include",
+                    body: oFile,
+                  });
+                  oExtModel.refresh();
+                  oFileUploader.setValue("");
+                } else {
+                  oFileUploader.setValueState("Error");
+                }
+              
+          }
           } catch (error) {
             console.error(error);
             MessageBox.error("fileUploadError", {

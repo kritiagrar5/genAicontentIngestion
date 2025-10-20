@@ -33,7 +33,9 @@ entity DataDictionary as
   entity Content          as
     select from schema.Content {
       *,
-
+  
+      UseCase,
+      isChecker,
       metaData,
       @UI.Hidden      : true
       @UI.HiddenFilter: true

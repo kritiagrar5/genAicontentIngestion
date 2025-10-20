@@ -9,6 +9,8 @@ entity AppSelection {
   key ID              : UUID;
       AppName         : String;
      }
+
+  @UI.lineItem: [{ position: 40, label: 'UseCase',value:UseCase, hidden: false }]
 entity Content : managed {
       @UI.AdaptationHidden: true
   key ID              : String;
@@ -32,7 +34,7 @@ entity Content : managed {
       @UI.AdaptationHidden: true
       metaData        : LargeString;
 
-      @UI.AdaptationHidden: true
+      
       isChecker       : Boolean;
 
       UseCase         : String;
