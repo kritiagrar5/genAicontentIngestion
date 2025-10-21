@@ -352,7 +352,12 @@ sap.ui.define(
           try {
             await readFilePromise;
             isValid = true;
-            await this._checkBankIDExists(dataRows.map(r => r[0])).then(exists => {
+            // Extract unique bankIDs from dataRows
+            const bankIDs = [
+              ...new Set(dataRows.map((row) => row[0])),
+            ].filter((id) => id !== undefined && id !== null && id !== "");
+            // Check if bankIDs exist in the system
+            await this._checkBankIDExists(bankIDs).then(exists => {
               if (!exists) {
                   MessageBox.error("One or more Bank IDs do not exist in the system.");
                   isValid = false;
@@ -369,20 +374,20 @@ sap.ui.define(
         _checkBankIDExists: async function (bankIDs) {
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const csrf = await this.onfetchCSRF(baseUrl);
+          //odata server endpoint to find if bank exists
           const bankUrl = baseUrl + "/pa_api/v2/odata/v4/earning-upload-srv/Banks";
-          // Join the array into a comma-separated string
-          const payload = { bankIDs: bankIDs.join(",") };
           const response = await fetch(bankUrl, {
-            method: "POST",
+            method: "GET",
             headers: {
               "Content-Type": "application/json",
               "X-CSRF-Token": csrf,
             },
             credentials: "include",
-            body: JSON.stringify(payload),
           });
           const res = await response.json();
-          return res.value; // or res as needed
+          const existingBankIDs = res.value.map(bank => bank.BankID);
+          // Check if all bankIDs exist in existingBankIDs
+          return bankIDs.every(id => existingBankIDs.includes(id));
         },
        onConfirmUpload: async function (oEvent) {
           try {

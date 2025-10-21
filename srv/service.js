@@ -298,30 +298,30 @@ else{
   }
   });
 
-  this.on("checkBanks", async (req) => {
-    console.log("checkBanks", req);
-    const bankIDsString = req.data.bankIDs;
-    console.log("bank IDs: ", bankIDsString);
-    const response = await executeHttpRequest(
-      { destinationName: "PeerAnalysisV2Srv" },
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        url: "/v2/odata/v4/earning-upload-srv/Banks",
-        params: {
-          $filter: `code in ('${bankIDsString.split(',').map(id => id.trim()).join("','")}')`,
-          $select: "code",
-        },
-      }
-    );
-    console.log('Banks fetched:', response.data);
-    const existingBankIDs = response.data.value.map(bank => bank.code);
-    const allExist = bankIDs.every(id => existingBankIDs.includes(id));
-    return allExist;
+//   this.on("checkBanks", async (req) => {
+//     console.log("checkBanks", req);
+//     const bankIDsString = req.data.bankIDs;
+//     console.log("bank IDs: ", bankIDsString);
+//     const response = await executeHttpRequest(
+//       { destinationName: "PeerAnalysisV2Srv" },
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         url: "/v2/odata/v4/earning-upload-srv/Banks",
+//         params: {
+//           $filter: `code in ('${bankIDsString.split(',').map(id => id.trim()).join("','")}')`,
+//           $select: "code",
+//         },
+//       }
+//     );
+//     console.log('Banks fetched:', response.data);
+//     const existingBankIDs = response.data.value.map(bank => bank.code);
+//     const allExist = bankIDs.every(id => existingBankIDs.includes(id));
+//     return allExist;
   
-});
+// });
 
 this.on("downloadMetadata", async (req) => {
   // Fetch all metadata records sorted by bankID

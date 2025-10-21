@@ -65,7 +65,7 @@ entity DataDictionary as
  
 
   action createContent(initialData: String)             returns String;
-  action checkBanks(bankIDs: String) returns Boolean;
+  // action checkBanks(bankIDs: String) returns Boolean;
   // returns the excel file as attachment
   action downloadMetadata() returns String;
 
