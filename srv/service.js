@@ -302,12 +302,8 @@ else{
     console.log("checkBanks", req);
     const bankIDsString = req.data.bankIDs;
     console.log("bank IDs: ", bankIDsString);
-    const destination = await getDestination({
-      destinationName: "PeerAnalysisV2SRV"
-    });
-    console.log("destination----",destination);
     const response = await executeHttpRequest(
-      { destinationName: "PeerAnalysisV2SRV" },
+      { destinationName: "PeerAnalysisV2Srv" },
       {
         method: "GET",
         headers: {

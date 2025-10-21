@@ -369,7 +369,7 @@ sap.ui.define(
         _checkBankIDExists: async function (bankIDs) {
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const csrf = await this.onfetchCSRF(baseUrl);
-          const bankUrl = baseUrl + "/odata/v4/catalog/checkBanks";
+          const bankUrl = baseUrl + "/pa_api/v2/odata/v4/earning-upload-srv/Banks";
           // Join the array into a comma-separated string
           const payload = { bankIDs: bankIDs.join(",") };
           const response = await fetch(bankUrl, {

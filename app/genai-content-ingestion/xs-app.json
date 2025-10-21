@@ -16,6 +16,12 @@
       "csrfProtection" : false
     },
     {
+      "source": "^/pa_api/v2/odata/v4/earning-upload-srv/(.*)$",
+      "target": "/v2/odata/v4/earning-upload-srv/$1",
+      "authenticationType": "none",
+      "destination": "PeerAnalysisV2Srv"
+    },   
+    {
       "source": "^/user-api/currentUser$",
       "target": "/currentUser",
       "service": "sap-approuter-userapi"
