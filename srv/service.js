@@ -14,52 +14,50 @@ module.exports = cds.service.impl(async function () {
   const LOG = cds.log('CI');
 
   this.after("READ", "Content", (each, req) => {
-    const userRoles = { Treasury_ContentChecker: 1, Treasury_ContentMaker: 1};
+    console.log("each",each)
+   // const userRoles = { Treasury_ContentChecker: 1, Treasury_ContentMaker: 1 };
+    const userRoles = req.user?.roles;
+    console.log(" 📥 userRoles ", userRoles)
+    console.log(" 📥 user ",  req.user)
     const usecase = each.UseCase;
     const checkerRole = `${usecase}_ContentChecker`;
     const makerRole = `${usecase}_ContentMaker`;
-
-  //  each.canApprove = userRoles[checkerRole] === 1;
-  //  each.canDelete = userRoles[makerRole] === 1;
-  //  each.isChecker = userRoles[checkerRole] === 1;
-    each.canApprove = true;
-    each.canDelete = true;
-    each.isChecker = true;
-
-
-  });
+    each.isChecker = userRoles[checkerRole] ===1;
+    each.canApprove = userRoles[checkerRole] === 1;
+    each.canDelete = userRoles[makerRole] === 1;
+   
+    // each.canApprove = true;
+    // each.canDelete = true;
+    });
 
 
   this.before('READ', 'AppSelection', (req) => {
-    const userRoles = { Workzone_EFDNA_Type_Employee: 1,  };
+    //const userRoles = { Workzone_EFDNA_Type_Employee: 1, };
+   const userRoles = req.user?.roles;
     const viewerRole = "Workzone_EFDNA_Type_Employee";
-  
-  if ( userRoles[viewerRole] === 1) {
-   
-    return; 
-  }
-    
+
+    if (userRoles[viewerRole] === 1) {
+
+      return;
+    }
+
   });
-  
+  this.before('READ', 'ConfigStore', (req) => {
+    // const userRoles = [
+    //   'Workzone_EFDNA_Type_Employee',
+    //   'Workzone_EFDNA_GenAI_Treasury_Practitioners',
+    //   'Workzone_EFDNA_GenAI_Earnings_Practitioners'
+    // ];
+    //  const userRoles = { Workzone_EFDNA_Type_Employee: 1, Workzone_EFDNA_GenAI_Treasury_Practitioners: 1,Workzone_EFDNA_GenAI_Earnings_Practitioners:1 };
+   
+   const userRoles = req.user?.roles;
+   const conditions = Object.keys(userRoles)
+  .map(r => `roles like '%${r}%'`)
+  .join(' or ');
 
+req.query.where(cds.parse.expr(conditions));
 
-
-this.before('READ', 'ConfigStore', (req) => {
-  const userRoles = [
-    'Workzone_EFDNA_Type_Employee',
-    'Workzone_EFDNA_GenAI_Treasury_Practitioners',
-    'Workzone_EFDNA_GenAI_Earnings_Practitioners'
-  ];
-
- 
-  const conditions = userRoles
-    .map(r => `roles like '%${r}%'`)
-    .join(' or ');
-
-
-  req.query.where(cds.parse.expr(conditions));
-
-});
+  });
  
 this.after("READ", "FileType", (rows) => {
     if (!Array.isArray(rows)) return rows;
@@ -109,9 +107,9 @@ this.on('READ', 'Banks', async (req) => {
     const ownFile = oneFile.createdBy === req.user.id;
   
 
-    // if (ownFile) {
-    //   req.reject(400, 'You cannot Approve files that are created by you');
-    // }
+    if (ownFile) {
+      req.reject(400, 'You cannot Approve files that are created by you');
+    }
     //check if file content exists
     if (!oneFile?.content) {
       return req.reject(404, 'File content not found.');

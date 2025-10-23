@@ -385,7 +385,7 @@ sap.ui.define(
             credentials: "include",
           });
           const res = await response.json();
-          const existingBankIDs = res.value.map(bank => bank.BankID);
+          const existingBankIDs = res.d.results.map(bank => bank.code);
           // Check if all bankIDs exist in existingBankIDs
           return bankIDs.every(id => existingBankIDs.includes(id));
         },
