@@ -199,11 +199,7 @@ this.on('READ', 'Banks', async (req) => {
           console.error('Error inserting row:', err);
         }
       }
-      cds.tx (async ()=>{
-        await UPDATE(Content, ID).with({
-          status: "COMPLETED"
-        });
-      });
+      await tx.update(Content, ID).with({ status: "COMPLETED" });
       return await SELECT.one.from(Content).where({ ID });
     }else{
       //Call API to create Embeddings
