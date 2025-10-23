@@ -28,7 +28,7 @@ entity Content : managed {
       @UI.AdaptationHidden: true
       url             : String;
 
-      @Core.MediaType     : mediaType
+     
       content         : LargeBinary;
 
       @UI.AdaptationHidden: true
