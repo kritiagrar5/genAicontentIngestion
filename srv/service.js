@@ -168,6 +168,45 @@ this.on('READ', 'Banks', async (req) => {
       }
      await tx.update(Content, ID).with({ status: "COMPLETED" });
         return await tx.read(Content).where({ ID });
+    }else if(oneFile.fileType === "Data Dictionary"){
+      //parse the xlsx file and update the DataDictionary table, first row is header
+      const xlsx = require("xlsx");
+      const buffer = await streamToBuffer(oneFile.content);
+      console.log('buffer is Buffer:',Buffer.isBuffer(oneFile.content));
+      const workbook = xlsx.read(buffer, { type: "buffer" });
+      console.log('workbook is: ',workbook);
+      const sheetName = workbook.SheetNames[0];
+      console.log('sheetNames is: ',workbook.SheetNames);
+      const worksheet = workbook.Sheets[sheetName];
+      console.log('worksheet is: ',worksheet);
+      const jsonData = xlsx.utils.sheet_to_json(worksheet, {header:1});
+      console.log("Excel Data:", jsonData);
+      const dataRows = jsonData.slice(1);
+      const headers = jsonData[0];
+      
+      // remove all rows in DataDictionary
+      console.log("Deleting all rows in DataDictionary");
+      await DELETE.from(DataDictionary);
+      //insert the rows in DataDictionary table
+      for (const row of dataRows) {
+        const rowData = {};
+        headers.forEach((header, index) => {
+          rowData[header] = row[index];
+        });
+        rowData["userID"] = oneFile.createdBy;
+        console.log('Inserting row:', rowData);
+        try {
+          await INSERT.into(DataDictionary).entries(rowData);
+        } catch (err) {
+          console.error('Error inserting row:', err);
+        }
+      }
+      cds.tx (async ()=>{
+        await UPDATE(Content, ID).with({
+          status: "COMPLETED"
+        });
+      });
+      return await SELECT.one.from(Content).where({ ID });
     }else{
       //Call API to create Embeddings
       try {
