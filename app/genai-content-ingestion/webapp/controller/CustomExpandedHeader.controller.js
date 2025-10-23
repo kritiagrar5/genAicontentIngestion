@@ -612,7 +612,7 @@ if(dublinCheck === 1){
                       fileName: oFile.name,
                       url: putUrl,
                       status: "SUBMITTED",
-                    
+                      mediaType: oFile.type,
                       UseCase: UseCase,
                       team: oteam,
                       fileType: ofileType,
