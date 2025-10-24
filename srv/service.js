@@ -35,9 +35,9 @@ module.exports = cds.service.impl(async function () {
     //const userRoles = { Workzone_EFDNA_Type_Employee: 1, };
    const userRoles = req.user?.roles;
     const viewerRole = "Workzone_EFDNA_Type_Employee";
-
+    console.log("app-selection1:", userRoles)
     if (userRoles[viewerRole] === 1) {
-
+      console.log("app-selection2:", userRoles)
       return;
     }
 

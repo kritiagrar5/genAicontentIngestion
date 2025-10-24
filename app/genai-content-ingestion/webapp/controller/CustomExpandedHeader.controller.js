@@ -359,13 +359,13 @@ sap.ui.define(
             // Check if bankIDs exist in the system
             await this._checkBankIDExists(bankIDs).then(exists => {
               if (!exists) {
-                  MessageBox.error("One or more Bank IDs do not exist in the system.");
-                  isValid = false;
-                }
-              }).catch(err => {
-                console.error("Error checking Bank IDs:", err);
+                MessageBox.error("One or more Bank IDs do not exist in the system.");
                 isValid = false;
-              });
+              }
+            }).catch(err => {
+              console.error("Error checking Bank IDs:", err);
+              isValid = false;
+            });
           } catch (error) {
             isValid = false;
           }
@@ -389,7 +389,7 @@ sap.ui.define(
           // Check if all bankIDs exist in existingBankIDs
           return bankIDs.every(id => existingBankIDs.includes(id));
         },
-       onConfirmUpload: async function (oEvent) {
+        onConfirmUpload: async function (oEvent) {
           try {
             var that = this;
             BusyIndicator.show(0);
@@ -418,10 +418,9 @@ sap.ui.define(
               return;
             }
 
-              if (ofileType === "Standard Account Line Mapping" || ofileType ==="Data Dictionary")
-              {
-dublinCheck = 0;
-              }
+            if (ofileType === "Standard Account Line Mapping" || ofileType === "Data Dictionary") {
+              dublinCheck = 0;
+            }
             //const oFileUploader = this.base.byId("__fileUploader");
             const oFileUploader = sap.ui.core.Fragment.byId(
               that.getView().getId() + "--myUploadDialog",
@@ -467,7 +466,7 @@ dublinCheck = 0;
                 if (record.ID == fileHash) {
                   flag = true;
                   if (record.team.includes(oteam) == 1) {
-                    MessageBox.error(`File already exists!`);
+                    MessageBox.error(`File already exists in Usecase :  ${record.UseCase}`);
                     oFileUploader.setValueState("None");
                   } else {
                     const newteam = record.team + "," + oteam;
@@ -493,168 +492,176 @@ dublinCheck = 0;
               }
             }
 
-if(dublinCheck === 1){
-            const responseAPI = await fetch(chatUrl, {
-              method: "POST",
-              headers: {
-                "X-CSRF-Token": csrf,
-              },
-              body: formData,
-            });
-            if (!responseAPI.ok) {
-              const res = await responseAPI.json();
-              // sap.m.MessageToast.show(res.message);
-              MessageBox.error(res.description);
-              return;
-            }
-            const json = await responseAPI.json();
-            sap.m.MessageToast.show("opening dialog box");
-            const dialog = await this.onOpenDialog(json);
-            const decision = json.metadata.processing_decision;
-          
-            this.getView()
-              .getModel("viewModel")
-              .setProperty("/decision", decision);
-                  
-            if (dialog) {
-              if (decision == "REJECTED") return;
-              else {
-                const putUrl =
-                  baseUrl +
-                  "/odata/v4/catalog/Content/" +
-                  fileHash +
-                  "/content";
+            if (dublinCheck === 1) {
+              const responseAPI = await fetch(chatUrl, {
+                method: "POST",
+                headers: {
+                  "X-CSRF-Token": csrf,
+                },
+                body: formData,
+              });
+              if (!responseAPI.ok) {
+                const res = await responseAPI.json();
+                // sap.m.MessageToast.show(res.message);
+                MessageBox.error(res.description);
+                return;
+              }
+              const json = await responseAPI.json();
+              sap.m.MessageToast.show("opening dialog box");
+              const dialog = await this.onOpenDialog(json);
+              const decision = json.metadata.processing_decision;
 
-                const metadata = json.metadata;
+              this.getView()
+                .getModel("viewModel")
+                .setProperty("/decision", decision);
 
-                if (oFileUploader.getValue()) {
-                  oFileUploader.setValueState("None");
+              if (dialog) {
+                if (decision == "REJECTED") return;
+                else {
+                  const putUrl =
+                    baseUrl +
+                    "/odata/v4/catalog/Content/" +
+                    fileHash +
+                    "/content";
 
-                  // create a record in Content Table
-                  const response = await fetch(contentUrl, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      "X-CSRF-Token": csrf,
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                      ID: `${fileHash}`,
-                      fileName: oFile.name,
-                      url: putUrl,
-                      status: "SUBMITTED",
-                      metaData: JSON.stringify({ metadata }),
-                      UseCase: UseCase,
-                      team: oteam,
-                      fileType: ofileType,
-                    }),
-                  });
-                
-              
+                  const metadata = json.metadata;
+                  var oMediaType = oFile.type;
+                  if (oMediaType.includes("spreadsheet"))
+                    oMediaType = "application/xlsx"
 
-                  if (!response.ok) {
-                    if (response.status === 400) {
-                      sap.m.MessageToast.show("400-Bad Request");
-                      return;
-                    } else {
-                      throw new Error(
-                        `Entity creation failed: ${response.status}`
-                      );
+
+                  if (oFileUploader.getValue()) {
+                    oFileUploader.setValueState("None");
+
+                    // create a record in Content Table
+                    const response = await fetch(contentUrl, {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-Token": csrf,
+                      },
+                      credentials: "include",
+                      body: JSON.stringify({
+                        ID: `${fileHash}`,
+                        fileName: oFile.name,
+                        url: putUrl,
+                        status: "SUBMITTED",
+                        mediaType: oMediaType,
+                        metaData: JSON.stringify({ metadata }),
+                        UseCase: UseCase,
+                        team: oteam,
+                        fileType: ofileType,
+                      }),
+                    });
+
+
+
+                    if (!response.ok) {
+                      if (response.status === 400) {
+                        sap.m.MessageToast.show("400-Bad Request");
+                        return;
+                      } else {
+                        throw new Error(
+                          `Entity creation failed: ${response.status}`
+                        );
+                      }
                     }
-                  }
 
-                  const oExtModel = this.base.getExtensionAPI().getModel();
-                  var fileType;
-                  if (oFile.type.includes("pdf")) fileType = "PDF";
-                  else if (oFile.type.includes("spreadsheet"))
-                    fileType = "Excel";
-                  else fileType = "Document/Word";
-                  await fetch(putUrl, {
-                    method: "PUT",
-                    headers: {
-                      "Content-Type": oFile.type,
-                      Slug: encodeURIComponent(oFile.name),
-                      "X-CSRF-Token": csrf,
-                    },
-                    credentials: "include",
-                    body: oFile,
-                  });
-                  oExtModel.refresh();
-                  oFileUploader.setValue("");
-                } else {
-                  oFileUploader.setValueState("Error");
+                    const oExtModel = this.base.getExtensionAPI().getModel();
+                    var fileType;
+                    if (oFile.type.includes("pdf")) fileType = "PDF";
+                    else if (oFile.type.includes("spreadsheet"))
+                      fileType = "Excel";
+                    else fileType = "Document/Word";
+                    await fetch(putUrl, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": oFile.type,
+                        Slug: encodeURIComponent(oFile.name),
+                        "X-CSRF-Token": csrf,
+                      },
+                      credentials: "include",
+                      body: oFile,
+                    });
+                    oExtModel.refresh();
+                    oFileUploader.setValue("");
+                  } else {
+                    oFileUploader.setValueState("Error");
+                  }
                 }
               }
             }
-          }
-          else{
-               const putUrl =
-                  baseUrl +
-                  "/odata/v4/catalog/Content/" +
-                  fileHash +
-                  "/content";
+            else {
+              const putUrl =
+                baseUrl +
+                "/odata/v4/catalog/Content/" +
+                fileHash +
+                "/content";
 
-                const metadata = "";
+              const metadata = "";
+              var oMediaType = oFile.type;
+              if (oMediaType.includes("spreadsheet"))
+                oMediaType = "application/xlsx"
 
-                if (oFileUploader.getValue()) {
-                  oFileUploader.setValueState("None");
+              if (oFileUploader.getValue()) {
+                oFileUploader.setValueState("None");
 
-                  // create a record in Content Table
-                  const response = await fetch(contentUrl, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      "X-CSRF-Token": csrf,
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                      ID: `${fileHash}`,
-                      fileName: oFile.name,
-                      url: putUrl,
-                      status: "SUBMITTED",
-                    
-                      UseCase: UseCase,
-                      team: oteam,
-                      fileType: ofileType,
-                    }),
-                  });
-                
-              
+                // create a record in Content Table
+                const response = await fetch(contentUrl, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": csrf,
+                  },
+                  credentials: "include",
+                  body: JSON.stringify({
+                    ID: `${fileHash}`,
+                    fileName: oFile.name,
+                    url: putUrl,
+                    status: "SUBMITTED",
+                    mediaType: oMediaType,
+                    UseCase: UseCase,
+                    team: oteam,
+                    fileType: ofileType,
+                  }),
+                });
 
-                  if (!response.ok) {
-                    if (response.status === 400) {
-                      sap.m.MessageToast.show("400-Bad Request");
-                      return;
-                    } else {
-                      throw new Error(
-                        `Entity creation failed: ${response.status}`
-                      );
-                    }
+
+
+                if (!response.ok) {
+                  if (response.status === 400) {
+                    sap.m.MessageToast.show("400-Bad Request");
+                    return;
+                  } else {
+                    throw new Error(
+                      `Entity creation failed: ${response.status}`
+                    );
                   }
-
-                  const oExtModel = this.base.getExtensionAPI().getModel();
-                  var fileType;
-                  if (oFile.type.includes("pdf")) fileType = "PDF";
-                  else if (oFile.type.includes("spreadsheet"))
-                    fileType = "Excel";
-                  else fileType = "Document/Word";
-                  await fetch(putUrl, {
-                    method: "PUT",
-                    headers: {
-                      "Content-Type": oFile.type,
-                      Slug: encodeURIComponent(oFile.name),
-                      "X-CSRF-Token": csrf,
-                    },
-                    credentials: "include",
-                    body: oFile,
-                  });
-                  oExtModel.refresh();
-                  oFileUploader.setValue("");
-                } else {
-                  oFileUploader.setValueState("Error");
                 }
-              
-          }
+
+                const oExtModel = this.base.getExtensionAPI().getModel();
+                var fileType;
+                if (oFile.type.includes("pdf")) fileType = "PDF";
+                else if (oFile.type.includes("spreadsheet"))
+                  fileType = "Excel";
+                else fileType = "Document/Word";
+                await fetch(putUrl, {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": oFile.type,
+                    Slug: encodeURIComponent(oFile.name),
+                    "X-CSRF-Token": csrf,
+                  },
+                  credentials: "include",
+                  body: oFile,
+                });
+                oExtModel.refresh();
+                oFileUploader.setValue("");
+              } else {
+                oFileUploader.setValueState("Error");
+              }
+
+            }
           } catch (error) {
             console.error(error);
             MessageBox.error("fileUploadError", {
