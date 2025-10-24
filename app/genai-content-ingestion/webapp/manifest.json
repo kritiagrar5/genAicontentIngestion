@@ -79,7 +79,9 @@
     },
     "resources": {
       "css": [
-        { "uri": "css/style.css" }
+        {
+          "uri": "css/style.css"
+        }
       ]
     },
     "routing": {
@@ -118,11 +120,11 @@
                     "Metadata": {
                       "header": "MetaData",
                       "position": {
-                        "anchor": "DataField::isChecker",
+                        "anchor": "DataField::UseCase",
                         "placement": "After"
                       },
                       "template": "genaicontentingestion.ext.fragment.Metadata",
-                       "width": "5rem",
+                      "width": "5rem",
                       "horizontalAlign": "Center"
                     },
                     "Delete": {
@@ -131,7 +133,7 @@
                         "placement": "After"
                       },
                       "template": "genaicontentingestion.ext.fragment.Delete",
-                       "width": "5rem",
+                      "width": "5rem",
                       "horizontalAlign": "Center"
                     }
                   }
