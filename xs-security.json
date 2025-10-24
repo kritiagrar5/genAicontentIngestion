@@ -11,19 +11,34 @@
       "name": "$XSAPPNAME.Treasury_ContentChecker",
       "description": "Treasury_ContentChecker"
     },
+     {
+      "name": "$XSAPPNAME.Workzone_EFDNA_GenAI_Treasury_Checker",
+      "description": "Workzone_EFDNA_GenAI_Treasury_Checker"
+    },
     {
       "name": "$XSAPPNAME.Treasury_ContentMaker",
       "description": "Treasury_ContentMaker"
+    },
+     {
+      "name": "$XSAPPNAME.Workzone_EFDNA_GenAI_Treasury_Maker",
+      "description": "Workzone_EFDNA_GenAI_Treasury_Maker"
     },
      {
       "name": "$XSAPPNAME.Peer-Analysis_ContentChecker",
       "description": "Peer-Analysis_ContentChecker"
     },
     {
+      "name": "$XSAPPNAME.Workzone_EFDNA_GenAI_Earnings_Checker",
+      "description": "Workzone_EFDNA_GenAI_Earnings_Checker"
+    },
+    {
       "name": "$XSAPPNAME.Peer-Analysis_ContentMaker",
       "description": "Peer-Analysis_ContentMaker"
     },
-     
+     {
+      "name": "$XSAPPNAME.Workzone_EFDNA_GenAI_Earnings_Maker",
+      "description": "Workzone_EFDNA_GenAI_Earnings_Maker"
+    },
     {
       "name": "$XSAPPNAME.Workzone_EFDNA_Type_Employee",
       "description": "Workzone_EFDNA_Type_Employee"
@@ -41,25 +56,25 @@
     {
       "name": "Workzone_EFDNA_GenAI_Treasury_Checker",
       "description": "Workzone_EFDNA_GenAI_Treasury_Checker",
-      "scope-references": ["$XSAPPNAME.Treasury_ContentChecker"]
+      "scope-references": ["$XSAPPNAME.Treasury_ContentChecker","$XSAPPNAME.Workzone_EFDNA_GenAI_Treasury_Checker"]
       
     },
     {
       "name": "Workzone_EFDNA_GenAI_Treasury_Maker",
       "description": "Workzone_EFDNA_GenAI_Treasury_Maker",
-      "scope-references": ["$XSAPPNAME.Treasury_ContentMaker"]
+      "scope-references": ["$XSAPPNAME.Treasury_ContentMaker","$XSAPPNAME.Workzone_EFDNA_GenAI_Treasury_Maker"]
        
     },
       {
       "name": "Workzone_EFDNA_GenAI_Earnings_Checker",
       "description": "Workzone_EFDNA_GenAI_Earnings_Checker",
-      "scope-references": ["$XSAPPNAME.Peer-Analysis_ContentChecker"]
+      "scope-references": ["$XSAPPNAME.Peer-Analysis_ContentChecker","$XSAPPNAME.Workzone_EFDNA_GenAI_Earnings_Checker"]
       
     },
     {
       "name": "Workzone_EFDNA_GenAI_Earnings_Maker",
       "description": "Workzone_EFDNA_GenAI_Earnings_Maker",
-      "scope-references": ["$XSAPPNAME.Peer-Analysis_ContentMaker"]
+      "scope-references": ["$XSAPPNAME.Peer-Analysis_ContentMaker","$XSAPPNAME.Workzone_EFDNA_GenAI_Earnings_Maker"]
       
     },
          {

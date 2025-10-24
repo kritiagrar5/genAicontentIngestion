@@ -31,24 +31,19 @@ module.exports = cds.service.impl(async function () {
     });
 
 
-  this.before('READ', 'AppSelection', (req) => {
-    //const userRoles = { Workzone_EFDNA_Type_Employee: 1, };
-   const userRoles = req.user?.roles;
-    const viewerRole = "Workzone_EFDNA_Type_Employee";
-    console.log("app-selection1:", userRoles)
-    if (userRoles[viewerRole] === 1) {
-      console.log("app-selection2:", userRoles)
-      return;
-    }
+  // this.before('READ', 'AppSelection', (req) => {
+  //   //const userRoles = { Workzone_EFDNA_Type_Employee: 1, };
+  //  const userRoles = req.user?.roles;
+  //   const viewerRole = "Workzone_EFDNA_Type_Employee";
+  //   console.log("app-selection1:", userRoles)
+  //   if (userRoles[viewerRole] === 1) {
+  //     console.log("app-selection2:", userRoles)
+  //     return;
+  //   }
 
-  });
+  // });
   this.before('READ', 'ConfigStore', (req) => {
-    // const userRoles = [
-    //   'Workzone_EFDNA_Type_Employee',
-    //   'Workzone_EFDNA_GenAI_Treasury_Practitioners',
-    //   'Workzone_EFDNA_GenAI_Earnings_Practitioners'
-    // ];
-    //  const userRoles = { Workzone_EFDNA_Type_Employee: 1, Workzone_EFDNA_GenAI_Treasury_Practitioners: 1,Workzone_EFDNA_GenAI_Earnings_Practitioners:1 };
+     //  const userRoles = { Workzone_EFDNA_Type_Employee: 1, Workzone_EFDNA_GenAI_Treasury_Practitioners: 1,Workzone_EFDNA_GenAI_Earnings_Practitioners:1 };
    
    const userRoles = req.user?.roles;
    const conditions = Object.keys(userRoles)
