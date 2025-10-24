@@ -357,8 +357,12 @@ else{
 // });
 
 this.on("downloadMetadata", async (req) => {
-  // Fetch all metadata records sorted by bankID
-  const allMetaData = await SELECT.from(MetaData).orderBy('bankID');
+  // Fetch all metadata records sorted by bankID,without ID column, and Column sequence – Bank ID, Standard metric, Bank metric
+  const allMetaData = await cds.run(
+    SELECT.from(MetaData).columns(['bankID', 'standardMetric', 'bankMetric', 'userID']).orderBy('bankID ASC')
+  );
+
+  // Convert to Excel
   const xlsx = require("xlsx");
   const worksheet = xlsx.utils.json_to_sheet(allMetaData);
   const workbook = xlsx.utils.book_new();
