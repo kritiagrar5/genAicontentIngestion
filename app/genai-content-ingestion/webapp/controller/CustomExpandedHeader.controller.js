@@ -69,10 +69,10 @@ sap.ui.define(
 
             // Create a new authModel for this controller
             const authModel = new sap.ui.model.json.JSONModel({
-              // isChecker: hasScopeForChecker,
-              // isMaker: hasScopeForMaker,
-              isChecker: true,
-              isMaker: true,
+              isChecker: hasScopeForChecker,
+              isMaker: hasScopeForMaker,
+              // isChecker: true,
+              // isMaker: true,
               usecase: usecase,
             });
 

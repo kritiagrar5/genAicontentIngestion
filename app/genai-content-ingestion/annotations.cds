@@ -15,7 +15,8 @@ annotate service.Content with @UI.LineItem: [
         Label                : 'Media Type',
         Value                : mediaType,
         visibleInAdvancedArea: false,
-        ![@HTML5.CssDefaults]: {width: 'auto', }
+        ![@HTML5.CssDefaults]: {width: 'auto', },
+        @UI.Hidden           : true
     },
     {
         $Type                : 'UI.DataField',
