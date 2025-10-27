@@ -117,6 +117,10 @@
                       },
                       "template": "genaicontentingestion.ext.fragment.FileDownload"
                     },
+                    "mediaType": {
+                      "header": "Media Type",
+                      "template": "genaicontentingestion.ext.fragment.MediaType"
+                    },
                     "Metadata": {
                       "header": "MetaData",
                       "position": {
