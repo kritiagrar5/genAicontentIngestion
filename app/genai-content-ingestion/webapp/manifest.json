@@ -130,6 +130,14 @@
                       },
                       "template": "genaicontentingestion.ext.fragment.FileDownload"
                     },
+                    "mediaType": {
+                      "header": "Media Type",
+                       "position": {
+                        "anchor": "DataField::status",
+                        "placement": "Before"
+                      },
+                      "template": "genaicontentingestion.ext.fragment.MediaType"
+                    },
                     "Metadata": {
                       "header": "MetaData",
                       "position": {

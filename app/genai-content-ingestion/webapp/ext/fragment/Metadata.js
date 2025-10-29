@@ -20,7 +20,7 @@ sap.ui.define([
   }
   return {
     onPress: async function (oEvent) {
-      MessageToast.show("Custom handler invoked.");
+      // MessageToast.show("Custom handler invoked.");
       const oContext = oEvent.getSource().getBindingContext();
       if (!oContext) return;
       const metaDataValue = await oContext.requestProperty("metaData");

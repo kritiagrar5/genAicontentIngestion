@@ -1,0 +1,4 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Text class="t" core:require="{ formatter: 'genaicontentingestion/ext/fragment/MediaType'}" text="{ path: 'mediaType', formatter: 'formatter.formatMediaType' }" />
+</core:FragmentDefinition>
