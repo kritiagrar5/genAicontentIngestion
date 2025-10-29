@@ -9,6 +9,7 @@ modules:
     requires:
       - name: uaa_genaicontentingestion
       - name: genaicontentingestion-db
+      - name: genaicontentingestion-html5-runtime
       - name: genaicontentingestion-destination-service
     provides:
     - name: srv-api
@@ -33,6 +34,7 @@ modules:
         parameters:
           service-key:
             name: uaa_genaicontentingestion-key
+      - name: genaicontentingestion-app-content
     parameters:
       content:
         instance:
@@ -122,6 +124,11 @@ resources:
       service: html5-apps-repo
       service-name: genaicontentingestion-html5-app-host-service
       service-plan: app-host
+  - name: genaicontentingestion-html5-runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
   - name: uaa_genaicontentingestion
     type: org.cloudfoundry.managed-service
     parameters:

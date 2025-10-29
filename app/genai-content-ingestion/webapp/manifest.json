@@ -24,6 +24,19 @@
           "odataVersion": "4.0"
         }
       }
+    },
+      "crossNavigation": {
+      "inbounds": {
+        "genaicontentingestion": {
+          "semanticObject": "genaicontentingestion",
+          "action": "display",
+          "title": "GenAI-Content-Ingestion",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
     }
   },
   "sap.ui": {
