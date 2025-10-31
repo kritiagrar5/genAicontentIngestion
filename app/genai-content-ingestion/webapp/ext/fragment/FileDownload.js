@@ -36,8 +36,17 @@ sap.ui.define([
                 url = record.url;
             }
             if (url) {
-                // Open in new tab
-                window.open(url, "_blank");
+                // Download with custom filename
+                const fileResponse = await fetch(url, { credentials: "include" });
+                const blob = await fileResponse.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(downloadUrl);
             } else {
                 MessageToast.show("File URL not available for " + fileName);
             }
