@@ -399,7 +399,7 @@ sap.ui.define(
               .getModel("viewModel")
               .getProperty("/usecase");
             if (!UseCase) {
-              sap.m.MessageToast.show("Please Select the UseCase ");
+              MessageBox.error("Please Select the UseCase ");
               return;
             }
 
@@ -408,14 +408,14 @@ sap.ui.define(
               .getModel("viewModel")
               .getProperty("/team");
             if (!oteam) {
-              sap.m.MessageToast.show("Please Select the Team ");
+              MessageBox.error("Please Select the Team ");
               return;
             }
             var ofileType = this.getView()
               .getModel("viewModel")
               .getProperty("/fileType");
             if (!ofileType) {
-              sap.m.MessageToast.show("Please Select the FileType ");
+              MessageBox.error("Please Select the FileType ");
               return;
             }
 
@@ -446,7 +446,7 @@ sap.ui.define(
             formData.append("file", oFile);
 
             if (!oFile) {
-              sap.m.MessageToast.show("Please select a file to upload.");
+              MessageBox.error("Please select a file to upload.");
               return;
             }
             const fileHash = await this.calculateFileHash(oFile);
@@ -508,7 +508,7 @@ sap.ui.define(
                 return;
               }
               const json = await responseAPI.json();
-              sap.m.MessageToast.show("opening dialog box");
+              // sap.m.MessageToast.show("opening dialog box");
               const dialog = await this.onOpenDialog(json);
               const decision = json.metadata.processing_decision;
 
@@ -559,7 +559,7 @@ sap.ui.define(
 
                     if (!response.ok) {
                       if (response.status === 400) {
-                        sap.m.MessageToast.show("400-Bad Request");
+                        MessageBox.error("400-Bad Request");
                         return;
                       } else {
                         throw new Error(
@@ -631,7 +631,7 @@ sap.ui.define(
 
                 if (!response.ok) {
                   if (response.status === 400) {
-                    sap.m.MessageToast.show("400-Bad Request");
+                    MessageBox.error("400-Bad Request");
                     return;
                   } else {
                     throw new Error(
@@ -692,9 +692,9 @@ sap.ui.define(
             let res;
             try {
               res = await responseAPI.json();
-              sap.m.MessageToast.show(res.message);
+              MessageBox.error(res.message);
             } catch (e) {
-              sap.m.MessageToast.show("Download failed.");
+              MessageBox.error("Download failed.");
             }
             return;
           }
