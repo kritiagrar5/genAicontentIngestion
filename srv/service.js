@@ -352,14 +352,20 @@ else{
 // });
 
 this.on("downloadMetadata", async (req) => {
-  // Fetch all metadata records sorted by bankID,without ID column, and Column sequence – Bank ID, Standard metric, Bank metric
+  // Define the headers you want in the Excel file
+  const headers = ["bankID", "stdMetric", "bankMetric", "userID"];
+
+  // Fetch all metadata records
   const allMetaData = await cds.run(
-    SELECT.from(MetaData).columns(['bankID', 'stdMetric', 'bankMetric', 'userID']).orderBy('bankID ASC')
+    SELECT.from(MetaData).columns(headers).orderBy("bankID ASC")
   );
 
-  // Convert to Excel
+  // If no data, add an empty object to preserve headers
+  const sheetData = allMetaData.length > 0 ? allMetaData : [{}];
+
+  // Convert to Excel with explicit header order
   const xlsx = require("xlsx");
-  const worksheet = xlsx.utils.json_to_sheet(allMetaData);
+  const worksheet = xlsx.utils.json_to_sheet(sheetData, { header: headers });
   const workbook = xlsx.utils.book_new();
   xlsx.utils.book_append_sheet(workbook, worksheet, "MetaData");
   const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
