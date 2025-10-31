@@ -5,7 +5,7 @@ sap.ui.define(
     "sap/ui/core/BusyIndicator",
     "sap/ui/core/Fragment",
     "sap/m/MessageToast",
-
+    "../thirdparty/xlsx.full.min",
   ],
   function (ControllerExtension, MessageBox, BusyIndicator, Fragment, MessageToast) {
     "use strict";
