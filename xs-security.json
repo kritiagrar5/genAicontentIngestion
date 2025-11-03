@@ -44,12 +44,12 @@
       "description": "Workzone_EFDNA_Type_Employee"
     },
           {
-      "name": "$XSAPPNAME.Workzone_EFDNA_GenAI_Treasury_Practitioners",
-      "description": "Workzone_EFDNA_GenAI_Treasury_Practitioners"
+      "name": "$XSAPPNAME.Workzone_EFDNA_GenAI_Treasury_Select_Practitioners",
+      "description": "Workzone_EFDNA_GenAI_Treasury_Select_Practitioners"
     },
        {
-      "name": "$XSAPPNAME.Workzone_EFDNA_GenAI_Earnings_Practitioners",
-      "description": "Workzone_EFDNA_GenAI_Earnings_Practitioners"
+      "name": "$XSAPPNAME.Workzone_EFDNA_GenAI_Earnings_Select_Practitioners",
+      "description": "Workzone_EFDNA_GenAI_Earnings_Select_Practitioners"
     }
   ],
   "role-templates": [
@@ -83,14 +83,14 @@
       "scope-references": ["$XSAPPNAME.Workzone_EFDNA_Type_Employee"]
           },
                  {
-      "name": "Workzone_EFDNA_GenAI_Treasury_Practitioners",
-      "description": "Workzone_EFDNA_GenAI_Treasury_Practitioners",
-      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_GenAI_Treasury_Practitioners"]
+      "name": "Workzone_EFDNA_GenAI_Treasury_Select_Practitioners",
+      "description": "Workzone_EFDNA_GenAI_Treasury_Select_Practitioners",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_GenAI_Treasury_Select_Practitioners"]
           },
                  {
-      "name": "Workzone_EFDNA_GenAI_Earnings_Practitioners",
-      "description": "Workzone_EFDNA_GenAI_Earnings_Practitioners",
-      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_GenAI_Earnings_Practitioners"]
+      "name": "Workzone_EFDNA_GenAI_Earnings_Select_Practitioners",
+      "description": "Workzone_EFDNA_GenAI_Earnings_Select_Practitioners",
+      "scope-references": ["$XSAPPNAME.Workzone_EFDNA_GenAI_Earnings_Select_Practitioners"]
           }
   ]
 }
