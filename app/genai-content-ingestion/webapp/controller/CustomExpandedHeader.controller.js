@@ -4,8 +4,8 @@ sap.ui.define(
     "sap/m/MessageBox",
     "sap/ui/core/BusyIndicator",
     "sap/ui/core/Fragment",
-    "sap/m/MessageToast",
-    "../thirdparty/xlsx.full.min",
+    "sap/m/MessageToast"
+    // "genaicontentingestion/thirdparty/xlsx.full.min",
   ],
   function (ControllerExtension, MessageBox, BusyIndicator, Fragment, MessageToast) {
     "use strict";
