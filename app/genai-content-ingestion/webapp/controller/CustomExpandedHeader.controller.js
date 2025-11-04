@@ -4,10 +4,10 @@ sap.ui.define(
     "sap/m/MessageBox",
     "sap/ui/core/BusyIndicator",
     "sap/ui/core/Fragment",
-    "sap/m/MessageToast"
-    // "genaicontentingestion/thirdparty/xlsx.full.min",
+    //xlsx library is loaded as a global script
+    "genaicontentingestion/thirdparty/xlsx",
   ],
-  function (ControllerExtension, MessageBox, BusyIndicator, Fragment, MessageToast) {
+  function (ControllerExtension, MessageBox, BusyIndicator, Fragment) {
     "use strict";
     return ControllerExtension.extend(
       "genaicontentingestion.controller.CustomExpandedHeader",
@@ -162,7 +162,9 @@ sap.ui.define(
           if (!oSelectedItem) return;
           const sKey = oSelectedItem.getText();
           this.getView().getModel("viewModel").setProperty("/fileType", sKey);
-          const UseCase = this.getView().getModel("viewModel").getProperty("/usecase");
+          const UseCase = this.getView()
+            .getModel("viewModel")
+            .getProperty("/usecase");
           const responseTeam = await fetch(teamUrl, {
             method: "GET",
             headers: {
@@ -173,11 +175,11 @@ sap.ui.define(
           });
           const resTeam = await responseTeam.json();
           //const sKeyTeam = resTeam.value.map((r) => r.team);
-          const sKeyTeam = resTeam.value.map(item => ({
+          const sKeyTeam = resTeam.value.map((item) => ({
             ID: item.ID,
             team: item.team,
             fileType: item.fileType,
-            usecase: item.usecase
+            usecase: item.usecase,
           }));
 
           const oTeamModel = new sap.ui.model.json.JSONModel({
@@ -195,14 +197,11 @@ sap.ui.define(
             oBinding.filter([
               new sap.ui.model.Filter("fileType", "EQ", sKey),
               new sap.ui.model.Filter("usecase", "EQ", UseCase),
-
-
             ]);
             const aItems = ft.getItems();
             const oteam = aItems[0].getText();
 
             this.getView().getModel("viewModel").setProperty("/team", oteam);
-
           }
         },
         onTeamChange: async function (oEvent) {
@@ -218,7 +217,7 @@ sap.ui.define(
           const oTeamModel = this.getView().getModel("teamModelFilter");
           var aTeams = oTeamModel.getProperty("/selectedTeams");
           const mandatoryTeams = ["Treasury", "Viewer"];
-           aTeams = [...new Set([...aTeams, ...mandatoryTeams])];
+          aTeams = [...new Set([...aTeams, ...mandatoryTeams])];
           const aTeamConditions = aTeams.map((v) => ({
             operator: "Contains",
             values: [v],
@@ -313,10 +312,8 @@ sap.ui.define(
           if (this._oDialog) {
             this._oDialog.destroy();
             this._oDialog = null;
-
           }
           this.getView().getModel("teamModel").setData({ Teams: [] });
-
         },
         _validateFile: async function (file) {
           //read the excel file and check the columns sequence
@@ -354,19 +351,23 @@ sap.ui.define(
             await readFilePromise;
             isValid = true;
             // Extract unique bankIDs from dataRows
-            const bankIDs = [
-              ...new Set(dataRows.map((row) => row[0])),
-            ].filter((id) => id !== undefined && id !== null && id !== "");
+            const bankIDs = [...new Set(dataRows.map((row) => row[0]))].filter(
+              (id) => id !== undefined && id !== null && id !== ""
+            );
             // Check if bankIDs exist in the system
-            await this._checkBankIDExists(bankIDs).then(exists => {
-              if (!exists) {
-                MessageBox.error("One or more Bank IDs do not exist in the system.");
+            await this._checkBankIDExists(bankIDs)
+              .then((exists) => {
+                if (!exists) {
+                  MessageBox.error(
+                    "One or more Bank IDs do not exist in the system."
+                  );
+                  isValid = false;
+                }
+              })
+              .catch((err) => {
+                console.error("Error checking Bank IDs:", err);
                 isValid = false;
-              }
-            }).catch(err => {
-              console.error("Error checking Bank IDs:", err);
-              isValid = false;
-            });
+              });
           } catch (error) {
             isValid = false;
           }
@@ -376,7 +377,8 @@ sap.ui.define(
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const csrf = await this.onfetchCSRF(baseUrl);
           //odata server endpoint to find if bank exists
-          const bankUrl = baseUrl + "/pa_api/v2/odata/v4/earning-upload-srv/Banks";
+          const bankUrl =
+            baseUrl + "/pa_api/v2/odata/v4/earning-upload-srv/Banks";
           const response = await fetch(bankUrl, {
             method: "GET",
             headers: {
@@ -386,9 +388,9 @@ sap.ui.define(
             credentials: "include",
           });
           const res = await response.json();
-          const existingBankIDs = res.d.results.map(bank => bank.code);
+          const existingBankIDs = res.d.results.map((bank) => bank.code);
           // Check if all bankIDs exist in existingBankIDs
-          return bankIDs.every(id => existingBankIDs.includes(id));
+          return bankIDs.every((id) => existingBankIDs.includes(id));
         },
         onConfirmUpload: async function (oEvent) {
           try {
@@ -419,7 +421,10 @@ sap.ui.define(
               return;
             }
 
-            if (ofileType === "Standard Account Line Mapping" || ofileType === "Data Dictionary") {
+            if (
+              ofileType === "Standard Account Line Mapping" ||
+              ofileType === "Data Dictionary"
+            ) {
               dublinCheck = 0;
             }
             //const oFileUploader = this.base.byId("__fileUploader");
@@ -467,7 +472,9 @@ sap.ui.define(
                 if (record.ID == fileHash) {
                   flag = true;
                   if (record.team.includes(oteam) == 1) {
-                    MessageBox.error(`File already exists in Usecase :  ${record.UseCase}`);
+                    MessageBox.error(
+                      `File already exists in Usecase :  ${record.UseCase}`
+                    );
                     oFileUploader.setValueState("None");
                   } else {
                     const newteam = record.team + "," + oteam;
@@ -528,8 +535,7 @@ sap.ui.define(
                   const metadata = json.metadata;
                   var oMediaType = oFile.type;
                   if (oMediaType.includes("spreadsheet"))
-                    oMediaType = "application/xlsx"
-
+                    oMediaType = "application/xlsx";
 
                   if (oFileUploader.getValue()) {
                     oFileUploader.setValueState("None");
@@ -554,8 +560,6 @@ sap.ui.define(
                         fileType: ofileType,
                       }),
                     });
-
-
 
                     if (!response.ok) {
                       if (response.status === 400) {
@@ -591,18 +595,14 @@ sap.ui.define(
                   }
                 }
               }
-            }
-            else {
+            } else {
               const putUrl =
-                baseUrl +
-                "/odata/v4/catalog/Content/" +
-                fileHash +
-                "/content";
+                baseUrl + "/odata/v4/catalog/Content/" + fileHash + "/content";
 
               const metadata = "";
               var oMediaType = oFile.type;
               if (oMediaType.includes("spreadsheet"))
-                oMediaType = "application/xlsx"
+                oMediaType = "application/xlsx";
 
               if (oFileUploader.getValue()) {
                 oFileUploader.setValueState("None");
@@ -627,8 +627,6 @@ sap.ui.define(
                   }),
                 });
 
-
-
                 if (!response.ok) {
                   if (response.status === 400) {
                     MessageBox.error("400-Bad Request");
@@ -643,8 +641,7 @@ sap.ui.define(
                 const oExtModel = this.base.getExtensionAPI().getModel();
                 var fileType;
                 if (oFile.type.includes("pdf")) fileType = "PDF";
-                else if (oFile.type.includes("spreadsheet"))
-                  fileType = "Excel";
+                else if (oFile.type.includes("spreadsheet")) fileType = "Excel";
                 else fileType = "Document/Word";
                 await fetch(putUrl, {
                   method: "PUT",
@@ -661,7 +658,6 @@ sap.ui.define(
               } else {
                 oFileUploader.setValueState("Error");
               }
-
             }
           } catch (error) {
             console.error(error);
@@ -683,10 +679,11 @@ sap.ui.define(
             method: "POST",
             headers: {
               "X-CSRF-Token": csrf,
-              "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-              "Content-type": "application/json"
+              Accept:
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "Content-type": "application/json",
             },
-            body: "{}"
+            body: "{}",
           });
           if (!responseAPI.ok) {
             let res;
@@ -700,14 +697,14 @@ sap.ui.define(
           }
           const blob = await responseAPI.blob();
           const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
+          const a = document.createElement("a");
           a.href = url;
-          a.download = 'metadata.xlsx';
+          a.download = "metadata.xlsx";
           document.body.appendChild(a);
           a.click();
           a.remove();
           window.URL.revokeObjectURL(url);
-        }
+        },
       }
     );
   }

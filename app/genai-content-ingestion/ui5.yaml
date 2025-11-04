@@ -26,3 +26,14 @@ server:
       configuration:
         flp:
           theme: sap_horizon
+shims:
+  configurations:
+    xlsx: # name as defined in package.json
+      specVersion: "4.0"
+      type: module # Use module type
+      metadata:
+        name: xlsx
+      resources:
+        configuration:
+          paths:
+            /resources/genaicontentingestion/thirdparty/: ""
