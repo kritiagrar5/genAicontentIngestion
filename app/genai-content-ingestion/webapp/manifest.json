@@ -98,7 +98,7 @@
       ],
       "js": [
         {
-          "uri": "thirdparty/xlsx.full.min.js"
+          "uri": "thirdparty/xlsx.js"
         }
       ]
     },
