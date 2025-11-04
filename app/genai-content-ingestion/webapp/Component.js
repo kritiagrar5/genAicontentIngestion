@@ -1,12 +1,7 @@
-sap.ui.define(["sap/ui/core/UIComponent"], function (UIComponent) {
-  "use strict";
-
-  return UIComponent.extend("genaicontentingestion.Component", {
-    metadata: {
-      manifest: "json",
-    },
-
-    init: function () {
+sap.ui.define(
+    ["sap/fe/core/AppComponent"],
+    function (Component) {
+      ("use strict");
       // Dynamically load XLSX if not already loaded
       if (!window.XLSX) {
         var script = document.createElement("script");
@@ -18,7 +13,10 @@ sap.ui.define(["sap/ui/core/UIComponent"], function (UIComponent) {
         };
         document.head.appendChild(script);
       }
-      UIComponent.prototype.init.apply(this, arguments);
-    },
-  });
-});
+      return Component.extend("genaicontentingestion.Component", {
+        metadata: {
+          manifest: "json",
+        },
+      });
+    }
+);
