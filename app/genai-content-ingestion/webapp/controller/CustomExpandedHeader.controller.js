@@ -5,7 +5,7 @@ sap.ui.define(
     "sap/ui/core/BusyIndicator",
     "sap/ui/core/Fragment",
     //xlsx library is loaded as a global script
-    "genaicontentingestion/thirdparty/xlsx",
+    "genaicontentingestion/thirdparty/xlsx.full.min",
   ],
   function (ControllerExtension, MessageBox, BusyIndicator, Fragment) {
     "use strict";

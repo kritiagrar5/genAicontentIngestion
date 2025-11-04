@@ -18,8 +18,7 @@
     "@sap/xssec": "^4.9.1",
     "express": "^4",
     "hdb": "^2.25.1",
-    "sap-cf-axios": "^1.0.2",
-    "xlsx": "^0.18.5"
+    "sap-cf-axios": "^1.0.2"
   },
   "engines": {
     "node": ">=20"
