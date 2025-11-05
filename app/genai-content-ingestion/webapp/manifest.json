@@ -95,11 +95,6 @@
         {
           "uri": "css/style.css"
         }
-      ],
-      "js": [
-        {
-          "uri": "thirdparty/xlsx.js"
-        }
       ]
     },
     "routing": {
