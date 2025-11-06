@@ -13,16 +13,26 @@ entity AppSelection {
   @UI.lineItem: [{ position: 40, label: 'UseCase',value:UseCase, hidden: false }]
 entity Content : managed {
       @UI.AdaptationHidden: true
-  key ID              : String;
+      key ID              : String;
 
       @UI.AdaptationHidden: true
       @Common.Label       : 'File Name'
+      @Search.defaultSearchElement
+      @Search.fuzziness: 0.8
+      @Search.searchMode: 'text'
       fileName        : String;
+      @Search.fuzziness: 0.8
+      @Search.searchMode: 'text'
       mediaType       : String;
 
       @UI.AdaptationHidden: true
       tagType         : String;
+      @Search.fuzziness: 0.8
+      @Search.searchMode: 'text'
       status          : String;
+      @Search.fuzziness: 0.8
+      @Search.searchMode: 'text'
+      createdBy       : String;
       embeddingStatus : String;
 
       @UI.AdaptationHidden: true
