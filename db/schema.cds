@@ -39,22 +39,28 @@ entity Content : managed, SearchableManagedFields {
       @Search.fuzziness: 0.8
       @Search.searchMode: 'text'
       status          : String;
+      @Search.searchable: false
       embeddingStatus : String;
 
       @UI.AdaptationHidden: true
+      @Search.searchable: false
       url             : String;
 
       @Core.MediaType     : mediaType
+      @Search.searchable: false
       content         : LargeBinary;
 
       @UI.AdaptationHidden: true
+      @Search.searchable: false
       metaData        : LargeString;
 
-      
+      @Search.searchable: false
       isChecker       : Boolean;
-
+      @Search.searchable: false
       UseCase         : String;
+      @Search.searchable: false
       team            : String;
+      @Search.searchable: false
       fileType        : String;
 
 }
