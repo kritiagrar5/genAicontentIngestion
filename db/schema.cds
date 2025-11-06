@@ -1,5 +1,14 @@
 namespace genai;
 
+aspect SearchableManagedFields {
+  @Search.fuzziness: 0.8
+  @Search.searchMode: 'text'
+  createdBy     : String;
+  @Search.fuzziness: 0.8
+  @Search.searchMode: 'text'
+  modifiedBy    : String;
+}
+
 using {
   cuid,
   managed
@@ -11,7 +20,7 @@ entity AppSelection {
      }
 
   @UI.lineItem: [{ position: 40, label: 'UseCase',value:UseCase, hidden: false }]
-entity Content : managed {
+entity Content : managed, SearchableManagedFields {
       @UI.AdaptationHidden: true
       key ID              : String;
 
@@ -30,9 +39,6 @@ entity Content : managed {
       @Search.fuzziness: 0.8
       @Search.searchMode: 'text'
       status          : String;
-      @Search.fuzziness: 0.8
-      @Search.searchMode: 'text'
-      createdBy       : String;
       embeddingStatus : String;
 
       @UI.AdaptationHidden: true
