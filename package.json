@@ -81,6 +81,9 @@
           "srv"
         ]
       }
+    },
+    "hana": {
+      "fuzzy": false
     }
   },
   "sapux": [
