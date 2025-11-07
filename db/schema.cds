@@ -29,7 +29,7 @@ entity Content : managed {
       @UI.AdaptationHidden: true
       key ID              : String;
 
-      @UI.AdaptationHidden: true
+      
       @Common.Label       : 'File Name'
       fileName        : String;
       mediaType       : String;
@@ -37,6 +37,7 @@ entity Content : managed {
       @UI.AdaptationHidden: true
       tagType         : String;
       status          : String;
+      @UI.HiddenFilter: true
       embeddingStatus : String;
 
       @UI.AdaptationHidden: true
@@ -47,10 +48,12 @@ entity Content : managed {
 
       @UI.AdaptationHidden: true
       metaData        : LargeString;
-
+      @UI.HiddenFilter: true
       isChecker       : Boolean;
       UseCase         : String;
+      @UI.HiddenFilter: true
       team            : String;
+      @UI.HiddenFilter: true
       fileType        : String;
 
 }
