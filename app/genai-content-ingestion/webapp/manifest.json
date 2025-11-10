@@ -128,7 +128,8 @@
                         "anchor": "DataField::mediaType",
                         "placement": "Before"
                       },
-                      "template": "genaicontentingestion.ext.fragment.FileDownload"
+                      "template": "genaicontentingestion.ext.fragment.FileDownload",
+                       "properties": ["fileName"]
                     },
                     "mediaType": {
                       "header": "Media Type",
@@ -136,7 +137,8 @@
                         "anchor": "DataField::status",
                         "placement": "Before"
                       },
-                      "template": "genaicontentingestion.ext.fragment.MediaType"
+                      "template": "genaicontentingestion.ext.fragment.MediaType",
+                        "properties": ["mediaType"]
                     },
                     "Metadata": {
                       "header": "MetaData",
@@ -145,6 +147,7 @@
                         "placement": "After"
                       },
                       "template": "genaicontentingestion.ext.fragment.Metadata",
+                      
                       "width": "5rem",
                       "horizontalAlign": "Center"
                     },

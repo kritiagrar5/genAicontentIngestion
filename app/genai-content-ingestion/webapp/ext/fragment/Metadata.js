@@ -1,8 +1,9 @@
 sap.ui.define([
   "sap/m/MessageToast",
   "sap/ui/core/Fragment",
-  "sap/ui/model/json/JSONModel"
-], function (MessageToast, Fragment, JSONModel) {
+  "sap/ui/model/json/JSONModel",
+   "sap/m/MessageBox"
+], function (MessageToast, Fragment, JSONModel,MessageBox) {
   "use strict";
   function _customColumnController(oExtensionAPI) {
     var detailDialog;
@@ -28,7 +29,7 @@ sap.ui.define([
       try {
         // const metaDataValue = await oContext.requestObject("metaData");
         if (!metaDataValue) {
-          console.warn("metaData field not available");
+          MessageBox.error("MetaData field not available for SALM and Data Dictinary Files.");
           return;
         }
         const parsedMeta = JSON.parse(metaDataValue);
