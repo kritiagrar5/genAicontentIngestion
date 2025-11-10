@@ -313,7 +313,7 @@ sap.ui.define(
           }
           this.getView().getModel("teamModel").setData({ Teams: [] });
         },
-        _validateFile: async function (file) {
+        _validateFile: async function (file, ofileType) {
           //read the excel file and check the columns sequence
           const fileReader = new FileReader();
           const oFile = file;
@@ -331,17 +331,33 @@ sap.ui.define(
               });
               headers = jsonData[0];
               dataRows = jsonData.slice(1);
-              if (
-                headers.length !== 3 ||
-                headers[0] !== "bankID" ||
-                headers[1] !== "stdMetric" ||
-                headers[2] !== "bankMetric"
-              ) {
-                MessageBox.error("Invalid Template Format.");
-                reject("Invalid Header");
-              } else {
-                resolve("Valid Header");
+              if (ofileType === "Data Dictionary") {
+                if (
+                  headers.length !== 3 ||
+                  headers[0] !== "column" ||
+                  headers[1] !== "description" ||
+                  headers[2] !== "longDescription"
+                ) {
+                  MessageBox.error("Invalid File Format.");
+                  reject("Invalid Header");
+                } else {
+                  resolve("Valid Header");
+                }
               }
+              if (ofileType === "Standard Account Line Mapping") {
+                if (
+                  headers.length !== 3 ||
+                  headers[0] !== "bankID" ||
+                  headers[1] !== "stdMetric" ||
+                  headers[2] !== "bankMetric"
+                ) {
+                  MessageBox.error("Invalid Template Format.");
+                  reject("Invalid Header");
+                } else {
+                  resolve("Valid Header");
+                }
+              }
+              
             };
             fileReader.readAsArrayBuffer(oFile);
           });
@@ -435,8 +451,8 @@ sap.ui.define(
 
             const chatUrl = baseUrl + "/api/upload?use_case=" + use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
-            if (ofileType === "Standard Account Line Mapping") {
-              const isValid = await this._validateFile(oFile);
+            if (ofileType === "Standard Account Line Mapping" || ofileType === "Data Dictionary") {
+              const isValid = await this._validateFile(oFile, ofileType);
 
               if (!isValid) {
                 BusyIndicator.hide();
