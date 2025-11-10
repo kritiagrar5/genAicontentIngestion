@@ -214,7 +214,8 @@ sap.ui.define(
             .byId("genaicontentingestion::ContentList--fe::FilterBar::Content");
           const oTeamModel = this.getView().getModel("teamModelFilter");
           var aTeams = oTeamModel.getProperty("/selectedTeams");
-          const mandatoryTeams = ["Treasury", "Viewer"];
+        //  const mandatoryTeams = ["Treasury", "Viewer"];
+         const mandatoryTeams = ["Maker"];
           aTeams = [...new Set([...aTeams, ...mandatoryTeams])];
           const aTeamConditions = aTeams.map((v) => ({
             operator: "Contains",

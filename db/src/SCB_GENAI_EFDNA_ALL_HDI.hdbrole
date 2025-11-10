@@ -1,0 +1,8 @@
+{
+    "role": {
+      "name": "AllGenAI",
+      "schema_privileges": [{
+        "privileges":   ["SELECT","ALTER", "UPDATE", "DELETE"]
+      }]
+    }
+  }
