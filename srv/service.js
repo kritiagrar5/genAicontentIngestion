@@ -386,5 +386,40 @@ this.on("downloadMetadata", async (req) => {
   // Fallback for CAP v5
   return buffer;
 });
+this.on("downloadDataDictionary", async (req) => {
+  // Define the headers you want in the Excel file
+  const headers = ["column", "description", "longDescription", "userID"];
+
+  // Fetch all DataDictionary records
+  const allDataDictionary = await cds.run(
+    SELECT.from(DataDictionary).columns(headers).orderBy("column ASC")
+  );
+
+  // If no data, add an empty object to preserve headers
+  const sheetData = allDataDictionary.length > 0 ? allDataDictionary : [{}];
+
+  // Convert to Excel with explicit header order
+  const xlsx = require("xlsx");
+  const worksheet = xlsx.utils.json_to_sheet(sheetData, { header: headers });
+  const workbook = xlsx.utils.book_new();
+  xlsx.utils.book_append_sheet(workbook, worksheet, "DataDictionary");
+  const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+  const fileName = "DataDictionary.xlsx";
+
+  if (req._.res) {
+    req._.res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    req._.res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${fileName}"`
+    );
+    req._.res.send(buffer);
+    return;
+  }
+  // Fallback for CAP v5
+  return buffer;
+});
 
 });
