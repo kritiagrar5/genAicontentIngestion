@@ -20,6 +20,8 @@ module.exports = cds.service.impl(async function () {
     console.log(" 📥 userRoles ", userRoles)
     console.log(" 📥 user ",  req.user)
     const usecase_temp = each.UseCase;
+    if(usecase_temp)
+    {
     if(usecase_temp.includes("Treasury"))
       var usecase = "Treasury";
     else if(usecase_temp.includes("Peer-Analysis"))
@@ -29,7 +31,8 @@ module.exports = cds.service.impl(async function () {
     each.isChecker = userRoles[checkerRole] ===1;
     each.canApprove = userRoles[checkerRole] === 1;
     each.canDelete = userRoles[makerRole] === 1;
-   
+}
+
     // each.canApprove = true;
     // each.canDelete = true;
     });
