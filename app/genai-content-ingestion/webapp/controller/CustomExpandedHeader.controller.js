@@ -56,8 +56,13 @@ sap.ui.define(
 
             const data = await response.json();
             const roles = data.scopes;
-            const checkerRole = `${usecase}_ContentChecker`;
-            const makerRole = `${usecase}_ContentMaker`;
+           
+    if(usecase.includes("Treasury"))
+      var usecase_= "Treasury";
+    else if(usecase.includes("Peer-Analysis"))
+       var usecase_ = "Peer-Analysis";
+            const checkerRole = `${usecase_}_ContentChecker`;
+            const makerRole = `${usecase_}_ContentMaker`;
             const hasScopeForChecker = roles.some((role) =>
               role.includes(checkerRole)
             );
@@ -416,11 +421,16 @@ sap.ui.define(
               .getModel("viewModel")
               .getProperty("/usecase");
             if (!UseCase) {
-              MessageBox.error("Please Select the UseCase ");
+              MessageBox.error("Please Select the Context ");
               return;
             }
 
-            const use_case = UseCase.toLowerCase();
+              const use_case_temp = UseCase.toLowerCase();
+            if(use_case_temp.includes("treasury"))
+              var use_case= "treasury";
+            else if(use_case_temp.includes("earnings"))
+              var use_case = "peer-analysis";
+              
             var oteam = this.getView()
               .getModel("viewModel")
               .getProperty("/team");
@@ -488,7 +498,7 @@ sap.ui.define(
                   flag = true;
                   if (record.team.includes(oteam) == 1) {
                     MessageBox.error(
-                      `File already exists in Usecase :  ${record.UseCase}`
+                      `File already exists in the Context :  ${record.UseCase}`
                     );
                     oFileUploader.setValueState("None");
                   } else {

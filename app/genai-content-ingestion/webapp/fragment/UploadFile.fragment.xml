@@ -10,7 +10,7 @@
     <VBox>
        <Title text="Upload Content" level="H1"  class="sapUiSmallMarginTop largeBoldTitle"  />
         <!-- Label above -->
-        <Label text="Use Case" required="true"  class="sapUiTinyMarginTop smallBoldTitle" />
+        <Label text="Context" required="true"  class="sapUiTinyMarginTop smallBoldTitle" />
 
         <!-- Row: dropdown + button -->
         <HBox alignItems="Center" justifyContent="Start">

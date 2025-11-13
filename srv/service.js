@@ -19,7 +19,11 @@ module.exports = cds.service.impl(async function () {
     const userRoles = req.user?.roles;
     console.log(" 📥 userRoles ", userRoles)
     console.log(" 📥 user ",  req.user)
-    const usecase = each.UseCase;
+    const usecase_temp = each.UseCase;
+    if(usecase_temp.includes("Treasury"))
+      var usecase = "Treasury";
+    else if(usecase_temp.includes("Peer-Analysis"))
+       var usecase = "Peer-Analysis";
     const checkerRole = `${usecase}_ContentChecker`;
     const makerRole = `${usecase}_ContentMaker`;
     each.isChecker = userRoles[checkerRole] ===1;
