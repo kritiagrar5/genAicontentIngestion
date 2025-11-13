@@ -141,7 +141,6 @@
                         "properties": ["mediaType"]
                     },
                     "Metadata": {
-                      "header": "MetaData",
                       "position": {
                         "anchor": "DataField::UseCase",
                         "placement": "After"
