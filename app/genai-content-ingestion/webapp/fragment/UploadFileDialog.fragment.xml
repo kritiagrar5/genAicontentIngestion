@@ -33,9 +33,9 @@
                       
                         <core:ListItem key="{ID}" text="{fileType}" />
                     </Select>
-                    <HBox>
-                        <Link id="downloadMappingFile" visible="{= ${viewModel>/usecase} === 'Peer-Analysis' }" text="Download latest Standard Account Line Mapping file" press=".onDownloadMappingfile" />
-                        <Link id="downloadDataDictionary" visible="{= ${viewModel>/usecase} === 'Treasury' }" text="Download latest Data Dictionary file" press=".onDownloadMappingfile" />
+                    <HBox visible="{= ${viewModel>/usecase} === 'Peer-Analysis' }">
+                        <Link id="downloadMappingFile" text="Download latest Standard Account Line Mapping file" press=".onDownloadMappingfile" />
+                        <!-- <Link id="downloadDataDictionary" visible="{= ${viewModel>/usecase} === 'Treasury' }" text="Download latest Data Dictionary file" press=".onDownloadMappingfile" /> -->
                         <Text class="sapUiTinyMarginBegin" text="and edit it before uploading." />
                     </HBox>
                 </VBox>

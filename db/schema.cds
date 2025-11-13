@@ -29,6 +29,8 @@ entity Content : managed {
       @UI.AdaptationHidden: true
       key ID              : String;
 
+      @UI.AdaptationHidden: true
+      status_reason: String;
       
       @Common.Label       : 'File Name'
       fileName        : String;

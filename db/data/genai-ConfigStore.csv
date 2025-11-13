@@ -2,7 +2,7 @@ ID,team,roles,usecase,fileType
 1,Capital,Workzone_EFDNA_Type_Treasury_Capital,Treasury,Content
 2,Liquidity,Workzone_EFDNA_Type_Treasury_Liquidity,Treasury,Content
 3,IRRBB,Workzone_EFDNA_Type_Treasury_IRRBB,Treasury,Content
-4,Treasury,Workzone_EFDNA_GenAI_Treasury_Maker,Treasury,Content
+4,Maker,Workzone_EFDNA_GenAI_Treasury_Maker,Treasury,Content
 5,Treasury Practitioners,Workzone_EFDNA_GenAI_Treasury_Select_Practitioners,Treasury,Data Dictionary
-6,Viewer,Workzone_EFDNA_GenAI_Earnings_Maker,Peer-Analysis,Content
+6,Maker,Workzone_EFDNA_GenAI_Earnings_Maker,Peer-Analysis,Content
 7,Peer Analysis Practitioners,Workzone_EFDNA_GenAI_Earnings_Select_Practitioners,Peer-Analysis,Standard Account Line Mapping
