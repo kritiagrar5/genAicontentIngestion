@@ -397,7 +397,7 @@ this.on("downloadMetadata", async (req) => {
     );
     req._.res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${fileName}"`
+      `attachment; filename=${fileName}`
     );
     req._.res.send(buffer);
     return;
@@ -432,7 +432,7 @@ this.on("downloadDataDictionary", async (req) => {
     );
     req._.res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${fileName}"`
+      `attachment; filename=${fileName}`
     );
     req._.res.send(buffer);
     return;
