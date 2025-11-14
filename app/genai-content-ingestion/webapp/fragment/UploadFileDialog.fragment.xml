@@ -33,7 +33,7 @@
                       
                         <core:ListItem key="{ID}" text="{fileType}" />
                     </Select>
-                    <HBox visible="{= ${viewModel>/usecase} === 'Peer-Analysis' }">
+                    <HBox visible="{= ${viewModel>/usecase} === 'Earnings(Peer-Analysis)' }">
                         <Link id="downloadMappingFile" text="Download latest Standard Account Line Mapping file" press=".onDownloadMappingfile" />
                         <!-- <Link id="downloadDataDictionary" visible="{= ${viewModel>/usecase} === 'Treasury' }" text="Download latest Data Dictionary file" press=".onDownloadMappingfile" /> -->
                         <Text class="sapUiTinyMarginBegin" text="and edit it before uploading." />
