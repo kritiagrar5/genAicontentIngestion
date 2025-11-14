@@ -123,7 +123,12 @@ this.on('READ', 'Banks', async (req) => {
         status: "PROCESSING"
       });
     })
-  
+    let use_case_;
+  if(use_case.includes("peer-analysis"))
+    use_case_ = "peer-analysis";
+  else if(use_case.includes("treasury"))
+    use_case_ = "treasury";
+
   
    // check if file is meta data(mapper), if yes replace all bank metrics in MetaData table
    console.log('file type is: ',oneFile.fileType);
@@ -209,7 +214,7 @@ this.on('READ', 'Banks', async (req) => {
       try {
         
             const responseEmbeddings = await axios.post(
-              `${destination.url}/api/generate-embeddings?use_case=${use_case}`,
+              `${destination.url}/api/generate-embeddings?use_case=${use_case_}`,
               { document_id: oneFile.ID },
               {
                 headers: {
@@ -300,6 +305,12 @@ this.on('READ', 'Banks', async (req) => {
       if (!ownFiles) {
         req.reject(400, 'You cannot delete files that are not created by you');
      }
+      let use_case_;
+  if(use_case.includes("peer-analysis"))
+    use_case_ = "peer-analysis";
+  else if(use_case.includes("treasury"))
+    use_case_ = "treasury";
+
    if(file.status != "COMPLETED")
 {
  await DELETE.from(Content).where({ ID: ID });
@@ -315,7 +326,7 @@ else{
             'Content-Type': 'application/json'
           },
           url: '/api/delete',
-          params: { use_case : use_case  },
+          params: { use_case : use_case_  },
          data: { document_id: ID }
           
         },
