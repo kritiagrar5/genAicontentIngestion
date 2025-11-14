@@ -700,7 +700,7 @@ sap.ui.define(
           const targetId = oEvent.getSource().getId();
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
           const downloadUrl = `${baseUrl}/odata/v4/catalog/${
-            targetId === "downloadMappingFile"
+            targetId.indexOf("downloadMappingFile") !==-1
               ? "downloadMetadata"
               : "downloadDataDictionary"
           }`;
