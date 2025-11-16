@@ -56,11 +56,11 @@ sap.ui.define(
 
             const data = await response.json();
             const roles = data.scopes;
-           
-    if(usecase.includes("Treasury"))
-      var usecase_= "Treasury";
-    else if(usecase.includes("Peer-Analysis"))
-       var usecase_ = "Peer-Analysis";
+
+            if (usecase.includes("Treasury"))
+              var usecase_ = "Treasury";
+            else if (usecase.includes("Peer-Analysis"))
+              var usecase_ = "Peer-Analysis";
             const checkerRole = `${usecase_}_ContentChecker`;
             const makerRole = `${usecase_}_ContentMaker`;
             const hasScopeForChecker = roles.some((role) =>
@@ -219,8 +219,8 @@ sap.ui.define(
             .byId("genaicontentingestion::ContentList--fe::FilterBar::Content");
           const oTeamModel = this.getView().getModel("teamModelFilter");
           var aTeams = oTeamModel.getProperty("/selectedTeams");
-        //  const mandatoryTeams = ["Treasury", "Viewer"];
-         const mandatoryTeams = ["Maker"];
+          //  const mandatoryTeams = ["Treasury", "Viewer"];
+          const mandatoryTeams = ["Maker"];
           aTeams = [...new Set([...aTeams, ...mandatoryTeams])];
           const aTeamConditions = aTeams.map((v) => ({
             operator: "Contains",
@@ -363,7 +363,7 @@ sap.ui.define(
                   resolve("Valid Header");
                 }
               }
-              
+
             };
             fileReader.readAsArrayBuffer(oFile);
           });
@@ -425,12 +425,12 @@ sap.ui.define(
               return;
             }
 
-              const use_case_temp = UseCase.toLowerCase();
-            if(use_case_temp.includes("treasury"))
-              var use_case= "treasury";
-            else if(use_case_temp.includes("earnings"))
+            const use_case_temp = UseCase.toLowerCase();
+            if (use_case_temp.includes("treasury"))
+              var use_case = "treasury";
+            else if (use_case_temp.includes("earnings"))
               var use_case = "peer-analysis";
-              
+
             var oteam = this.getView()
               .getModel("viewModel")
               .getProperty("/team");
@@ -541,23 +541,39 @@ sap.ui.define(
               }
               const json = await responseAPI.json();
               // sap.m.MessageToast.show("opening dialog box");
-              const dialog = await this.onOpenDialog(json);
-              const decision = json.metadata.processing_decision;
+              let dialog;
+              let image;
+              let decision;
+              let status;
+              let metadata;
+              if (oFile.type.includes("image")) {
+                image = true;
+                decision = "APPROVED";
+                status = "COMPLETED";
+                metadata = "";
+              }
+              else {
+                image = false;
+                decision = json.metadata.processing_decision;
+                status = "SUBMITTED";
+                metadata = json.metadata;
+                dialog = await this.onOpenDialog(json);
+              }
 
               this.getView()
                 .getModel("viewModel")
                 .setProperty("/decision", decision);
 
-              if (dialog) {
-                if (decision == "REJECTED") return;
+              
+                if (decision == "REJECTED")
+                  return;
                 else {
                   const putUrl =
                     baseUrl +
                     "/odata/v4/catalog/Content/" +
                     fileHash +
                     "/content";
-
-                  const metadata = json.metadata;
+                  //const metadata = json.metadata;
                   var oMediaType = oFile.type;
                   if (oMediaType.includes("spreadsheet"))
                     oMediaType = "application/xlsx";
@@ -577,7 +593,7 @@ sap.ui.define(
                         ID: `${fileHash}`,
                         fileName: oFile.name,
                         url: putUrl,
-                        status: "SUBMITTED",
+                        status: status,
                         mediaType: oMediaType,
                         metaData: JSON.stringify({ metadata }),
                         UseCase: UseCase,
@@ -619,8 +635,9 @@ sap.ui.define(
                     oFileUploader.setValueState("Error");
                   }
                 }
-              }
-            } else {
+              
+            }
+             else {
               const putUrl =
                 baseUrl + "/odata/v4/catalog/Content/" + fileHash + "/content";
 
@@ -699,11 +716,10 @@ sap.ui.define(
         onDownloadMappingfile: async function (oEvent) {
           const targetId = oEvent.getSource().getId();
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
-          const downloadUrl = `${baseUrl}/odata/v4/catalog/${
-            targetId.indexOf("downloadMappingFile") !==-1
-              ? "downloadMetadata"
-              : "downloadDataDictionary"
-          }`;
+          const downloadUrl = `${baseUrl}/odata/v4/catalog/${targetId.indexOf("downloadMappingFile") !== -1
+            ? "downloadMetadata"
+            : "downloadDataDictionary"
+            }`;
           const csrf = await this.onfetchCSRF(baseUrl);
           const responseAPI = await fetch(downloadUrl, {
             method: "POST",
