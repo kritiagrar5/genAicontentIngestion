@@ -26,8 +26,14 @@ sap.ui.define([
       if (!oContext) return;
       const metaDataValue = await oContext.requestProperty("metaData");
       const decision = await oContext.requestProperty('status');
+      const mediaType = await oContext.requestProperty('mediaType');
       try {
         // const metaDataValue = await oContext.requestObject("metaData");
+        if(mediaType.includes("image"))
+        {
+           MessageBox.error("MetaData field not available for Images");
+          return;
+        }
         if (!metaDataValue) {
           MessageBox.error("MetaData field not available for SALM and Data Dictinary Files.");
           return;
