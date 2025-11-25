@@ -30,7 +30,7 @@
         "genaicontentingestion": {
           "semanticObject": "genaicontentingestion",
           "action": "display",
-          "title": "GenAI-Content-Ingestion",
+          "title": "Content Ingestion",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
