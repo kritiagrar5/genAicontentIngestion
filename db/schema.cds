@@ -6,32 +6,37 @@ using {
 } from '@sap/cds/common';
 
 entity AppSelection {
-  key ID              : UUID;
-      AppName         : String;
-     }
+  key ID      : UUID;
+      AppName : String;
+}
 
-  @UI.lineItem: [{ position: 40, label: 'UseCase',value:UseCase, hidden: false }]
-@cds.search: {
-      ID:false,
-      fileName:true,
-      mediaType:true,
-      status:true,
-      isChecker:false,
-      UseCase:false,
-      team:false,
-      fileType:false,
-      embeddingStatus:false,
-      url:false,
-      content:false,
-      metaData:false
+@UI.lineItem: [{
+  position: 40,
+  label   : 'UseCase',
+  value   : UseCase,
+  hidden  : false
+}]
+@cds.search : {
+  ID             : false,
+  fileName       : true,
+  mediaType      : true,
+  status         : true,
+  isChecker      : false,
+  UseCase        : false,
+  team           : false,
+  fileType       : false,
+  embeddingStatus: false,
+  url            : false,
+  content        : false,
+  metaData       : false
 }
 entity Content : managed {
       @UI.AdaptationHidden: true
-      key ID              : String;
+  key ID              : String;
 
       @UI.AdaptationHidden: true
-      status_reason: String;
-      
+      status_reason   : String;
+
       @Common.Label       : 'File Name'
       fileName        : String;
       mediaType       : String;
@@ -39,7 +44,8 @@ entity Content : managed {
       @UI.AdaptationHidden: true
       tagType         : String;
       status          : String;
-      @UI.HiddenFilter: true
+
+      @UI.HiddenFilter    : true
       embeddingStatus : String;
 
       @UI.AdaptationHidden: true
@@ -50,12 +56,15 @@ entity Content : managed {
 
       @UI.AdaptationHidden: true
       metaData        : LargeString;
-      @UI.HiddenFilter: true
+
+      @UI.HiddenFilter    : true
       isChecker       : Boolean;
       UseCase         : String;
-      @UI.HiddenFilter: true
+
+      @UI.HiddenFilter    : true
       team            : String;
-      @UI.HiddenFilter: true
+
+      @UI.HiddenFilter    : true
       fileType        : String;
 
 }
@@ -69,29 +78,61 @@ entity ActionVisibility : cuid, {
 }
 
 entity FileType {
-  key ID              : UUID;
-      fileType         : String;
-   }
+  key ID       : UUID;
+      fileType : String;
+}
 
 entity ConfigStore {
 
-  key ID: String;
-  team : String;
-  roles : String;
-  usecase : String;
-  fileType : String;
-  
+  key ID       : String;
+      team     : String;
+      roles    : String;
+      usecase  : String;
+      fileType : String;
+
 }
+
 entity MetaData : cuid {
-  key bankID: String;
-  key stdMetric: String;
-  bankMetric: String;
-  userID: String;
+  key bankID     : String;
+  key stdMetric  : String;
+      bankMetric : String;
+      userID     : String;
 }
 
 entity DataDictionary : cuid {
-  key column: String;
-  description: String;
-  longDescription: LargeString;
-  userID: String;
+  key column          : String;
+      description     : String;
+      longDescription : LargeString;
+      userID          : String;
+}
+
+entity PromptTemplate : cuid {
+  key OLD_ID              : String;
+      category            : String;
+      product             : LargeString;
+      template            : String;
+      original_prompt     : String;
+      description         : String;
+      select_product      : String;
+      input_country       : String;
+      select_model        : String;
+      select_coupon_type  : String;
+      select_metric       : String;
+      select_COB_date     : String;
+      select_attribute    : String;
+      input_ISIN          : String;
+      input_month_year    : String;
+      input_portfolio     : String;
+
+      keyword_product     : String;
+      keyword_country     : String;
+      keyword_model       : String;
+      keyword_coupon_type : String;
+      keyword_metric      : String;
+      keyword_COB_date    : String;
+      keyword_attribute   : String;
+      keyword_ISIN        : String;
+      keyword_month_year  : String;
+      keyword_portfolio   : String;
+
 }

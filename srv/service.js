@@ -62,20 +62,21 @@ req.query.where(cds.parse.expr(conditions));
 
   });
  
-this.after("READ", "FileType", (rows) => {
-    if (!Array.isArray(rows)) return rows;
+// this.after("READ", "ConfigStore", (rows) => {
+//     if (!Array.isArray(rows)) return rows;
 
-    // Create a blank row
-    const blankRow = {
-        ID: "",               
-        fileType: "Select what your file will be used for"        
-    };
+//     // Create a blank row
+//     const blankRow = {
+//         ID: "",               
+//         fileType: "Select what your file will be used for", 
+//         usecase:"",        
+//     };
 
-    // Insert at the start of the array
-    rows.unshift(blankRow);
+//     // Insert at the start of the array
+//     rows.unshift(blankRow);
 
-    return rows;
-});
+//     return rows;
+// });
 
 /*this.before("READ", "ConfigStore", (rows) => {
     if (!Array.isArray(rows)) return rows;
@@ -209,7 +210,43 @@ this.on('READ', 'Banks', async (req) => {
       }
       await tx.update(Content, ID).with({ status: "COMPLETED" });
       return await SELECT.one.from(Content).where({ ID });
-    }else{
+    }else if(oneFile.fileType === "Prompt Template"){
+      //parse the xlsx file and update the DataDictionary table, first row is header
+      const xlsx = require("xlsx");
+      const buffer = await streamToBuffer(oneFile.content);
+      console.log('buffer is Buffer:',Buffer.isBuffer(oneFile.content));
+      const workbook = xlsx.read(buffer, { type: "buffer" });
+      console.log('workbook is: ',workbook);
+      const sheetName = workbook.SheetNames[0];
+      console.log('sheetNames is: ',workbook.SheetNames);
+      const worksheet = workbook.Sheets[sheetName];
+      console.log('worksheet is: ',worksheet);
+      const jsonData = xlsx.utils.sheet_to_json(worksheet, {header:1});
+      console.log("Excel Data:", jsonData);
+      const dataRows = jsonData.slice(1);
+      const headers = jsonData[0];
+      
+      // remove all rows in PromptTemplate
+      console.log("Deleting all rows in PromptTemplate");
+      await DELETE.from(PromptTemplate);
+      //insert the rows in PromptTemplate table
+      for (const row of dataRows) {
+        const rowData = {};
+        headers.forEach((header, index) => {
+          rowData[header] = row[index];
+        });
+        rowData["userID"] = oneFile.createdBy;
+        console.log('Inserting row:', rowData);
+        try {
+          await INSERT.into(PromptTemplate).entries(rowData);
+        } catch (err) {
+          console.error('Error inserting row:', err);
+        }
+      }
+      await tx.update(Content, ID).with({ status: "COMPLETED" });
+      return await SELECT.one.from(Content).where({ ID });
+    }
+    else{
       //Call API to create Embeddings
       try {
         
@@ -424,6 +461,42 @@ this.on("downloadDataDictionary", async (req) => {
   xlsx.utils.book_append_sheet(workbook, worksheet, "DataDictionary");
   const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
   const fileName = "DataDictionary.xlsx";
+
+  if (req._.res) {
+    req._.res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    req._.res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=${fileName}`
+    );
+    req._.res.send(buffer);
+    return;
+  }
+  // Fallback for CAP v5
+  return buffer;
+});
+this.on("downloadPromptTemplate", async (req) => {
+  // Define the headers you want in the Excel file
+  const headers = ["OLD_ID", "category", "product", "template","original_prompt","description","select_product","input_country","select_model","select_coupon_type","select_metric","select_COB_date","select_attribute",
+    "input_ISIN","input_month_year","input_portfolio","keyword_product","keyword_country","keyword_model","keyword_coupon_type","keyword_metric","keyword_COB_date","keyword_attribute","keyword_ISIN","keyword_month_year","keyword_portfolio"];
+
+  // Fetch all DataDictionary records
+  const allDataDictionary = await cds.run(
+    SELECT.from(PromptTemplate).columns(headers).orderBy("column ASC")
+  );
+
+  // If no data, add an empty object to preserve headers
+  const sheetData = allDataDictionary.length > 0 ? allDataDictionary : [{}];
+
+  // Convert to Excel with explicit header order
+  const xlsx = require("xlsx");
+  const worksheet = xlsx.utils.json_to_sheet(sheetData, { header: headers });
+  const workbook = xlsx.utils.book_new();
+  xlsx.utils.book_append_sheet(workbook, worksheet, "PromptTemplate");
+  const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+  const fileName = "PromptTemplate.xlsx";
 
   if (req._.res) {
     req._.res.setHeader(

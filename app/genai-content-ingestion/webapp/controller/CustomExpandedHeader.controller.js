@@ -111,13 +111,29 @@ sap.ui.define(
             credentials: "include",
           });
           const resTeam = await responseTeam.json();
-          const sKeyTeam = resTeam.value.map((r) => r.team);
-
-          const oTeamModel = new sap.ui.model.json.JSONModel({
-            selectedTeams: sKeyTeam,
+          const sKeyTeam = resTeam.value.map((item) => ({
+            ID: item.ID,
+            team: item.team,
+            fileType: item.fileType,
+            usecase: item.usecase,
+          }));
+          this.getView().getModel("viewModel").setProperty("/allConfigStore", sKeyTeam);
+          const filtered_model = sKeyTeam.filter(item => item.usecase === sKey);
+          filtered_model.unshift({
+            ID: "",
+            team: "",
+            fileType: "Select what your file will be used for",
+            usecase: ""
           });
+          const oTeamModel = new sap.ui.model.json.JSONModel({
+            selectedTeams: filtered_model,
+          });
+
+
           this.onfetchRoles();
           this.getView().setModel(oTeamModel, "teamModelFilter");
+
+
           this.onFilterBarChange(sKey);
         },
         onTypeMismatch: function () {
@@ -155,6 +171,18 @@ sap.ui.define(
             .getSelectedItem()
             .getBindingContext();
           this.onfetchRoles();
+          const sKeyTeam = this.getView().getModel("viewModel").getProperty("/allConfigStore");
+          const filtered_model = sKeyTeam.filter(item => item.usecase === sKey);
+          filtered_model.unshift({
+            ID: "",
+            team: "",
+            fileType: "Select what your file will be used for",
+            usecase: ""
+          });
+          const oTeamModel = new sap.ui.model.json.JSONModel({
+            selectedTeams: filtered_model,
+          });
+          this.getView().setModel(oTeamModel, "teamModelFilter");
           this.onFilterBarChange(sKey);
         },
         onFileTypeChange: async function (oEvent) {
@@ -168,7 +196,7 @@ sap.ui.define(
           const UseCase = this.getView()
             .getModel("viewModel")
             .getProperty("/usecase");
-          const responseTeam = await fetch(teamUrl, {
+          /*const responseTeam = await fetch(teamUrl, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -183,8 +211,8 @@ sap.ui.define(
             team: item.team,
             fileType: item.fileType,
             usecase: item.usecase,
-          }));
-
+          }));*/
+          const sKeyTeam = this.getView().getModel("viewModel").getProperty("/allConfigStore");
           const oTeamModel = new sap.ui.model.json.JSONModel({
             selectedTeams: sKeyTeam,
           });
@@ -220,8 +248,9 @@ sap.ui.define(
           const oTeamModel = this.getView().getModel("teamModelFilter");
           var aTeams = oTeamModel.getProperty("/selectedTeams");
           //  const mandatoryTeams = ["Treasury", "Viewer"];
+          const onlyTeams = aTeams.map(item => item.team);
           const mandatoryTeams = ["Maker"];
-          aTeams = [...new Set([...aTeams, ...mandatoryTeams])];
+          aTeams = [...new Set([...onlyTeams, ...mandatoryTeams])];
           const aTeamConditions = aTeams.map((v) => ({
             operator: "Contains",
             values: [v],
@@ -311,6 +340,7 @@ sap.ui.define(
             this.getView().addDependent(oDialog);
             oDialog.open();
           });
+
         },
         onCancelUpload: function () {
           if (this._oDialog) {
@@ -363,13 +393,56 @@ sap.ui.define(
                   resolve("Valid Header");
                 }
               }
+              if (ofileType === "Prompt Template") {
+                headers = jsonData[0].map(h =>
+                  typeof h === "string" ? h.toLowerCase() : h
+                );
+                if (
+                  headers.length !== 26 ||
+                  headers[0] !== "old_id" ||
+                  headers[1] !== "category" ||
+                  headers[2] !== "product" ||
+                  headers[3] !== "template" ||
+                  headers[4] !== "original_prompt" ||
+                  headers[5] !== "description" ||
 
+                  headers[6] !== "select product" ||
+                  headers[7] !== "input country" ||
+                  headers[8] !== "select model" ||
+                  headers[9] !== "select coupon type" ||
+                  headers[10] !== "select metric" ||
+                  headers[11] !== "select COB date" ||
+                  headers[12] !== "select attribute" ||
+                  headers[13] !== "input ISIN" ||
+                  headers[14] !== "input month year" ||
+                  headers[15] !== "input portfolio" ||
+                  headers[16] !== "keyword product" ||
+                  headers[17] !== "keyword country" ||
+                  headers[18] !== "keyword model" ||
+                  headers[19] !== "keyword coupon type" ||
+                  headers[20] !== "keyword metric" ||
+                  headers[21] !== "keyword COB date" ||
+                  headers[22] !== "keyword attribute" ||
+                  headers[23] !== "keyword ISIN" ||
+                  headers[24] !== "keyword month year" ||
+                  headers[25] !== "keyword portfolio" 
+
+                ) {
+                  MessageBox.error("Invalid Template Format.");
+                  reject("Invalid Header");
+                } else {
+                  resolve("Valid Header");
+                }
+              }
             };
             fileReader.readAsArrayBuffer(oFile);
           });
           try {
             await readFilePromise;
             isValid = true;
+            if (ofileType === "Data Dictionary")
+              return isValid;
+
             // Extract unique bankIDs from dataRows
             const bankIDs = [...new Set(dataRows.map((row) => row[0]))].filter(
               (id) => id !== undefined && id !== null && id !== ""
@@ -448,7 +521,8 @@ sap.ui.define(
 
             if (
               ofileType === "Standard Account Line Mapping" ||
-              ofileType === "Data Dictionary"
+              ofileType === "Data Dictionary" ||
+              ofileType === "Prompt Template"
             ) {
               dublinCheck = 0;
             }
@@ -462,7 +536,8 @@ sap.ui.define(
 
             const chatUrl = baseUrl + "/api/upload?use_case=" + use_case;
             const contentUrl = baseUrl + "/odata/v4/catalog/Content";
-            if (ofileType === "Standard Account Line Mapping" || ofileType === "Data Dictionary") {
+            if (ofileType === "Standard Account Line Mapping" || ofileType === "Data Dictionary" ||
+              ofileType === "Prompt Template") {
               const isValid = await this._validateFile(oFile, ofileType);
 
               if (!isValid) {
@@ -564,80 +639,80 @@ sap.ui.define(
                 .getModel("viewModel")
                 .setProperty("/decision", decision);
 
-              
-                if (decision == "REJECTED")
-                  return;
-                else {
-                  const putUrl =
-                    baseUrl +
-                    "/odata/v4/catalog/Content/" +
-                    fileHash +
-                    "/content";
-                  //const metadata = json.metadata;
-                  var oMediaType = oFile.type;
-                  if (oMediaType.includes("spreadsheet"))
-                    oMediaType = "application/xlsx";
 
-                  if (oFileUploader.getValue()) {
-                    oFileUploader.setValueState("None");
+              if (decision == "REJECTED")
+                return;
+              else {
+                const putUrl =
+                  baseUrl +
+                  "/odata/v4/catalog/Content/" +
+                  fileHash +
+                  "/content";
+                //const metadata = json.metadata;
+                var oMediaType = oFile.type;
+                if (oMediaType.includes("spreadsheet"))
+                  oMediaType = "application/xlsx";
 
-                    // create a record in Content Table
-                    const response = await fetch(contentUrl, {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-Token": csrf,
-                      },
-                      credentials: "include",
-                      body: JSON.stringify({
-                        ID: `${fileHash}`,
-                        fileName: oFile.name,
-                        url: putUrl,
-                        status: status,
-                        mediaType: oMediaType,
-                        metaData: JSON.stringify({ metadata }),
-                        UseCase: UseCase,
-                        team: oteam,
-                        fileType: ofileType,
-                      }),
-                    });
+                if (oFileUploader.getValue()) {
+                  oFileUploader.setValueState("None");
 
-                    if (!response.ok) {
-                      if (response.status === 400) {
-                        MessageBox.error("400-Bad Request");
-                        return;
-                      } else {
-                        throw new Error(
-                          `Entity creation failed: ${response.status}`
-                        );
-                      }
+                  // create a record in Content Table
+                  const response = await fetch(contentUrl, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "X-CSRF-Token": csrf,
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                      ID: `${fileHash}`,
+                      fileName: oFile.name,
+                      url: putUrl,
+                      status: status,
+                      mediaType: oMediaType,
+                      metaData: JSON.stringify({ metadata }),
+                      UseCase: UseCase,
+                      team: oteam,
+                      fileType: ofileType,
+                    }),
+                  });
+
+                  if (!response.ok) {
+                    if (response.status === 400) {
+                      MessageBox.error("400-Bad Request");
+                      return;
+                    } else {
+                      throw new Error(
+                        `Entity creation failed: ${response.status}`
+                      );
                     }
-
-                    const oExtModel = this.base.getExtensionAPI().getModel();
-                    var fileType;
-                    if (oFile.type.includes("pdf")) fileType = "PDF";
-                    else if (oFile.type.includes("spreadsheet"))
-                      fileType = "Excel";
-                    else fileType = "Document/Word";
-                    await fetch(putUrl, {
-                      method: "PUT",
-                      headers: {
-                        "Content-Type": oFile.type,
-                        Slug: encodeURIComponent(oFile.name),
-                        "X-CSRF-Token": csrf,
-                      },
-                      credentials: "include",
-                      body: oFile,
-                    });
-                    oExtModel.refresh();
-                    oFileUploader.setValue("");
-                  } else {
-                    oFileUploader.setValueState("Error");
                   }
+
+                  const oExtModel = this.base.getExtensionAPI().getModel();
+                  var fileType;
+                  if (oFile.type.includes("pdf")) fileType = "PDF";
+                  else if (oFile.type.includes("spreadsheet"))
+                    fileType = "Excel";
+                  else fileType = "Document/Word";
+                  await fetch(putUrl, {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": oFile.type,
+                      Slug: encodeURIComponent(oFile.name),
+                      "X-CSRF-Token": csrf,
+                    },
+                    credentials: "include",
+                    body: oFile,
+                  });
+                  oExtModel.refresh();
+                  oFileUploader.setValue("");
+                } else {
+                  oFileUploader.setValueState("Error");
                 }
-              
+              }
+
             }
-             else {
+            else {
               const putUrl =
                 baseUrl + "/odata/v4/catalog/Content/" + fileHash + "/content";
 

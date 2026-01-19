@@ -26,12 +26,12 @@
                     <Label text="File Type" required="true" />
                     <Select id="fileTypeSelect"
                             width="100%"
-                            items="{ path: '/FileType' }"
+                           items="{path: 'teamModelFilter>/selectedTeams'}"
                             change=".onFileTypeChange"  
                         
                             >
                       
-                        <core:ListItem key="{ID}" text="{fileType}" />
+                        <core:ListItem key="{teamModelFilter>ID}" text="{teamModelFilter>fileType}" />
                     </Select>
                     <HBox visible="{= ${viewModel>/usecase} === 'Earnings(Peer-Analysis)' }">
                         <Link id="downloadMappingFile" text="Download latest Standard Account Line Mapping file" press=".onDownloadMappingfile" />
