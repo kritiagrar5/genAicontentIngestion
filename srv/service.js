@@ -10,7 +10,7 @@ const fetch = require("node-fetch");
 const { isOriginOptions } = require("@sap-cloud-sdk/http-client/dist/http-client-types");
 
 module.exports = cds.service.impl(async function () {
-  const { Content, MetaData,DataDictionary, AppSelection, ActionVisibility,FileType,ConfigStore } = this.entities;
+  const { Content, MetaData,DataDictionary,PromptTemplate, AppSelection, ActionVisibility,FileType,ConfigStore } = this.entities;
   const LOG = cds.log('CI');
 
   this.after("READ", "Content", (each, req) => {
@@ -225,10 +225,11 @@ this.on('READ', 'Banks', async (req) => {
       console.log("Excel Data:", jsonData);
       const dataRows = jsonData.slice(1);
       const headers = jsonData[0];
-      
+     
       // remove all rows in PromptTemplate
       console.log("Deleting all rows in PromptTemplate");
       await DELETE.from(PromptTemplate);
+      
       //insert the rows in PromptTemplate table
       for (const row of dataRows) {
         const rowData = {};
