@@ -30,6 +30,10 @@ entity DataDictionary as
     select from schema.DataDictionary {
       *,
     }
+entity PromptTemplate as
+    select from schema.PromptTemplate {
+      *,
+    }
   entity Content          as
     select from schema.Content {
       *,
@@ -69,5 +73,6 @@ entity DataDictionary as
   // returns the excel file as attachment
   action downloadMetadata() returns String;
   action downloadDataDictionary() returns String;
+  action downloadPromptTemplate() returns String;
 
 }

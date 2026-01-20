@@ -211,7 +211,7 @@ this.on('READ', 'Banks', async (req) => {
       await tx.update(Content, ID).with({ status: "COMPLETED" });
       return await SELECT.one.from(Content).where({ ID });
     }else if(oneFile.fileType === "Prompt Template"){
-      //parse the xlsx file and update the DataDictionary table, first row is header
+      //parse the xlsx file and update the Prompt Template table, first row is header
       const xlsx = require("xlsx");
       const buffer = await streamToBuffer(oneFile.content);
       console.log('buffer is Buffer:',Buffer.isBuffer(oneFile.content));
@@ -480,7 +480,7 @@ this.on("downloadDataDictionary", async (req) => {
 this.on("downloadPromptTemplate", async (req) => {
   // Define the headers you want in the Excel file
   const headers = ["OLD_ID", "category", "product", "template","original_prompt","description","select_product","input_country","select_model","select_coupon_type","select_metric","select_COB_date","select_attribute",
-    "input_ISIN","input_month_year","input_portfolio","keyword_product","keyword_country","keyword_model","keyword_coupon_type","keyword_metric","keyword_COB_date","keyword_attribute","keyword_ISIN","keyword_month_year","keyword_portfolio"];
+    "input_ISIN","input_month_year","input_portfolio","keyword_product","keyword_country","keyword_model","keyword_coupon_type","keyword_metric","keyword_COB_date","keyword_attribute","keyword_ISIN","keyword_month_year","keyword_portfolio","userID"];
 
   // Fetch all DataDictionary records
   const allDataDictionary = await cds.run(
