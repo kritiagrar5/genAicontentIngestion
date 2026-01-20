@@ -397,6 +397,7 @@ sap.ui.define(
                 headers = jsonData[0].map(h =>
                   typeof h === "string" ? h.toLowerCase() : h
                 );
+            
                 if (
                   headers.length !== 26 ||
                   headers[0] !== "old_id" ||
@@ -405,15 +406,14 @@ sap.ui.define(
                   headers[3] !== "template" ||
                   headers[4] !== "original_prompt" ||
                   headers[5] !== "description" ||
-
                   headers[6] !== "select product" ||
                   headers[7] !== "input country" ||
                   headers[8] !== "select model" ||
                   headers[9] !== "select coupon type" ||
                   headers[10] !== "select metric" ||
-                  headers[11] !== "select COB date" ||
+                  headers[11] !== "select cob date" ||
                   headers[12] !== "select attribute" ||
-                  headers[13] !== "input ISIN" ||
+                  headers[13] !== "input isin" ||
                   headers[14] !== "input month year" ||
                   headers[15] !== "input portfolio" ||
                   headers[16] !== "keyword product" ||
@@ -421,11 +421,13 @@ sap.ui.define(
                   headers[18] !== "keyword model" ||
                   headers[19] !== "keyword coupon type" ||
                   headers[20] !== "keyword metric" ||
-                  headers[21] !== "keyword COB date" ||
+                  headers[21] !== "keyword cob date" ||
                   headers[22] !== "keyword attribute" ||
-                  headers[23] !== "keyword ISIN" ||
+                  headers[23] !== "keyword isin" ||
                   headers[24] !== "keyword month year" ||
                   headers[25] !== "keyword portfolio" 
+
+
 
                 ) {
                   MessageBox.error("Invalid Template Format.");
@@ -440,7 +442,7 @@ sap.ui.define(
           try {
             await readFilePromise;
             isValid = true;
-            if (ofileType === "Data Dictionary")
+            if (ofileType === "Data Dictionary" || ofileType === "Prompt Template")
               return isValid;
 
             // Extract unique bankIDs from dataRows
@@ -487,6 +489,7 @@ sap.ui.define(
         },
         onConfirmUpload: async function (oEvent) {
           try {
+
             var that = this;
             BusyIndicator.show(0);
             var dublinCheck = 1;

@@ -109,7 +109,7 @@ entity DataDictionary : cuid {
 entity PromptTemplate : cuid {
   key OLD_ID              : String;
       category            : String;
-      product             : LargeString;
+      product             : String;
       template            : String;
       original_prompt     : String;
       description         : String;
@@ -134,5 +134,6 @@ entity PromptTemplate : cuid {
       keyword_ISIN        : String;
       keyword_month_year  : String;
       keyword_portfolio   : String;
+      userID              : String;
 
 }
