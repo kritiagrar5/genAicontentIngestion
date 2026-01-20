@@ -485,11 +485,13 @@ this.on("downloadPromptTemplate", async (req) => {
 
   // Fetch all DataDictionary records
   const allDataDictionary = await cds.run(
-    SELECT.from(PromptTemplate).columns(headers).orderBy("column ASC")
+    SELECT.from(PromptTemplate)
   );
+  console.log("All Prompts Data",allDataDictionary);
 
   // If no data, add an empty object to preserve headers
   const sheetData = allDataDictionary.length > 0 ? allDataDictionary : [{}];
+  console.log("All Sheet Data",sheetData);
 
   // Convert to Excel with explicit header order
   const xlsx = require("xlsx");

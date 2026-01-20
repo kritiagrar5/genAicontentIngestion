@@ -38,6 +38,10 @@
                         <!-- <Link id="downloadDataDictionary" visible="{= ${viewModel>/usecase} === 'Treasury' }" text="Download latest Data Dictionary file" press=".onDownloadMappingfile" /> -->
                         <Text class="sapUiTinyMarginBegin" text="and edit it before uploading." />
                     </HBox>
+                    <HBox visible="{= ${viewModel>/usecase} === 'Treasury' }">
+                        <Link id="downloadPromptTemplate" visible="{= ${viewModel>/usecase} === 'Treasury' }" text="Download latest Prompt Template file" press=".onDownloadPromptTemplate" />
+                        <Text class="sapUiTinyMarginBegin" text="and edit it before uploading." />
+                    </HBox>
                 </VBox>
 
                 <!-- Team -->

@@ -834,6 +834,46 @@ sap.ui.define(
           a.remove();
           window.URL.revokeObjectURL(url);
         },
+        onDownloadPromptTemplate: async function (oEvent) {
+          const targetId = oEvent.getSource().getId();
+          const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
+          const downloadUrl = `${baseUrl}/odata/v4/catalog/${targetId.indexOf("downloadPromptTemplate") !== -1 ? "downloadPromptTemplate" : "downloadMetadata"}`;
+          const csrf = await this.onfetchCSRF(baseUrl);
+          const responseAPI = await fetch(downloadUrl, {
+            method: "POST",
+            headers: {
+              "X-CSRF-Token": csrf,
+              Accept:
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "Content-type": "application/json",
+            },
+            body: "{}",
+          });
+          if (!responseAPI.ok) {
+            let res;
+            try {
+              res = await responseAPI.json();
+              MessageBox.error(res.message);
+            } catch (e) {
+              MessageBox.error("Download failed.");
+            }
+            return;
+          }
+
+          //get file name from response headers
+          const fileName = responseAPI.headers
+            .get("Content-Disposition")
+            .split("filename=")[1];
+          const blob = await responseAPI.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+        },
       }
     );
   }
