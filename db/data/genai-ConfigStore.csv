@@ -6,3 +6,4 @@ ID,team,roles,usecase,fileType
 5,Treasury Practitioners,Workzone_EFDNA_GenAI_Treasury_Select_Practitioners,Treasury,Data Dictionary
 6,Maker,Workzone_EFDNA_GenAI_Earnings_Maker,Earnings(Peer-Analysis),Content
 7,Peer Analysis Practitioners,Workzone_EFDNA_GenAI_Earnings_Select_Practitioners,Earnings(Peer-Analysis),Standard Account Line Mapping
+8,Maker,Workzone_EFDNA_GenAI_Treasury_Maker,Treasury,Prompt Template

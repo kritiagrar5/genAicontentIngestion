@@ -370,9 +370,9 @@ sap.ui.define(
               if (ofileType === "Data Dictionary") {
                 if (
                   headers.length !== 3 ||
-                  headers[0] !== "column" ||
-                  headers[1] !== "description" ||
-                  headers[2] !== "longDescription"
+                  headers[0].toLowerCase() !== "column" ||
+                  headers[1].toLowerCase() !== "description" ||
+                  headers[2].toLowerCase() !== "longdescription"
                 ) {
                   MessageBox.error("Invalid File Format.");
                   reject("Invalid Header");
@@ -394,8 +394,8 @@ sap.ui.define(
                 }
               }
               if (ofileType === "Prompt Template") {
-                headers = jsonData[0].map(h =>
-                  typeof h === "string" ? h.toLowerCase() : h
+                const headers = jsonData[0].map(h =>
+                  typeof h === "string" ? h.trim().toLowerCase() : h
                 );
             
                 if (
@@ -406,26 +406,26 @@ sap.ui.define(
                   headers[3] !== "template" ||
                   headers[4] !== "original_prompt" ||
                   headers[5] !== "description" ||
-                  headers[6] !== "select product" ||
-                  headers[7] !== "input country" ||
-                  headers[8] !== "select model" ||
-                  headers[9] !== "select coupon type" ||
-                  headers[10] !== "select metric" ||
-                  headers[11] !== "select cob date" ||
-                  headers[12] !== "select attribute" ||
-                  headers[13] !== "input isin" ||
-                  headers[14] !== "input month year" ||
-                  headers[15] !== "input portfolio" ||
-                  headers[16] !== "keyword product" ||
-                  headers[17] !== "keyword country" ||
-                  headers[18] !== "keyword model" ||
-                  headers[19] !== "keyword coupon type" ||
-                  headers[20] !== "keyword metric" ||
-                  headers[21] !== "keyword cob date" ||
-                  headers[22] !== "keyword attribute" ||
-                  headers[23] !== "keyword isin" ||
-                  headers[24] !== "keyword month year" ||
-                  headers[25] !== "keyword portfolio" 
+                  headers[6] !== "select_product" ||
+                  headers[7] !== "input_country" ||
+                  headers[8] !== "select_model" ||
+                  headers[9] !== "select_coupon_type" ||
+                  headers[10] !== "select_metric" ||
+                  headers[11] !== "select_cob_date" ||
+                  headers[12] !== "select_attribute" ||
+                  headers[13] !== "input_isin" ||
+                  headers[14] !== "input_month_year" ||
+                  headers[15] !== "input_portfolio" ||
+                  headers[16] !== "keyword_product" ||
+                  headers[17] !== "keyword_country" ||
+                  headers[18] !== "keyword_model" ||
+                  headers[19] !== "keyword_coupon_type" ||
+                  headers[20] !== "keyword_metric" ||
+                  headers[21] !== "keyword_cob_date" ||
+                  headers[22] !== "keyword_attribute" ||
+                  headers[23] !== "keyword_isin" ||
+                  headers[24] !== "keyword_month_year" ||
+                  headers[25] !== "keyword_portfolio" 
 
 
 

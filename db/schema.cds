@@ -106,34 +106,31 @@ entity DataDictionary : cuid {
       userID          : String;
 }
 
-entity PromptTemplate : cuid {
+entity PromptTemplate : cuid, managed {
   key OLD_ID              : String;
-      category            : String;
-      product             : String;
-      template            : String;
-      original_prompt     : String;
-      description         : String;
-      select_product      : String;
-      input_country       : String;
-      select_model        : String;
-      select_coupon_type  : String;
-      select_metric       : String;
-      select_COB_date     : String;
-      select_attribute    : String;
-      input_ISIN          : String;
-      input_month_year    : String;
-      input_portfolio     : String;
-
-      keyword_product     : String;
-      keyword_country     : String;
-      keyword_model       : String;
-      keyword_coupon_type : String;
-      keyword_metric      : String;
-      keyword_COB_date    : String;
-      keyword_attribute   : String;
-      keyword_ISIN        : String;
-      keyword_month_year  : String;
-      keyword_portfolio   : String;
-      userID              : String;
-
+      CATEGORY            : String;
+      PRODUCT             : String;
+      TEMPLATE            : LargeString;
+      ORIGINAL_PROMPT     : LargeString;
+      DESCRIPTION         : LargeString;
+      SELECT_PRODUCT      : String;
+      INPUT_COUNTRY       : String;
+      SELECT_MODEL        : String;
+      SELECT_COUPON_TYPE  : String;
+      SELECT_METRIC       : String;
+      SELECT_COB_DATE     : String;
+      SELECT_ATTRIBUTE    : String;
+      INPUT_ISIN          : String;
+      INPUT_MONTH_YEAR    : String;
+      INPUT_PORTFOLIO     : String;
+      KEYWORD_PRODUCT     : String;
+      KEYWORD_COUNTRY     : String;
+      KEYWORD_MODEL       : String;
+      KEYWORD_COUPON_TYPE : String;
+      KEYWORD_METRIC      : String;
+      KEYWORD_COB_DATE    : String;
+      KEYWORD_ATTRIBUTE   : String;
+      KEYWORD_ISIN        : String;
+      KEYWORD_MONTH_YEAR  : String;
+      KEYWORD_PORTFOLIO   : String;
 }
