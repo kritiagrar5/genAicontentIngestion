@@ -190,42 +190,47 @@ module.exports = cds.service.impl(async function () {
       const dataRows = jsonData.slice(1);
       const headers = jsonData[0];
 
-      // remove all rows in DataDictionary
-      console.log("Deleting all rows in DataDictionary");
-      await DELETE.from(DataDictionary);
+      try {
+        // remove all rows in DataDictionary
+        console.log("Deleting all rows in DataDictionary");
+        await tx.run(DELETE.from(DataDictionary));
 
-      const isEmpty = (val) => val === null || val === undefined || (typeof val === 'string' && val.trim() === '');
-      //insert the rows in DataDictionary table
+        const isEmpty = (val) => val === null || val === undefined || (typeof val === 'string' && val.trim() === '');
+        //insert the rows in DataDictionary table
 
-      for (let rowIndex = 0; rowIndex < dataRows.length; rowIndex++) {
-        const row = dataRows[rowIndex];
+        for (let rowIndex = 0; rowIndex < dataRows.length; rowIndex++) {
+          const row = dataRows[rowIndex];
 
-        // skip completely empty rows
-        if (row.every(cell => isEmpty(cell))) {
-          continue;
-        }
-
-        const rowData = {};
-
-        for (let colIndex = 0; colIndex < headers.length; colIndex++) {
-          const header = headers[colIndex];
-          const value = row[colIndex];
-
-          // partially empty row - null values validation
-          if (isEmpty(value)) {
-            req.error({
-              message: `Missing value for column '${header}' at row ${rowIndex + 2}`
-            })
+          // skip completely empty rows
+          if (row.every(cell => isEmpty(cell))) {
+            continue;
           }
-          rowData[header] = value;
+
+          const rowData = {};
+
+          for (let colIndex = 0; colIndex < headers.length; colIndex++) {
+            const header = headers[colIndex];
+            const value = row[colIndex];
+
+            // partially empty row - null values validation
+            if (isEmpty(value)) {
+              req.reject(400, "Missing value for column, update the data for missing fields");
+            }
+            rowData[header] = value;
+          }
+
+          rowData.userID = oneFile.createdBy;
+          await tx.run(INSERT.into(DataDictionary).entries(rowData));
         }
 
-        rowData.userID = oneFile.createdBy;
-        await INSERT.into(DataDictionary).entries(rowData);
+        await tx.update(Content, ID).with({ status: "COMPLETED" });
+        await tx.commit();
+        return await SELECT.one.from(Content).where({ ID });
+      } catch (err) {
+        await tx.rollback();
+        console.error('Error inserting row:', err);
+        throw err;
       }
-
-      await tx.update(Content, ID).with({ status: "COMPLETED" });
-      return await SELECT.one.from(Content).where({ ID });
     } else if (oneFile.fileType === "Prompt Template") {
       //parse the xlsx file and update the Prompt Template table, first row is header
       const xlsx = require("xlsx");

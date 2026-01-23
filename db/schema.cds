@@ -100,9 +100,9 @@ entity MetaData : cuid {
 }
 
 entity DataDictionary : cuid {
-  key column          : String;
-      description     : String;
-      longDescription : LargeString;
+  key COLUMN          : String;
+      DESCRIPTION     : String;
+      LONGDESCRIPTION : LargeString;
       userID          : String;
 }
 
