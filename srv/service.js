@@ -224,11 +224,12 @@ module.exports = cds.service.impl(async function () {
         }
 
         await tx.update(Content, ID).with({ status: "COMPLETED" });
+        const result = await tx.run(SELECT.one.from(Content).where({ ID }));
         await tx.commit();
-        return await SELECT.one.from(Content).where({ ID });
+        return result;
       } catch (err) {
         await tx.rollback();
-        console.error('Error inserting row:', err);
+        console.error('Error inserting row in DataDictionary:', err);
         throw err;
       }
     } else if (oneFile.fileType === "Prompt Template") {
@@ -247,38 +248,38 @@ module.exports = cds.service.impl(async function () {
       const dataRows = jsonData.slice(1);
       const headers = jsonData[0];
 
-      // remove all rows in PromptTemplate
-      console.log("Deleting all rows in PromptTemplate");
+        // remove all rows in PromptTemplate
+        console.log("Deleting all rows in PromptTemplate");
       await DELETE.from(PromptTemplate);
 
-      const isEmpty = (val) => val === null || val === undefined || (typeof val === 'string' && val.trim() === '');
-      //insert the rows in DataDictionary table
+        const isEmpty = (val) => val === null || val === undefined || (typeof val === 'string' && val.trim() === '');
+        //insert the rows in DataDictionary table
 
-      for (let rowIndex = 0; rowIndex < dataRows.length; rowIndex++) {
-        const row = dataRows[rowIndex];
+        for (let rowIndex = 0; rowIndex < dataRows.length; rowIndex++) {
+          const row = dataRows[rowIndex];
 
-        // skip completely empty rows
-        if (row.every(cell => isEmpty(cell))) {
-          continue;
-        }
-
-        const rowData = {};
-
-        for (let colIndex = 0; colIndex < headers.length; colIndex++) {
-          const header = headers[colIndex];
-          const value = row[colIndex];
-
-          // partially empty row - null values validation
-          if (isEmpty(value)) {
+          // skip completely empty rows
+          if (row.every(cell => isEmpty(cell))) {
             continue;
           }
-          rowData[header] = value;
-          console.log("Row Data", rowData);
-        }
+
+          const rowData = {};
+
+          for (let colIndex = 0; colIndex < headers.length; colIndex++) {
+            const header = headers[colIndex];
+            const value = row[colIndex];
+
+            // partially empty row - null values validation
+            if (isEmpty(value)) {
+              continue;
+            }
+            rowData[header] = value;
+            console.log("Row Data", rowData);
+          }
         await INSERT.into(PromptTemplate).entries(rowData);
-      }
-      await tx.update(Content, ID).with({ status: "COMPLETED" });
-      return await SELECT.one.from(Content).where({ ID });
+        }
+        await tx.update(Content, ID).with({ status: "COMPLETED" });
+        return await SELECT.one.from(Content).where({ ID });
     }
     else {
       //Call API to create Embeddings
@@ -515,7 +516,7 @@ module.exports = cds.service.impl(async function () {
 
     // Fetch all DataDictionary records
     const allDataDictionary = await cds.run(
-      SELECT.from(PromptTemplate)
+      SELECT.from(PromptTemplate).columns("OLD_ID", "CATEGORY", "PRODUCT", "TEMPLATE", "ORIGINAL_PROMPT", "DESCRIPTION", "SELECT_PRODUCT", "INPUT_COUNTRY", "SELECT_MODEL", "SELECT_COUPON_TYPE", "SELECT_METRIC", "SELECT_COB_DATE", 'SELECT_ATTRIBUTE', "INPUT_ISIN", "INPUT_MONTH_YEAR", "INPUT_PORTFOLIO", "KEYWORD_PRODUCT", "KEYWORD_COUNTRY", "KEYWORD_MODEL", "KEYWORD_COUPON_TYPE", "KEYWORD_METRIC", "KEYWORD_COB_DATE", "KEYWORD_ATTRIBUTE", "KEYWORD_ISIN", "KEYWORD_MONTH_YEAR", "KEYWORD_PORTFOLIO")
     );
     console.log("All Prompts Data", allDataDictionary);
 
