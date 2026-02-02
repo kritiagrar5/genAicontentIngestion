@@ -39,8 +39,9 @@
                         <Text class="sapUiTinyMarginBegin" text="and edit it before uploading." />
                     </HBox>
                     <HBox visible="{= ${viewModel>/usecase} === 'Treasury' }">
-                        <Link id="downloadPromptTemplate" visible="{= ${viewModel>/usecase} === 'Treasury' }" text="Download latest Prompt Template file" press=".onDownloadPromptTemplate" />
-                        <Text class="sapUiTinyMarginBegin" text="and edit it before uploading." />
+                        <Link id="downloadPromptTemplate" visible="false" text="Download latest Prompt Template file" press=".onDownloadTemplate" />
+                        <Link id="downloadDataDictionary" visible="false" text="Download latest Data Dictionary file" press=".onDownloadTemplate" />
+                        <Text id="treasuryText" class="sapUiTinyMarginBegin" visible="false" text="and edit it before uploading." />
                     </HBox>
                 </VBox>
 

@@ -477,11 +477,11 @@ module.exports = cds.service.impl(async function () {
   });
   this.on("downloadDataDictionary", async (req) => {
     // Define the headers you want in the Excel file
-    const headers = ["column", "description", "longDescription", "userID"];
+    const headers = ["COLUMN", "DESCRIPTION", "LONGDESCRIPTION"];
 
     // Fetch all DataDictionary records
     const allDataDictionary = await cds.run(
-      SELECT.from(DataDictionary).columns(headers).orderBy("column ASC")
+      SELECT.from(DataDictionary).columns(headers)
     );
 
     // If no data, add an empty object to preserve headers

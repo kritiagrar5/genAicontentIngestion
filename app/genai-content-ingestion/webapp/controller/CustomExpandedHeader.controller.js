@@ -192,6 +192,34 @@ sap.ui.define(
           const oSelectedItem = oEvent.getParameter("selectedItem");
           if (!oSelectedItem) return;
           const sKey = oSelectedItem.getText();
+
+          var pt = sap.ui.core.Fragment.byId(
+              this.getView().getId() + "--myUploadDialog",
+              "downloadPromptTemplate"
+            );
+          var dd = sap.ui.core.Fragment.byId(
+              this.getView().getId() + "--myUploadDialog",
+              "downloadDataDictionary"
+            );
+          var text = sap.ui.core.Fragment.byId(
+              this.getView().getId() + "--myUploadDialog",
+              "treasuryText"
+            );
+          if (sKey == "Data Dictionary") {
+            dd.setVisible(true);
+            pt.setVisible(false);
+            text.setVisible(true);
+          }
+          else if (sKey == "Prompt Template") {
+            dd.setVisible(false);
+            pt.setVisible(true);
+            text.setVisible(true);
+          }
+          else {
+            dd.setVisible(false);
+            pt.setVisible(false);
+            text.setVisible(false);
+          }
           this.getView().getModel("viewModel").setProperty("/fileType", sKey);
           const UseCase = this.getView()
             .getModel("viewModel")
@@ -397,7 +425,7 @@ sap.ui.define(
                 const headers = jsonData[0].map(h =>
                   typeof h === "string" ? h.trim().toLowerCase() : h
                 );
-            
+
                 if (
                   headers.length !== 26 ||
                   headers[0] !== "old_id" ||
@@ -425,7 +453,7 @@ sap.ui.define(
                   headers[22] !== "keyword_attribute" ||
                   headers[23] !== "keyword_isin" ||
                   headers[24] !== "keyword_month_year" ||
-                  headers[25] !== "keyword_portfolio" 
+                  headers[25] !== "keyword_portfolio"
 
 
 
@@ -834,10 +862,10 @@ sap.ui.define(
           a.remove();
           window.URL.revokeObjectURL(url);
         },
-        onDownloadPromptTemplate: async function (oEvent) {
+        onDownloadTemplate: async function (oEvent) {
           const targetId = oEvent.getSource().getId();
           const baseUrl = sap.ui.require.toUrl("genaicontentingestion");
-          const downloadUrl = `${baseUrl}/odata/v4/catalog/${targetId.indexOf("downloadPromptTemplate") !== -1 ? "downloadPromptTemplate" : "downloadMetadata"}`;
+          const downloadUrl = `${baseUrl}/odata/v4/catalog/${targetId.indexOf("downloadPromptTemplate") !== -1 ? "downloadPromptTemplate" : "downloadDataDictionary"}`;
           const csrf = await this.onfetchCSRF(baseUrl);
           const responseAPI = await fetch(downloadUrl, {
             method: "POST",
